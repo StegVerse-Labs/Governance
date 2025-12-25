@@ -14,7 +14,7 @@ A GDR MUST include:
 
 - `gdr_version` (currently `1.0`)
 - `decision_id`
-- `decision` (allow | deny | require_review | recommend)
+- `decision` (`allow | deny | require_review | recommend`)
 - `policy.policy_id`
 - `policy.policy_version`
 - `evaluated_inputs.source`
@@ -27,7 +27,7 @@ Optional fields:
 - `evaluated_inputs.bundle_hash`
 - `notes` (string list)
 - `hints` (machine hints)
-- `trace` (correlation/trace metadata)
+- `trace` (correlation / trace metadata)
 
 ---
 
@@ -51,9 +51,13 @@ Optional fields:
   "rationale": "Receipt chain verified; signing key is known and not revoked.",
   "notes": ["No anomalies detected."]
 }
+```
+
+---
 
 ## Design Guarantees
-	•	Deterministic for a given inputs + policy version
-	•	Does not modify receipts
-	•	Does not claim authority over truth
-	•	Safe for humans + AI consumers
+
+- Deterministic for given inputs + policy version
+- Does not modify receipts
+- Does not claim authority over truth
+- Safe for humans + AI consumers

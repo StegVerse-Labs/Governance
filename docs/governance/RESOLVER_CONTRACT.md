@@ -11,14 +11,14 @@ The resolver is the minimal governance engine component that transforms:
 ## Inputs (required)
 
 - Verified receipt(s) from StegID
-- Policy configuration (policy_id + policy_version)
+- Policy configuration (`policy_id` + `policy_version`)
 - Optional execution context (trace info, request metadata)
 
 ---
 
 ## Output (required)
 
-- A valid GDR (see `docs/GOVERNANCE_DECISION_RECORD.md`)
+- A valid GDR
 
 ---
 
@@ -26,10 +26,10 @@ The resolver is the minimal governance engine component that transforms:
 
 The resolver MUST NOT:
 
-- call StegID verification internally
-- mutate receipts
-- invent identity
-- output decisions without referencing evaluated inputs
+- Call StegID verification internally
+- Mutate receipts
+- Invent identity
+- Output decisions without referencing evaluated inputs
 
 ---
 

@@ -27,7 +27,7 @@ All cryptographic verification MUST be completed prior to evaluation.
 
 A policy evaluation MUST emit a **Governance Decision Record (GDR)** containing:
 
-- decision: allow | deny | require_review | recommend
+- decision (`allow | deny | require_review | recommend`)
 - policy_id
 - policy_version
 - evaluated_receipts (IDs)
@@ -69,7 +69,7 @@ Failures MUST be explicit and non-silent.
 
 ## Non-Goals
 
-Policy evaluation does not:
+Policy evaluation does NOT:
 - Perform identity verification
 - Validate cryptographic signatures
 - Modify receipts

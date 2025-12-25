@@ -33,9 +33,6 @@ Governance MUST NOT:
 - Assert truth without reference to verified inputs
 - Act without producing an auditable record
 
-Governance does not decide what *happened*.
-It decides what is *allowed* or *recommended* given what happened.
-
 ---
 
 ## Relationship to StegID
@@ -53,6 +50,3 @@ This separation is intentional and non-negotiable.
 ## Design Principle
 
 > Governance has authority over **decisions**, not **truth**.
-
-Truth comes from receipts.
-Authority comes from policy.
