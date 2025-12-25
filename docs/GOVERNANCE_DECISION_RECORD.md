@@ -51,3 +51,9 @@ Optional fields:
   "rationale": "Receipt chain verified; signing key is known and not revoked.",
   "notes": ["No anomalies detected."]
 }
+
+## Design Guarantees
+	•	Deterministic for a given inputs + policy version
+	•	Does not modify receipts
+	•	Does not claim authority over truth
+	•	Safe for humans + AI consumers
