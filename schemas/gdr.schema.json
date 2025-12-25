@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stegverse.org/schemas/gdr.schema.json",
+  "title": "Governance Decision Record (GDR)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gdr_version",
+    "decision_id",
+    "decision",
+    "policy",
+    "evaluated_inputs",
+    "issued_at",
+    "rationale"
+  ],
+  "properties": {
+    "gdr_version": {
+      "type": "string",
+      "description": "Version of the GDR contract.",
+      "pattern": "^1\\.0$"
+    },
+    "decision_id": {
+      "type": "string",
+      "description": "Unique identifier for this decision record."
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["allow", "deny", "require_review", "recommend"]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "policy_version"],
+      "properties": {
+        "policy_id": { "type": "string" },
+        "policy_version": { "type": "string" }
+      }
+    },
+    "evaluated_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "receipt_ids"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Where the verified inputs came from (e.g., StegID receipts, bundle hash, etc.)"
+        },
+        "receipt_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "bundle_hash": {
+          "type": ["string", "null"],
+          "description": "Optional hash of the complete verified bundle used for evaluation."
+        }
+      }
+    },
+    "issued_at": {
+      "type": "integer",
+      "description": "Unix epoch seconds when this decision was issued."
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Human-readable explanation for the decision."
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "hints": {
+      "type": "object",
+      "description": "Optional machine hints for downstream systems.",
+      "additionalProperties": true
+    },
+    "trace": {
+      "type": "object",
+      "description": "Optional tracing metadata (request IDs, correlation IDs, etc.)",
+      "additionalProperties": true
+    }
+  }
+}
