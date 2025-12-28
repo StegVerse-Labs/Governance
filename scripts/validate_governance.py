@@ -4,14 +4,13 @@ Governance repo validation (no external deps).
 
 Checks:
 - Required files exist
+- README contains privacy banner
 - GDR schema is valid JSON and contains required keys
-- Core governance docs exist
-- README contains a standard privacy banner (tolerant to Unicode variants)
+- TRACE Signal Bundle schema is valid JSON and contains required keys
 """
 from __future__ import annotations
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -21,20 +20,18 @@ REQUIRED_FILES = [
     ROOT / "README.md",
     ROOT / "DISCLAIMER.md",
     ROOT / "CONFIDENCE_LABELS.md",
+    # Schemas
     ROOT / "schemas" / "gdr.schema.json",
+    ROOT / "schemas" / "trace_signal_bundle.schema.json",
+    # Core governance docs
     ROOT / "docs" / "governance" / "GOVERNANCE_DECISION_RECORD.md",
     ROOT / "docs" / "governance" / "POLICY_EVALUATION_MODEL.md",
     ROOT / "docs" / "governance" / "RESOLVER_CONTRACT.md",
     ROOT / "docs" / "governance" / "ROLE_OF_GOVERNANCE.md",
     ROOT / "docs" / "governance" / "TRACE_INTEGRATION.md",
+    ROOT / "docs" / "governance" / "TRACE_SIGNAL_BUNDLE.md",
     ROOT / "docs" / "governance" / "STEGTALK_POLICY_PROFILE.md",
-]
-
-ZERO_WIDTH = [
-    "\u200b",  # zero width space
-    "\u200c",  # zero width non-joiner
-    "\u200d",  # zero width joiner
-    "\ufeff",  # BOM / zero width no-break
+    ROOT / "docs" / "governance" / "GDR_ENFORCEMENT_PROFILE.md",
 ]
 
 def die(msg: str, code: int = 1) -> None:
@@ -44,77 +41,60 @@ def die(msg: str, code: int = 1) -> None:
 def ok(msg: str) -> None:
     print(f"OK: {msg}")
 
-def _normalize(s: str) -> str:
-    # Remove invisible chars and emoji variation selectors that break exact matching.
-    for ch in ZERO_WIDTH:
-        s = s.replace(ch, "")
-    s = s.replace("\ufe0f", "")  # variation selector 16
-    s = s.replace("\ufe0e", "")  # variation selector 15
-    # Normalize common dash variants to a plain hyphen for matching.
-    s = s.replace("–", "-").replace("—", "-")
-    return s
+def load_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as e:
+        die(f"Failed to parse {path.relative_to(ROOT)} as JSON: {e}")
+    raise AssertionError("unreachable")
 
-def _has_privacy_banner(readme_text: str) -> bool:
-    t = _normalize(readme_text)
-
-    # Accept any of these signals (keeps it strict but not brittle).
-    patterns = [
-        r"\*\*Public Repository\*\*",
-        r"\*\*Private Repository\*\*",
-        r"\*\*Public Repository\s*-\s*TRACE-Processed Content\*\*",
-        r"\*\*Public Repository\s*-\s*TRACE\-Processed Content\*\*",
-        r"\*\*Public Repository\s*-\s*TRACE Processed Content\*\*",
-    ]
-
-    # Also accept the exact quoted banner style (with or without the emoji).
-    # Example:
-    # > 🔓 **Public Repository**
-    # or
-    # > **Public Repository**
-    quoted_ok = re.search(r"^>\s*(🔓\s*)?\*\*Public Repository\*\*", t, re.MULTILINE) is not None
-    quoted_ok |= re.search(r"^>\s*(🔒\s*)?\*\*Private Repository\*\*", t, re.MULTILINE) is not None
-    quoted_ok |= re.search(r"^>\s*(📘\s*)?\*\*Public Repository\s*-\s*TRACE-Processed Content\*\*", t, re.MULTILINE) is not None
-
-    if quoted_ok:
-        return True
-
-    return any(re.search(p, t) for p in patterns)
+def require_keys(obj: dict, keys: list[str], name: str) -> None:
+    for k in keys:
+        if k not in obj:
+            die(f"{name} missing required top-level key: {k}")
 
 def main() -> None:
+    # Existence checks
     missing = [p for p in REQUIRED_FILES if not p.exists()]
     if missing:
         for p in missing:
             print(f"Missing: {p.relative_to(ROOT)}")
         die(f"{len(missing)} required file(s) missing.")
-
     ok("All required files present.")
 
-    readme_path = ROOT / "README.md"
-    readme = readme_path.read_text(encoding="utf-8", errors="replace")
-    if not _has_privacy_banner(readme):
-        # Helpful debug without leaking content: show the first few lines normalized.
-        first_lines = "\n".join(_normalize(readme).splitlines()[:8])
-        print("DEBUG (first lines, normalized):")
-        print(first_lines)
+    # README banner check
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    banner_markers = [
+        "🔓 **Public Repository**",
+        "🔒 **Private Repository**",
+        "📘 **Public Repository – TRACE-Processed Content**",
+    ]
+    if not any(m in readme for m in banner_markers):
         die("README is missing a standard privacy classification banner.")
     ok("README contains privacy classification banner.")
 
-    schema_path = ROOT / "schemas" / "gdr.schema.json"
-    try:
-        schema = json.loads(schema_path.read_text(encoding="utf-8"))
-    except Exception as e:
-        die(f"Failed to parse schemas/gdr.schema.json as JSON: {e}")
+    # ---- Schema checks: GDR ----
+    gdr_path = ROOT / "schemas" / "gdr.schema.json"
+    gdr = load_json(gdr_path)
+    require_keys(gdr, ["$schema", "$id", "title", "type", "required", "properties"], "gdr.schema.json")
 
-    for key in ["$schema", "$id", "title", "type", "required", "properties"]:
-        if key not in schema:
-            die(f"gdr.schema.json missing required top-level key: {key}")
-
-    required = set(schema.get("required", []))
+    required = set(gdr.get("required", []))
     expected = {"gdr_version", "decision_id", "decision", "policy", "evaluated_inputs", "issued_at", "rationale"}
     if not expected.issubset(required):
-        die(f"gdr.schema.json required fields do not include expected baseline. Missing: {sorted(expected - required)}")
-
+        die(f"gdr.schema.json required fields missing: {sorted(expected - required)}")
     ok("gdr.schema.json structure looks sane.")
+
+    # ---- Schema checks: TRACE Signal Bundle ----
+    tsb_path = ROOT / "schemas" / "trace_signal_bundle.schema.json"
+    tsb = load_json(tsb_path)
+    require_keys(tsb, ["$schema", "$id", "title", "type", "required", "properties"], "trace_signal_bundle.schema.json")
+
+    tsb_required = set(tsb.get("required", []))
+    tsb_expected = {"bundle_version", "bundle_id", "produced_at", "subject", "signals"}
+    if not tsb_expected.issubset(tsb_required):
+        die(f"trace_signal_bundle.schema.json required fields missing: {sorted(tsb_expected - tsb_required)}")
+    ok("trace_signal_bundle.schema.json structure looks sane.")
+
     print("\nValidation passed.")
     sys.exit(0)
 
