@@ -45,8 +45,10 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
   - `TRACE_INTEGRATION.md` — how StegCore consumes TRACE outputs safely
   - `TRACE_SIGNAL_BUNDLE.md` — contract defining the only TRACE output Governance may evaluate
   - `STEGTALK_POLICY_PROFILE.md` — StegTalk tier policy rules expressed for governance
+  - `GDR_ENFORCEMENT_PROFILE.md` — enforcement rules for downstream systems (Governance-first boundary)
 - `schemas/`
   - `gdr.schema.json` — JSON Schema for a Governance Decision Record
+  - `trace_signal_bundle.schema.json` — JSON Schema for TRACE Signal Bundle
 - `scripts/`
   - `validate_governance.py` — CI validation script (no external deps)
 - `stegtvc_client.py`
