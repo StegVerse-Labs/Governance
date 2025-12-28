@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stegverse.org/schemas/trace_signal_bundle.schema.json",
+  "title": "TRACE Signal Bundle",
+  "description": "Bounded, confidence-scored output from TRACE (StegTrace). Non-authoritative. Designed for Governance consumption.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "bundle_version",
+    "bundle_id",
+    "produced_at",
+    "subject",
+    "signals"
+  ],
+  "properties": {
+    "bundle_version": {
+      "type": "string",
+      "pattern": "^1\\.0$",
+      "description": "TRACE bundle contract version."
+    },
+    "bundle_id": {
+      "type": "string",
+      "description": "Unique ID for this bundle."
+    },
+    "produced_at": {
+      "type": "integer",
+      "description": "Unix epoch seconds when the bundle was produced."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_type", "subject_id"],
+      "properties": {
+        "subject_type": {
+          "type": "string",
+          "description": "What the signals are about (e.g., person, org, repo, document, claim, artifact, message)."
+        },
+        "subject_id": {
+          "type": "string",
+          "description": "Stable identifier for the subject in TRACE scope (may be a hash or internal ID)."
+        },
+        "display_name": {
+          "type": ["string", "null"],
+          "description": "Optional human-readable label."
+        }
+      }
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signal_id",
+          "signal_type",
+          "confidence",
+          "summary",
+          "evidence_refs"
+        ],
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "description": "Unique ID for this signal item."
+          },
+          "signal_type": {
+            "type": "string",
+            "description": "Category/type of signal (e.g., handwriting_match, provenance_gap, source_reliability, claim_support)."
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "TRACE confidence score in [0,1]."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable summary of what the signal means."
+          },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional tags for filtering/search."
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["ref_type", "ref_id"],
+              "properties": {
+                "ref_type": {
+                  "type": "string",
+                  "description": "Type of evidence reference (url, citation, doc_id, hash, case_id, archive_id)."
+                },
+                "ref_id": {
+                  "type": "string",
+                  "description": "The reference identifier (not raw content)."
+                },
+                "notes": {
+                  "type": ["string", "null"],
+                  "description": "Optional short note about what this reference supports."
+                }
+              }
+            },
+            "description": "Bounded references only; do not embed raw evidence."
+          },
+          "counter_signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["summary", "confidence"],
+              "properties": {
+                "summary": { "type": "string" },
+                "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+              }
+            },
+            "description": "Optional structured counterpoints."
+          },
+          "limits": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "non_authoritative": { "type": "boolean" },
+              "not_legal_advice": { "type": "boolean" },
+              "not_identity_verification": { "type": "boolean" }
+            },
+            "description": "Optional explicit limitations on interpretation."
+          }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional correlation metadata."
+    }
+  }
+}
