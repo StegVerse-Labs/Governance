@@ -1,20 +1,45 @@
-# .github/workflows/forward-to-bridge.yml
 name: Forward PR to StegVerse AI Bridge
 
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to forward (optional; for manual testing)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
   forward:
     runs-on: ubuntu-latest
     steps:
-      - name: Call repository_dispatch on bridge
+      - name: Dispatch to hybrid-collab-bridge
         env:
           GH_TOKEN: ${{ secrets.GH_STEGVERSE_AI_TOKEN }}
+          TARGET_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MANUAL_PR: ${{ github.event.inputs.pr_number }}
         run: |
-          echo "${GH_TOKEN}" | gh auth login --with-token
-          gh api repos/StegVerse/hybrid-collab-bridge/dispatches \
-            -X POST \
-            -F event_type="stegverse-ai-review" \
-            -F client_payload="{\"target_repo\":\"${GITHUB_REPOSITORY}\",\"pr_number\":${{ github.event.pull_request.number }}}"
+          set -euo pipefail
+
+          # Decide PR number: event PR > manual input > 0
+          if [ -n "${PR_NUMBER:-}" ]; then
+            N="${PR_NUMBER}"
+          elif [ -n "${MANUAL_PR:-}" ]; then
+            N="${MANUAL_PR}"
+          else
+            N="0"
+          fi
+
+          echo "Forwarding repo=${TARGET_REPO} pr_number=${N}"
+
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            https://api.github.com/repos/StegVerse/hybrid-collab-bridge/dispatches \
+            -d "{\"event_type\":\"stegverse-ai-review\",\"client_payload\":{\"target_repo\":\"${TARGET_REPO}\",\"pr_number\":${N}}}"
