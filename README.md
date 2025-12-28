@@ -1,6 +1,6 @@
 🔓 **Public Repository**
 
-This repository contains protocol specifications, engines, or methodology.
+This repository contains protocol specifications, engines, or methodology.  
 It contains **no private data**, **no credentials**, and **no sensitive artifacts**.
 
 # Governance (StegCore Policy + Resolver)
@@ -20,11 +20,11 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
 
 ## Key guarantees
 
-- **Deterministic** for given inputs + policy version + configuration
-- **Auditable** outputs (GDR) with rationale and evaluated input references
-- **Versioned** policies and contracts
-- **Non-retroactive** — issued decisions are immutable; new information produces new GDRs
-- **Safe for humans and AI** consumers
+- **Deterministic** for given inputs + policy version + configuration  
+- **Auditable** outputs (GDR) with rationale and evaluated input references  
+- **Versioned** policies and contracts  
+- **Non-retroactive** — issued decisions are immutable; new information produces new GDRs  
+- **Safe for humans and AI** consumers  
 
 ---
 
@@ -42,10 +42,10 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
   - `POLICY_EVALUATION_MODEL.md` — how evaluation works and what inputs are allowed
   - `RESOLVER_CONTRACT.md` — resolver rules and output requirements
   - `GOVERNANCE_DECISION_RECORD.md` — GDR contract (human-readable)
+  - `GDR_ENFORCEMENT_PROFILE.md` — governance-first automation boundary (downstream enforcement rules)
   - `TRACE_INTEGRATION.md` — how StegCore consumes TRACE outputs safely
-  - `TRACE_SIGNAL_BUNDLE.md` — contract defining the only TRACE output Governance may evaluate
+  - `TRACE_SIGNAL_BUNDLE.md` — the only TRACE output Governance may evaluate (bounded + confidence-scored)
   - `STEGTALK_POLICY_PROFILE.md` — StegTalk tier policy rules expressed for governance
-  - `GDR_ENFORCEMENT_PROFILE.md` — enforcement rules for downstream systems (Governance-first boundary)
 - `schemas/`
   - `gdr.schema.json` — JSON Schema for a Governance Decision Record
   - `trace_signal_bundle.schema.json` — JSON Schema for TRACE Signal Bundle
@@ -89,45 +89,53 @@ cfg = resolve(use_case="connectivity-check", module="hybrid-collab-bridge")
 print(cfg)
 ```
 
-## How decisions are produced (conceptual)
-	1.	StegID verifies receipts (signatures, continuity, revocation, etc.)
-	2.	Governance evaluates verified inputs using a policy
-	3.	Governance emits a GDR
-	4.	Downstream systems enforce:
-	    - allow
-	    - deny
-	    - require_review
-	    - recommend
-	    - plus any machine hints and constraints
+---
 
-⸻
+## How decisions are produced (conceptual)
+
+1. **StegID verifies** receipts (signatures, continuity, revocation, etc.)
+2. Governance **evaluates verified inputs** using a policy
+3. Governance **emits a GDR**
+4. Downstream systems enforce:
+   - `allow`
+   - `deny`
+   - `require_review`
+   - `recommend`
+   - plus any machine hints and constraints
+
+---
 
 ## Governance is intentionally separate from truth
-- StegID answers: “What happened, and can it be proven?”
-- TRACE (StegTrace) answers: “What do we believe about signals or artifacts, with what confidence, and why?”
-- Governance answers: “Given verified and bounded inputs, what should happen next?”
 
-Governance has authority over decisions, not truth.
+- **StegID** answers: “What happened, and can it be proven?”
+- **TRACE (StegTrace)** answers: “What do we believe about signals or artifacts, with what confidence, and why?”
+- **Governance** answers: “Given verified and bounded inputs, what should happen next?”
 
-⸻
+Governance has authority over **decisions**, not **truth**.
+
+---
 
 ## Governance-first automation boundary
 
 Governance is the automation boundary for StegVerse.
 
-No downstream system may execute irreversible actions without a valid, auditable Governance Decision Record (GDR).
+No downstream system may execute irreversible actions without a valid, auditable **Governance Decision Record (GDR)**.
 
-⸻
+See:
+- `docs/governance/GDR_ENFORCEMENT_PROFILE.md`
+
+---
 
 ## Documents for legal & ethical clarity
-- DISCLAIMER.md
-- CONFIDENCE_LABELS.md
 
-⸻
+- `DISCLAIMER.md`
+- `CONFIDENCE_LABELS.md`
+
+---
 
 ## Contributing
+
 - All changes via pull request
-- main is protected
+- `main` is protected
 - Schemas and core docs must pass CI validation
-- Governance v0 API surface is frozen
-- additive changes require a new policy version
+- Governance v0 API surface is frozen — additive changes require a new policy version
