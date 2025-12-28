@@ -1,7 +1,6 @@
-> 🔓 **Public Repository**
->
-> This repository contains protocol specifications, engines, or methodology.
-> It contains **no private data**, **no credentials**, and **no sensitive artifacts**.
+🔓 **Public Repository**
+
+This repository contains protocol specifications, engines, or methodology.  It contains **no private data**, **no credentials**, and **no sensitive artifacts**.
 
 # Governance (StegCore Policy + Resolver)
 
