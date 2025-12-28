@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Decide PR number: event PR > manual input > 0
+          # Decide PR number: PR event > manual input > 0
           if [ -n "${PR_NUMBER:-}" ]; then
             N="${PR_NUMBER}"
           elif [ -n "${MANUAL_PR:-}" ]; then
@@ -38,7 +38,7 @@ jobs:
 
           echo "Forwarding repo=${TARGET_REPO} pr_number=${N}"
 
-          curl -sS -X POST \
+          curl -sSL -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             https://api.github.com/repos/StegVerse/hybrid-collab-bridge/dispatches \
