@@ -74,3 +74,14 @@ Policy evaluation does NOT:
 - Validate cryptographic signatures
 - Modify receipts
 - Create authority outside policy scope
+
+## Failure Semantics
+
+Governance failure modes are explicit and blocking.
+
+If evaluation fails:
+- no decision is emitted
+- downstream enforcement MUST NOT proceed
+- failure is surfaced to humans and AI
+
+Silent degradation is forbidden.
