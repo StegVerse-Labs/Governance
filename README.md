@@ -86,3 +86,5 @@ print(cfg)
 - All changes via PR
 - `main` is protected
 - Schemas and core docs must pass CI validation
+
+> Governance v0 API surface is frozen. Additive changes require a new policy version.
