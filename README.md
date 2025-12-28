@@ -92,18 +92,18 @@ print(cfg)
 	2.	Governance evaluates verified inputs using a policy
 	3.	Governance emits a GDR
 	4.	Downstream systems enforce:
-	•	allow
-	•	deny
-	•	require_review
-	•	recommend
-	•	plus any machine hints and constraints
+	    - allow
+	    - deny
+	    - require_review
+	    - recommend
+	    - plus any machine hints and constraints
 
 ⸻
 
 ## Governance is intentionally separate from truth
-	•	StegID answers: “What happened, and can it be proven?”
-	•	TRACE (StegTrace) answers: “What do we believe about signals or artifacts, with what confidence, and why?”
-	•	Governance answers: “Given verified and bounded inputs, what should happen next?”
+- StegID answers: “What happened, and can it be proven?”
+- TRACE (StegTrace) answers: “What do we believe about signals or artifacts, with what confidence, and why?”
+- Governance answers: “Given verified and bounded inputs, what should happen next?”
 
 Governance has authority over decisions, not truth.
 
@@ -118,13 +118,14 @@ No downstream system may execute irreversible actions without a valid, auditable
 ⸻
 
 ## Documents for legal & ethical clarity
-	•	DISCLAIMER.md
-	•	CONFIDENCE_LABELS.md
+- DISCLAIMER.md
+- CONFIDENCE_LABELS.md
 
 ⸻
 
 ## Contributing
-	•	All changes via pull request
-	•	main is protected
-	•	Schemas and core docs must pass CI validation
-	•	Governance v0 API surface is frozen — additive changes require a new policy version
+- All changes via pull request
+- main is protected
+- Schemas and core docs must pass CI validation
+- Governance v0 API surface is frozen
+- additive changes require a new policy version
