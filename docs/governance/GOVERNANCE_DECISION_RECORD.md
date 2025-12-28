@@ -61,3 +61,19 @@ Optional fields:
 - Does not modify receipts
 - Does not claim authority over truth
 - Safe for humans + AI consumers
+
+## Decision Stability
+
+A GDR reflects a decision **at the time of issuance**.
+
+New information MAY:
+- produce a new GDR
+- recommend review
+- downgrade confidence via TRACE
+
+New information MUST NOT:
+- silently invalidate prior GDRs
+- rewrite historical decisions
+- alter issued records
+
+Supersession requires a new GDR referencing the prior decision_id.
