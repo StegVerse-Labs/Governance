@@ -5,6 +5,10 @@ It contains **no private data**, **no credentials**, and **no sensitive artifact
 
 # Governance (StegCore Policy + Resolver)
 
+> Constitutional role: see [`CONSTITUTIONAL_ROLE.md`](CONSTITUTIONAL_ROLE.md).
+>
+> Continuation handoff: see [`docs/GOVERNANCE_MIRROR_HANDOFF.md`](docs/GOVERNANCE_MIRROR_HANDOFF.md).
+
 ## What this repo is
 
 **Governance** is StegVerse’s policy layer: it takes **verified inputs** (typically from **StegID**) and produces an auditable, portable decision record called a **GDR (Governance Decision Record)**.
