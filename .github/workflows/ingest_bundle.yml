@@ -1,0 +1,60 @@
+name: Ingest Bundle → create docs
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_path:
+        description: "Path to the bundle file"
+        required: true
+        default: "docs/bundles/stegverse_bundle.md"
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Parse bundle and write files
+        env:
+          BUNDLE_PATH: ${{ github.event.inputs.bundle_path }}
+        run: |
+          python - <<'PY'
+          import os, re, sys, pathlib
+          bundle_path = os.environ.get("BUNDLE_PATH", "docs/bundles/stegverse_bundle.md")
+          p = pathlib.Path(bundle_path)
+          if not p.exists():
+              print(f"ERROR: bundle not found at {bundle_path}")
+              sys.exit(1)
+          text = p.read_text(encoding="utf-8")
+          pattern = re.compile(r"^===\s*file:\s*(.+?)\s*===\s*\n(.*?)\n===\s*/file\s*===\s*$", re.S | re.M)
+          matches = list(pattern.finditer(text))
+          if not matches:
+              print("ERROR: No file sections found. Ensure markers are correct.")
+              sys.exit(1)
+          written = []
+          for m in matches:
+              out_path = m.group(1).strip()
+              body = m.group(2)
+              out = pathlib.Path(out_path)
+              out.parent.mkdir(parents=True, exist_ok=True)
+              out.write_text(body, encoding="utf-8")
+              written.append(out_path)
+          print("WROTE FILES:")
+          for w in written:
+              print(" -", w)
+          PY
+
+      - name: Commit & push
+        run: |
+          git config user.name "bundle-bot"
+          git config user.email "bundle-bot@users.noreply.github.com"
+          git add docs
+          if ! git diff --cached --quiet; then
+            git commit -m "Ingest bundle → create/update governance and policy docs"
+            git push
+          else
+            echo "No changes to commit."
+          fi
