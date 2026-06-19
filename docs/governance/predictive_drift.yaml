@@ -1,0 +1,40 @@
+module: "Predictive Drift Early Warning"
+version: 0.1
+inputs:
+  window_days:
+    - 7
+    - 30
+  features:
+    - QPR
+    - OD
+    - VQF
+    - AD
+    - EP
+    - EC
+    - Trend_QPR_OD
+    - Seasonality
+model:
+  method: "EWMA plus CUSUM plus simple forecaster"
+  forecast_horizon_days: 14
+  retrain_interval_hours: 24
+thresholds:
+  warn_score: 60
+  forecast_time_to_warn_days: 7
+  forecast_time_to_review_days: 3
+responses:
+  - condition: "forecast_time_to_warn_days <= 7"
+    actions:
+      - emit_pre_mediation_suggestion
+      - temporarily_require_extra_domains_for_major_changes
+  - condition: "forecast_time_to_review_days <= 3"
+    actions:
+      - raise_timelock_for_major_changes
+      - bonus_credits_for_cross_group_co_sponsorship
+api:
+  endpoints:
+    - "GET /drift/predict"
+    - "POST /drift/mitigate"
+audit:
+  anchor_with: "anchoring_policy.yaml"
+notes: >
+  This is an additive early warning layer. It never approves capability growth.
