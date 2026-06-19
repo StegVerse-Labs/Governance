@@ -8,12 +8,14 @@ on:
     paths:
       - 'docs/**'
       - 'scripts/validate_docs.py'
+      - 'scripts/validate_gdr_examples.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
       - '.github/workflows/validate_docs.yml'
   pull_request:
     paths:
       - 'docs/**'
       - 'scripts/validate_docs.py'
+      - 'scripts/validate_gdr_examples.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
       - '.github/workflows/validate_docs.yml'
 
@@ -36,3 +38,6 @@ jobs:
 
       - name: Validate governance docs
         run: python scripts/validate_docs.py
+
+      - name: Validate GDR examples
+        run: python scripts/validate_gdr_examples.py
