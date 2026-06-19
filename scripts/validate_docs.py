@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Validate Governance documentation handoff, required docs, and YAML syntax."""
+"""Validate Governance documentation handoff, required docs, YAML syntax, and JSON fixtures."""
 from __future__ import annotations
 
+import json
 import pathlib
 import sys
 
@@ -14,6 +15,9 @@ REQUIRED_FILES = [
     "README.md",
     "GOVERNANCE_MIRROR_HANDOFF.md",
     "docs/INDEX.md",
+    "docs/DEFERRED_REVIEW.md",
+    "docs/VALIDATION_GUIDE.md",
+    "docs/IMPLEMENTATION_PLACEMENT.md",
     "docs/governance/index.md",
     "docs/governance/constitution.yaml",
     "docs/governance/change_classes.yaml",
@@ -29,6 +33,12 @@ REQUIRED_FILES = [
     "docs/governance/plugin_registry_policy.yaml",
     "docs/governance/ai_citizenship_charter.md",
     "docs/policies/risk_register.md",
+    "docs/examples/dual_quorum_gdr_example.md",
+    "docs/examples/drift_review_gdr_example.md",
+    "docs/examples/GDR_SCHEMA_MAPPING.md",
+    "docs/examples/fixtures/dual_quorum_gdr.json",
+    "docs/examples/fixtures/drift_review_gdr.json",
+    "scripts/validate_docs.py",
     ".github/workflows/ingest_bundle.yml",
     ".github/workflows/ingest_conversation.yml",
     ".github/workflows/validate_docs.yml",
@@ -39,6 +49,17 @@ REQUIRED_HANDOFF_PHRASES = [
     "Next Actions",
     "Definition of Done",
     "Current Completion Assessment",
+]
+
+REQUIRED_GDR_FIXTURE_FIELDS = [
+    "gdr_id",
+    "proposal_id",
+    "policy_version",
+    "decision",
+    "inputs",
+    "rationale",
+    "constraints",
+    "next_step",
 ]
 
 
@@ -66,6 +87,22 @@ def validate_yaml() -> list[str]:
     return errors
 
 
+def validate_json_fixtures() -> list[str]:
+    errors: list[str] = []
+    for path in sorted(pathlib.Path("docs/examples/fixtures").glob("*.json")):
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            errors.append(f"invalid JSON in {path}: {exc}")
+            continue
+        for field in REQUIRED_GDR_FIXTURE_FIELDS:
+            if field not in loaded:
+                errors.append(f"fixture {path} missing required field: {field}")
+        if loaded.get("decision") not in {"allow", "deny", "require_review", "recommend"}:
+            errors.append(f"fixture {path} uses unsupported decision: {loaded.get('decision')}")
+    return errors
+
+
 def validate_handoff() -> list[str]:
     errors: list[str] = []
     path = pathlib.Path("GOVERNANCE_MIRROR_HANDOFF.md")
@@ -82,6 +119,7 @@ def main() -> int:
     errors = []
     errors.extend(validate_required_files())
     errors.extend(validate_yaml())
+    errors.extend(validate_json_fixtures())
     errors.extend(validate_handoff())
     if errors:
         print("Governance documentation validation failed:")
