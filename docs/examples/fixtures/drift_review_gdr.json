@@ -1,26 +1,37 @@
 {
-  "gdr_id": "gdr-example-drift-review-001",
-  "proposal_id": "example-drift-review-001",
-  "policy_version": "draft-0.1",
+  "gdr_version": "1.0",
+  "decision_id": "gdr-example-drift-review-001",
   "decision": "require_review",
-  "inputs": {
-    "change_class": "C",
-    "drift_score": 83,
-    "signals": {
-      "quorum_participation_rate": 0.51,
-      "outcome_divergence": 0.44,
-      "equity_concentration": 0.62
-    }
+  "policy": {
+    "policy_id": "drift-review-draft",
+    "policy_version": "draft-0.1"
   },
-  "rationale": [
-    "drift score reached review threshold",
-    "outcome divergence requires explanation",
-    "equity concentration requires distribution review"
+  "evaluated_inputs": {
+    "source": "docs-example",
+    "receipt_ids": [
+      "example-drift-review-001"
+    ],
+    "bundle_hash": null
+  },
+  "issued_at": 1792368060,
+  "rationale": "Drift score reached review threshold; outcome divergence and equity concentration require governance review.",
+  "notes": [
+    "change_class=C",
+    "drift_score=83",
+    "quorum_participation_rate=0.51",
+    "outcome_divergence=0.44",
+    "equity_concentration=0.62"
   ],
-  "constraints": [
-    "delay major parameter changes until review completes",
-    "preserve drift signal snapshot",
-    "request dual-quorum review packet"
-  ],
-  "next_step": "produce_drift_review_packet"
+  "hints": {
+    "next_step": "produce_drift_review_packet",
+    "constraints": [
+      "delay major parameter changes until review completes",
+      "preserve drift signal snapshot",
+      "request dual-quorum review packet"
+    ]
+  },
+  "trace": {
+    "example_fixture": true,
+    "source_doc": "docs/examples/drift_review_gdr_example.md"
+  }
 }
