@@ -7,7 +7,9 @@ It contains **no private data**, **no credentials**, and **no sensitive artifact
 
 > Constitutional role: see [`CONSTITUTIONAL_ROLE.md`](CONSTITUTIONAL_ROLE.md).
 >
-> Continuation handoff: see [`docs/GOVERNANCE_MIRROR_HANDOFF.md`](docs/GOVERNANCE_MIRROR_HANDOFF.md).
+> Continuation handoff: see [`GOVERNANCE_MIRROR_HANDOFF.md`](GOVERNANCE_MIRROR_HANDOFF.md).
+>
+> Governance docs index: see [`docs/INDEX.md`](docs/INDEX.md).
 
 ## What this repo is
 
@@ -29,6 +31,7 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
 - **Versioned** policies and contracts  
 - **Non-retroactive** — issued decisions are immutable; new information produces new GDRs  
 - **Safe for humans and AI** consumers  
+- **Continuity-managed** through [`GOVERNANCE_MIRROR_HANDOFF.md`](GOVERNANCE_MIRROR_HANDOFF.md)
 
 ---
 
@@ -37,6 +40,9 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
 - `.github/workflows/`
   - `forward-to-bridge.yml` — forwards PRs to the Hybrid Collab Bridge for AI review
   - `validate-governance.yml` — validates schemas + required governance docs
+  - `validate_docs.yml` — validates new governance documentation YAML and required indexes
+  - `ingest_conversation.yml` — saves pasted conversations into indexed topic notes
+  - `ingest_bundle.yml` — creates/updates docs from marked source bundles
 - `app/`
   - `resolver.py` — minimal “policy resolver” component (Verified Inputs → GDR)
 - `data/`
@@ -50,6 +56,13 @@ It is downstream of verification (StegID) and upstream of enforcement (StegOps, 
   - `TRACE_INTEGRATION.md` — how StegCore consumes TRACE outputs safely
   - `TRACE_SIGNAL_BUNDLE.md` — the only TRACE output Governance may evaluate (bounded + confidence-scored)
   - `STEGTALK_POLICY_PROFILE.md` — StegTalk tier policy rules expressed for governance
+  - `constitution.yaml` — draft constitutional governance core
+  - `change_classes.yaml` — draft change-class policy map
+  - `dual_quorum_protocol.yaml` — draft dual-quorum protocol
+  - `drift_monitor.yaml` and `predictive_drift.yaml` — draft drift and early-warning policies
+  - `index.md` — governance-specific navigation index
+- `docs/policies/`
+  - `risk_register.md` — living risk register
 - `schemas/`
   - `gdr.schema.json` — JSON Schema for a Governance Decision Record
   - `trace_signal_bundle.schema.json` — JSON Schema for TRACE Signal Bundle
@@ -127,6 +140,21 @@ No downstream system may execute irreversible actions without a valid, auditable
 
 See:
 - `docs/governance/GDR_ENFORCEMENT_PROFILE.md`
+
+---
+
+## Ecosystem-managed continuation
+
+The current build goal is to continue without manual actions until completion, or until handoff and task completion are capable of being handled by the ecosystem’s own management.
+
+Use this order:
+
+1. Read [`GOVERNANCE_MIRROR_HANDOFF.md`](GOVERNANCE_MIRROR_HANDOFF.md).
+2. Review [`docs/INDEX.md`](docs/INDEX.md).
+3. Run or inspect `github/workflows/validate_docs.yml`.
+4. Continue only from the handoff’s next actions.
+
+Workflow paths above are displayed without the leading dot for readability; actual paths are under `.github/`.
 
 ---
 
