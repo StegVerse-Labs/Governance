@@ -29,6 +29,8 @@ The Governance repo now holds:
 10. README links for handoff, docs index, and ecosystem-managed continuation.
 11. Deferred review register for legal/treasury-sensitive or blocked topics.
 12. Validation guide at `docs/VALIDATION_GUIDE.md`.
+13. Implementation placement note at `docs/IMPLEMENTATION_PLACEMENT.md`.
+14. Example Governance Decision Record bridges under `docs/examples/`.
 
 ## Files Present
 
@@ -37,6 +39,9 @@ The Governance repo now holds:
 - `docs/INDEX.md`
 - `docs/DEFERRED_REVIEW.md`
 - `docs/VALIDATION_GUIDE.md`
+- `docs/IMPLEMENTATION_PLACEMENT.md`
+- `docs/examples/dual_quorum_gdr_example.md`
+- `docs/examples/drift_review_gdr_example.md`
 - `docs/governance/index.md`
 - `docs/governance/constitution.yaml`
 - `docs/governance/change_classes.yaml`
@@ -78,8 +83,9 @@ Recommended next approach: add deferred items as smaller, neutral policy notes o
 1. Use GitHub Actions to run `Validate Governance Docs` and confirm `scripts/validate_docs.py` passes.
 2. Use GitHub Actions to run `Ingest Full Conversation` once with a small test snippet and confirm `docs/conversations/INDEX.md` is generated.
 3. If validation fails, fix required-file or YAML errors first.
-4. Decide whether implementation endpoints belong in this Governance repo or a separate code repo such as StegCore/SCW.
-5. Promote deferred items only after review criteria in `docs/DEFERRED_REVIEW.md` are satisfied.
+4. Map the example GDRs in `docs/examples/` to schema fields and/or fixtures.
+5. Use `docs/IMPLEMENTATION_PLACEMENT.md` to decide whether implementation endpoints belong in this Governance repo or a separate code repo such as StegCore/SCW.
+6. Promote deferred items only after review criteria in `docs/DEFERRED_REVIEW.md` are satisfied.
 
 ## Definition of Done
 
@@ -90,13 +96,14 @@ The current goal is complete when:
 - The repo contains indexed governance docs sufficient to preserve the design direction.
 - The repo can validate required docs and governance YAML through GitHub Actions.
 - Deferred items are tracked in-repo instead of chat memory.
+- Example decision records exist to bridge policy drafts toward resolver/schema work.
 - A future session can continue from this file without needing prior chat context.
 
 ## Current Completion Assessment
 
-- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, validation guide, deferred review register, and first-pass governance drafts.
+- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, validation guide, implementation placement note, deferred review register, and example GDR bridges.
 - Scaffolding/stubs: governance YAML/Markdown policy docs remain draft-level until wired to implementation.
-- Activation requires GitHub Actions verification runs and optional cleanup of deferred legal/treasury-sensitive docs.
+- Activation requires GitHub Actions verification runs and schema/fixture mapping for examples.
 
 ## Archive Status
 
