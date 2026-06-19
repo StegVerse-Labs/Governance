@@ -25,13 +25,16 @@ The Governance repo now holds:
 6. Bundle ingestion workflow scaffold for iPhone-only creation and refresh of multiple docs.
 7. Human-readable documentation indexes.
 8. Documentation validation workflow for required files and governance YAML syntax.
-9. README links for handoff, docs index, and ecosystem-managed continuation.
+9. Standalone docs validator at `scripts/validate_docs.py`.
+10. README links for handoff, docs index, and ecosystem-managed continuation.
+11. Deferred review register for legal/treasury-sensitive or blocked topics.
 
 ## Files Present
 
 - `README.md`
 - `GOVERNANCE_MIRROR_HANDOFF.md`
 - `docs/INDEX.md`
+- `docs/DEFERRED_REVIEW.md`
 - `docs/governance/index.md`
 - `docs/governance/constitution.yaml`
 - `docs/governance/change_classes.yaml`
@@ -47,6 +50,7 @@ The Governance repo now holds:
 - `docs/governance/plugin_registry_policy.yaml`
 - `docs/governance/ai_citizenship_charter.md`
 - `docs/policies/risk_register.md`
+- `scripts/validate_docs.py`
 - `.github/workflows/ingest_bundle.yml`
 - `.github/workflows/ingest_conversation.yml`
 - `.github/workflows/validate_docs.yml`
@@ -55,23 +59,25 @@ Note: when presenting workflow paths to the user, display them without the leadi
 
 ## Deferred / Blocked Items
 
-The following concepts were intentionally deferred because direct creation was blocked by safety checks or should be reviewed separately:
+Deferred items are tracked in `docs/DEFERRED_REVIEW.md`.
 
-1. `docs/bundles/stegverse_bundle.md` monolithic source bundle.
-2. External vault bridge policy with detailed transaction flow.
+Key deferred themes:
+
+1. Monolithic source bundle.
+2. External bridge policy with detailed transaction flow.
 3. Public-market or payout mechanics for plugin marketplace/registry.
-4. 30-day pilot/activation roadmap file.
+4. 30-day external pilot/activation roadmap file.
 5. Draft governance license language.
 
 Recommended next approach: add deferred items as smaller, neutral policy notes or route them through a legal/treasury review document.
 
 ## Next Actions
 
-1. Use GitHub Actions to run `Validate Governance Docs` and confirm required docs + YAML pass.
+1. Use GitHub Actions to run `Validate Governance Docs` and confirm `scripts/validate_docs.py` passes.
 2. Use GitHub Actions to run `Ingest Full Conversation` once with a small test snippet and confirm `docs/conversations/INDEX.md` is generated.
-3. Review generated validation output and fix any YAML or required-file failures.
+3. If validation fails, fix required-file or YAML errors first.
 4. Decide whether implementation endpoints belong in this Governance repo or a separate code repo such as StegCore/SCW.
-5. Add deferred vault bridge / public-market / licensing content only after phrasing and review are safe for publication.
+5. Promote deferred items only after review criteria in `docs/DEFERRED_REVIEW.md` are satisfied.
 
 ## Definition of Done
 
@@ -81,11 +87,12 @@ The current goal is complete when:
 - The repo contains workflows to ingest a whole conversation or a marked governance bundle.
 - The repo contains indexed governance docs sufficient to preserve the design direction.
 - The repo can validate required docs and governance YAML through GitHub Actions.
+- Deferred items are tracked in-repo instead of chat memory.
 - A future session can continue from this file without needing prior chat context.
 
 ## Current Completion Assessment
 
-- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, and first-pass governance drafts.
+- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, deferred review register, and first-pass governance drafts.
 - Scaffolding/stubs: governance YAML/Markdown policy docs remain draft-level until wired to implementation.
 - Activation requires GitHub Actions verification runs and optional cleanup of deferred legal/treasury-sensitive docs.
 
