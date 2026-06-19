@@ -1,29 +1,36 @@
 {
-  "gdr_id": "gdr-example-dual-quorum-001",
-  "proposal_id": "example-dual-quorum-001",
-  "policy_version": "draft-0.1",
+  "gdr_version": "1.0",
+  "decision_id": "gdr-example-dual-quorum-001",
   "decision": "require_review",
-  "inputs": {
-    "change_class": "C",
-    "human_quorum": {
-      "threshold": 0.67,
-      "observed": 0.72
-    },
-    "ai_quorum": {
-      "threshold": 0.67,
-      "observed": 0.7
-    },
-    "drift_score": 32
+  "policy": {
+    "policy_id": "dual-quorum-draft",
+    "policy_version": "draft-0.1"
   },
-  "rationale": [
-    "human quorum met threshold",
-    "ai quorum met threshold",
-    "drift score below warning threshold"
+  "evaluated_inputs": {
+    "source": "docs-example",
+    "receipt_ids": [
+      "example-dual-quorum-001"
+    ],
+    "bundle_hash": null
+  },
+  "issued_at": 1792368000,
+  "rationale": "Human quorum and AI quorum both met threshold; drift score remained below warning threshold.",
+  "notes": [
+    "change_class=C",
+    "human_quorum_observed=0.72",
+    "ai_quorum_observed=0.70",
+    "drift_score=32"
   ],
-  "constraints": [
-    "produce signed review receipt",
-    "record policy version",
-    "preserve quorum evidence"
-  ],
-  "next_step": "eligible_for_ratification_review"
+  "hints": {
+    "next_step": "eligible_for_ratification_review",
+    "constraints": [
+      "produce signed review receipt",
+      "record policy version",
+      "preserve quorum evidence"
+    ]
+  },
+  "trace": {
+    "example_fixture": true,
+    "source_doc": "docs/examples/dual_quorum_gdr_example.md"
+  }
 }
