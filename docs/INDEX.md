@@ -20,12 +20,16 @@
 
 - [Dual Quorum GDR Example](examples/dual_quorum_gdr_example.md)
 - [Drift Review GDR Example](examples/drift_review_gdr_example.md)
+- [GDR Schema Mapping](examples/GDR_SCHEMA_MAPPING.md)
+- [Dual Quorum Fixture](examples/fixtures/dual_quorum_gdr.json)
+- [Drift Review Fixture](examples/fixtures/drift_review_gdr.json)
 
 ## Policies
 
 - [Risk Register](policies/risk_register.md)
 - [Deferred Review Register](DEFERRED_REVIEW.md)
 - [Implementation Placement](IMPLEMENTATION_PLACEMENT.md)
+- [Activation Status](ACTIVATION_STATUS.md)
 
 ## Validation and Automation
 
@@ -34,6 +38,7 @@
 - [Bundle ingestion workflow](../.github/workflows/ingest_bundle.yml)
 - [Validation workflow](../.github/workflows/validate_docs.yml)
 - [Standalone docs validator](../scripts/validate_docs.py)
+- [GDR examples validator](../scripts/validate_gdr_examples.py)
 
 ## Handoff
 
