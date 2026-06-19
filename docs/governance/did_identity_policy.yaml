@@ -1,0 +1,36 @@
+module: "Ledger-Anchored DID Governance"
+version: 0.1
+did_method: "did:steg"
+document:
+  fields:
+    - public_keys
+    - service_endpoints
+    - guardians
+    - delegations
+    - attestation
+updates:
+  require:
+    - dual_quorum
+    - "change_class in B_or_C"
+    - "timelock >= 6h"
+anchors:
+  targets:
+    - timestamp_authority
+    - ethereum
+  cadence_minutes: 120
+delegation:
+  allow_deputies: true
+  deputy_limits:
+    - no_changes_to_guardians
+    - key_rotation_only
+revocation:
+  reasons:
+    - compromise
+    - drift_review
+    - sanction
+interop:
+  export_to:
+    - did:key
+    - did:web
+notes: >
+  Identity document changes must be attributable, reviewable, and anchored to independent evidence.
