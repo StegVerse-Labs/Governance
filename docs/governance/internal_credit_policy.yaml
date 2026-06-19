@@ -1,0 +1,29 @@
+module: "Internal Credit Policy"
+version: 0.1
+purpose: "Define scoped internal credits for work coordination between StegVerse agents and modules."
+ledger:
+  type: "append-only internal accounting log"
+  unit: credits
+guards:
+  per_event_cap: 10
+  daily_cap_per_agent: 1000
+  allowed_purposes:
+    - compute_coordination
+    - data_query_coordination
+    - bandwidth_coordination
+    - task_bounty_coordination
+  external_use_allowed: false
+  reconciliation_interval_minutes: 60
+governance:
+  changes_to_caps_require: "class C dual-quorum approval"
+receipts:
+  summary_interval_minutes: 60
+  anchor_targets:
+    - timestamp_authority
+api_outline:
+  endpoints:
+    - "POST /credits/record"
+    - "GET /credits/balance/{agent}"
+    - "GET /credits/receipt/{entry_id}"
+notes: >
+  This policy describes internal coordination credits only. It is not an external payment or public-market instrument.
