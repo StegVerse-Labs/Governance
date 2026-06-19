@@ -16,13 +16,20 @@
 - [Plugin Registry](governance/plugin_registry_policy.yaml)
 - [AI Citizenship Charter](governance/ai_citizenship_charter.md)
 
+## Examples
+
+- [Dual Quorum GDR Example](examples/dual_quorum_gdr_example.md)
+- [Drift Review GDR Example](examples/drift_review_gdr_example.md)
+
 ## Policies
 
 - [Risk Register](policies/risk_register.md)
 - [Deferred Review Register](DEFERRED_REVIEW.md)
+- [Implementation Placement](IMPLEMENTATION_PLACEMENT.md)
 
-## Automation
+## Validation and Automation
 
+- [Validation Guide](VALIDATION_GUIDE.md)
 - [Conversation ingestion workflow](../.github/workflows/ingest_conversation.yml)
 - [Bundle ingestion workflow](../.github/workflows/ingest_bundle.yml)
 - [Validation workflow](../.github/workflows/validate_docs.yml)
