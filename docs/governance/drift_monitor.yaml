@@ -1,0 +1,33 @@
+module: "DriftScore Monitor"
+metrics:
+  - id: QPR
+    description: "Quorum Participation Rate"
+  - id: OD
+    description: "Outcome Divergence"
+  - id: VQF
+    description: "Veto or Quarantine Frequency"
+  - id: AD
+    description: "Alignment Delta"
+  - id: EP
+    description: "Economic Parity"
+  - id: EC
+    description: "Equity Concentration"
+formula: >
+  Drift = w1*OD + w2*(1-QPR) + w3*VQF + w4*AD + w5*abs(EP-1) + w6*EC
+weights:
+  w1: 0.25
+  w2: 0.20
+  w3: 0.15
+  w4: 0.15
+  w5: 0.15
+  w6: 0.10
+thresholds:
+  warning: 60
+  review_required: 80
+responses:
+  warning:
+    range: "60-79"
+    action: "notify and encourage mediation proposal incentives"
+  review_required:
+    range: "80+"
+    action: "enter constitutional review mode and produce audit summary"
