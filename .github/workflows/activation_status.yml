@@ -1,0 +1,101 @@
+name: Governance Activation Status
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'scripts/validate_docs.py'
+      - 'scripts/validate_gdr_examples.py'
+      - 'GOVERNANCE_MIRROR_HANDOFF.md'
+      - '.github/workflows/activation_status.yml'
+      - '.github/workflows/validate_docs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install validation dependency
+        run: python -m pip install --upgrade pip pyyaml
+
+      - name: Run validators
+        run: |
+          python scripts/validate_docs.py
+          python scripts/validate_gdr_examples.py
+
+      - name: Record activation status
+        run: |
+          python - <<'PY'
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          content = f"""# Governance Activation Status
+
+## Current Goal
+
+Continue building without manual actions needed through completion, or until handoff and task completion are capable of being handled by the ecosystem's own management.
+
+## Status
+
+Activated for documentation continuity.
+
+## Last Automated Validation
+
+- Timestamp: {now}
+- `scripts/validate_docs.py`: passed
+- `scripts/validate_gdr_examples.py`: passed
+
+## Completed
+
+- Repository handoff source of truth exists.
+- README links to handoff and documentation index.
+- Governance policy drafts are indexed.
+- Deferred review items are tracked in-repo.
+- Example Governance Decision Records exist.
+- Example JSON fixtures are aligned to the current GDR schema shape.
+- Validation scripts exist for docs and GDR examples.
+- Validation workflow runs both validators.
+- Activation workflow records validator success back into this file.
+
+## Still Required
+
+No manual action is required for documentation-continuity activation after this workflow passes.
+
+## Activation Definition
+
+The repo reaches activation when a future session can continue governance documentation work from repository files alone, without requiring the original chat thread.
+
+## Next Integration Candidate
+
+Map fixture examples to resolver tests or choose the code repository where runtime endpoints should live.
+"""
+          Path('docs/ACTIVATION_STATUS.md').write_text(content, encoding='utf-8')
+          PY
+
+      - name: Commit activation status
+        run: |
+          git config user.name "activation-bot"
+          git config user.email "activation-bot@users.noreply.github.com"
+          git add docs/ACTIVATION_STATUS.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Record Governance activation status"
+            git push
+          else
+            echo "No activation status changes to commit."
+          fi
