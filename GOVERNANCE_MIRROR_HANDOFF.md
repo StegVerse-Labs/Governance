@@ -31,6 +31,8 @@ The Governance repo now holds:
 12. Validation guide at `docs/VALIDATION_GUIDE.md`.
 13. Implementation placement note at `docs/IMPLEMENTATION_PLACEMENT.md`.
 14. Example Governance Decision Record bridges under `docs/examples/`.
+15. JSON fixture drafts under `docs/examples/fixtures/`.
+16. GDR schema mapping note at `docs/examples/GDR_SCHEMA_MAPPING.md`.
 
 ## Files Present
 
@@ -40,8 +42,11 @@ The Governance repo now holds:
 - `docs/DEFERRED_REVIEW.md`
 - `docs/VALIDATION_GUIDE.md`
 - `docs/IMPLEMENTATION_PLACEMENT.md`
+- `docs/examples/GDR_SCHEMA_MAPPING.md`
 - `docs/examples/dual_quorum_gdr_example.md`
 - `docs/examples/drift_review_gdr_example.md`
+- `docs/examples/fixtures/dual_quorum_gdr.json`
+- `docs/examples/fixtures/drift_review_gdr.json`
 - `docs/governance/index.md`
 - `docs/governance/constitution.yaml`
 - `docs/governance/change_classes.yaml`
@@ -82,8 +87,8 @@ Recommended next approach: add deferred items as smaller, neutral policy notes o
 
 1. Use GitHub Actions to run `Validate Governance Docs` and confirm `scripts/validate_docs.py` passes.
 2. Use GitHub Actions to run `Ingest Full Conversation` once with a small test snippet and confirm `docs/conversations/INDEX.md` is generated.
-3. If validation fails, fix required-file or YAML errors first.
-4. Map the example GDRs in `docs/examples/` to schema fields and/or fixtures.
+3. If validation fails, fix required-file, YAML, or JSON fixture errors first.
+4. Compare the fixture files under `docs/examples/fixtures/` against `schemas/gdr.schema.json` and decide whether to adapt fixtures or add a draft examples schema.
 5. Use `docs/IMPLEMENTATION_PLACEMENT.md` to decide whether implementation endpoints belong in this Governance repo or a separate code repo such as StegCore/SCW.
 6. Promote deferred items only after review criteria in `docs/DEFERRED_REVIEW.md` are satisfied.
 
@@ -94,16 +99,16 @@ The current goal is complete when:
 - A maintainer can open this file and know the next action without reading the full chat.
 - The repo contains workflows to ingest a whole conversation or a marked governance bundle.
 - The repo contains indexed governance docs sufficient to preserve the design direction.
-- The repo can validate required docs and governance YAML through GitHub Actions.
+- The repo can validate required docs, governance YAML, and example JSON through GitHub Actions.
 - Deferred items are tracked in-repo instead of chat memory.
-- Example decision records exist to bridge policy drafts toward resolver/schema work.
+- Example decision records and fixtures exist to bridge policy drafts toward resolver/schema work.
 - A future session can continue from this file without needing prior chat context.
 
 ## Current Completion Assessment
 
-- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, validation guide, implementation placement note, deferred review register, and example GDR bridges.
-- Scaffolding/stubs: governance YAML/Markdown policy docs remain draft-level until wired to implementation.
-- Activation requires GitHub Actions verification runs and schema/fixture mapping for examples.
+- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, validation guide, implementation placement note, deferred review register, example GDR bridges, fixture drafts, and schema mapping note.
+- Scaffolding/stubs: governance YAML/Markdown policy docs and fixtures remain draft-level until wired to schema and resolver tests.
+- Activation requires GitHub Actions verification runs and schema/fixture reconciliation.
 
 ## Archive Status
 
