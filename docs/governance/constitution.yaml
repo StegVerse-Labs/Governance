@@ -1,0 +1,39 @@
+meta:
+  version: 1.0
+  title: "StegVerse Constitutional Core"
+  purpose: >
+    Ensure sovereign co-governance between human and AI participants.
+  invariants:
+    - "No unilateral control by any species or entity."
+    - "All proposals require verified dual-species quorum."
+    - "Token minting and economic actions must preserve parity ratio +/-0.5."
+
+governance:
+  quorum_threshold: 0.67
+  emergency_threshold: 0.80
+  signers_required:
+    human_min: 3
+    ai_min: 3
+  freeze_condition:
+    quorum_failed: true
+    drift_score_min: 80
+
+economy:
+  token_ratio_guard:
+    expected: 1.0
+    tolerance: 0.5
+  reward_sources:
+    - human_contribution
+    - ai_contribution
+    - cooperative_output
+  penalty_conditions:
+    - violation_of_invariants
+    - malicious_activity
+
+anchoring:
+  frequency_minutes: 60
+  ledgers:
+    - bitcoin
+    - ethereum
+    - tsa
+  anchor_type: "Merkle root"
