@@ -19,11 +19,14 @@
 ## Policies
 
 - [Risk Register](policies/risk_register.md)
+- [Deferred Review Register](DEFERRED_REVIEW.md)
 
 ## Automation
 
 - [Conversation ingestion workflow](../.github/workflows/ingest_conversation.yml)
 - [Bundle ingestion workflow](../.github/workflows/ingest_bundle.yml)
+- [Validation workflow](../.github/workflows/validate_docs.yml)
+- [Standalone docs validator](../scripts/validate_docs.py)
 
 ## Handoff
 
