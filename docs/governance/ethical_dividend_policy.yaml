@@ -1,0 +1,17 @@
+module: "Ethical Dividend and Reinvestment"
+version: 0.1
+allocation:
+  human_welfare_min_pct: 10
+  open_infrastructure_min_pct: 5
+  research_min_pct: 5
+  discretionary_max_pct: 20
+rules:
+  - id: public_reporting
+    assert: "quarterly_report_published == true"
+  - id: dual_quorum_required
+    assert: "dual_quorum == true"
+distribution:
+  schedule: quarterly
+  anchoring: anchoring_policy.yaml
+notes: >
+  These floors and ceilings are constitutional. Changes should use the major economic change class.
