@@ -28,6 +28,7 @@ The Governance repo now holds:
 9. Standalone docs validator at `scripts/validate_docs.py`.
 10. README links for handoff, docs index, and ecosystem-managed continuation.
 11. Deferred review register for legal/treasury-sensitive or blocked topics.
+12. Validation guide at `docs/VALIDATION_GUIDE.md`.
 
 ## Files Present
 
@@ -35,6 +36,7 @@ The Governance repo now holds:
 - `GOVERNANCE_MIRROR_HANDOFF.md`
 - `docs/INDEX.md`
 - `docs/DEFERRED_REVIEW.md`
+- `docs/VALIDATION_GUIDE.md`
 - `docs/governance/index.md`
 - `docs/governance/constitution.yaml`
 - `docs/governance/change_classes.yaml`
@@ -92,7 +94,7 @@ The current goal is complete when:
 
 ## Current Completion Assessment
 
-- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, deferred review register, and first-pass governance drafts.
+- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, standalone validator, validation guide, deferred review register, and first-pass governance drafts.
 - Scaffolding/stubs: governance YAML/Markdown policy docs remain draft-level until wired to implementation.
 - Activation requires GitHub Actions verification runs and optional cleanup of deferred legal/treasury-sensitive docs.
 
