@@ -1,0 +1,21 @@
+anchoring:
+  primary_log: "Merkle append-only"
+  checkpoint_frequency_minutes: 60
+  anchor_targets:
+    - name: bitcoin
+      network: mainnet
+      method: op_return
+    - name: ethereum
+      network: mainnet
+      method: calldata
+    - name: timestamp_authority
+      provider: RFC3161
+  privacy: "hash-only; no personal data"
+  retry_policy:
+    attempts: 3
+    backoff_minutes: 15
+  audit:
+    verification_endpoint: "/audit/verify"
+    public_dashboard: true
+notes: >
+  Anchor roots, not sensitive records. Tenants may opt for fewer or additional independent anchors.
