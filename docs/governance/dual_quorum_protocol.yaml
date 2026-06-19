@@ -1,0 +1,24 @@
+protocol_id: DQ-01
+title: "Dual Quorum Protocol"
+revision: 1.0
+quorum:
+  human_threshold: 0.67
+  ai_threshold: 0.67
+voting:
+  proposal_status:
+    - pending
+    - ratified
+    - stasis
+  finalize_condition: "human quorum and ai quorum both meet threshold"
+continuity:
+  trigger: "balance check failed or drift score at or above review threshold"
+  allowed_actions:
+    - maintenance
+    - prior_approved_state_review
+    - audit_review
+emission_rules:
+  basis: "verified paired contribution events"
+  decay_without_cross_group_activity: true
+attestation:
+  root_reference: "sha256:ROOT_REFERENCE_PLACEHOLDER"
+  reverify_period_days: 7
