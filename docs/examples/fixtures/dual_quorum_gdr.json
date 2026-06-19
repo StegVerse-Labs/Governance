@@ -1,0 +1,29 @@
+{
+  "gdr_id": "gdr-example-dual-quorum-001",
+  "proposal_id": "example-dual-quorum-001",
+  "policy_version": "draft-0.1",
+  "decision": "require_review",
+  "inputs": {
+    "change_class": "C",
+    "human_quorum": {
+      "threshold": 0.67,
+      "observed": 0.72
+    },
+    "ai_quorum": {
+      "threshold": 0.67,
+      "observed": 0.7
+    },
+    "drift_score": 32
+  },
+  "rationale": [
+    "human quorum met threshold",
+    "ai quorum met threshold",
+    "drift score below warning threshold"
+  ],
+  "constraints": [
+    "produce signed review receipt",
+    "record policy version",
+    "preserve quorum evidence"
+  ],
+  "next_step": "eligible_for_ratification_review"
+}
