@@ -37,6 +37,7 @@
 - [Conversation ingestion workflow](../.github/workflows/ingest_conversation.yml)
 - [Bundle ingestion workflow](../.github/workflows/ingest_bundle.yml)
 - [Validation workflow](../.github/workflows/validate_docs.yml)
+- [Activation status workflow](../.github/workflows/activation_status.yml)
 - [Standalone docs validator](../scripts/validate_docs.py)
 - [GDR examples validator](../scripts/validate_gdr_examples.py)
 
