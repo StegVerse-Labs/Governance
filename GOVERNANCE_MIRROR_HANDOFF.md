@@ -4,8 +4,8 @@
 
 - Organization: StegVerse-Labs
 - Repository: Governance
-- Current goal: establish a durable, iPhone-friendly governance documentation hub for StegCore / StegVerse.
-- Current activation target: enable repo-managed capture of governance design, conversation continuity, and codified policies without requiring local CLI access.
+- Current goal: continue building without manual actions needed through completion OR until task handoff and task completion is capable of being handled by the ecosystem's own management.
+- Current activation target: make the Governance repo self-describing, iPhone-friendly, and capable of preserving/organizing governance work without requiring prior chat context.
 
 ## Source of Truth
 
@@ -15,66 +15,76 @@ For this repo, continue from this file before adding or modifying governance doc
 
 ## Current Build State
 
-The Governance repo is intended to hold:
+The Governance repo now holds:
 
 1. StegCore constitutional governance specs.
-2. Dual-species human/AI governance and economic protocols.
-3. Drift detection, anchoring, identity, microledger, vault bridge, and marketplace policies.
-4. Conversation capture workflows for preserving working context.
-5. Bundle ingestion workflows for iPhone-only creation and refresh of multiple docs.
+2. Dual-quorum human/AI governance protocol draft.
+3. Drift detection and predictive drift drafts.
+4. Anchoring, identity, internal credit, model lifecycle, dividend, adaptive governance, registry, and AI citizenship drafts.
+5. Conversation capture workflow for preserving working context.
+6. Bundle ingestion workflow scaffold for iPhone-only creation and refresh of multiple docs.
+7. Human-readable documentation indexes.
 
-## Immediate Goal
+## Files Present
 
-Create the minimum working documentation automation layer:
+- `GOVERNANCE_MIRROR_HANDOFF.md`
+- `docs/INDEX.md`
+- `docs/governance/index.md`
+- `docs/governance/constitution.yaml`
+- `docs/governance/change_classes.yaml`
+- `docs/governance/dual_quorum_protocol.yaml`
+- `docs/governance/drift_monitor.yaml`
+- `docs/governance/predictive_drift.yaml`
+- `docs/governance/anchoring_policy.yaml`
+- `docs/governance/internal_credit_policy.yaml`
+- `docs/governance/model_lifecycle_review.yaml`
+- `docs/governance/did_identity_policy.yaml`
+- `docs/governance/ethical_dividend_policy.yaml`
+- `docs/governance/adaptive_governance.yaml`
+- `docs/governance/plugin_registry_policy.yaml`
+- `docs/governance/ai_citizenship_charter.md`
+- `docs/policies/risk_register.md`
+- `.github/workflows/ingest_bundle.yml`
+- `.github/workflows/ingest_conversation.yml`
 
-- `github/workflows/ingest_bundle.yml` creates/updates docs from a single marked bundle file.
-- `github/workflows/ingest_conversation.yml` splits pasted conversations into indexed topic notes.
-- `docs/bundles/stegverse_bundle.md` stores the governance bundle source.
-- `docs/INDEX.md` becomes the navigation entry point after bundle ingestion.
+Note: when presenting workflow paths to the user, display them without the leading dot and mention that the leading dot was intentionally omitted for readability.
 
-Note: Workflow file paths live under `.github/...`; when documented for the user, display them without the leading dot and note that the leading dot was intentionally omitted for readability.
+## Deferred / Blocked Items
 
-## Governance Topics Captured So Far
+The following concepts were intentionally deferred because direct creation was blocked by safety checks or should be reviewed separately:
 
-- Constitutional dual-species governance.
-- Human/AI quorum requirements.
-- Auto-quorum limits for safety and continuity only.
-- Change classes A/B/C/D.
-- Predictive drift and early warning.
-- Agent-to-agent internal microledger.
-- ModelOps lifecycle governance.
-- Ledger-anchored DID policy.
-- Ethical dividend and reinvestment.
-- Adaptive governance parameters.
-- Plugin marketplace policy.
-- Risk register.
-- Draft governance license.
-- 30-day pilot plan.
+1. `docs/bundles/stegverse_bundle.md` monolithic source bundle.
+2. External vault bridge policy with detailed transaction flow.
+3. Public-market or payout mechanics for plugin marketplace/registry.
+4. 30-day pilot/activation roadmap file.
+5. Draft governance license language.
+
+Recommended next approach: add deferred items as smaller, neutral policy notes or route them through a legal/treasury review document.
 
 ## Next Actions
 
-1. Confirm the bundle ingestion workflow exists and can parse `docs/bundles/stegverse_bundle.md`.
-2. Confirm the conversation ingestion workflow exists and can create `docs/conversations/INDEX.md`.
-3. Run the bundle ingestion workflow once to generate docs.
-4. Review generated docs for malformed YAML caused by copied mathematical symbols or action strings.
-5. Add or update `docs/governance/index.md` if a separate governance-only index is desired.
-6. After docs are generated, decide whether to add FastAPI stubs in a code repo or keep Governance as documentation-only.
+1. Validate that both workflows are visible under the GitHub Actions tab.
+2. Run `Ingest Full Conversation` once with a small test snippet to confirm `docs/conversations/INDEX.md` is generated.
+3. Review YAML syntax for all docs under `docs/governance`.
+4. Add a short README if the repo does not already have one.
+5. Decide whether implementation endpoints belong in this Governance repo or in a separate code repo such as StegCore/SCW.
+6. Add deferred vault bridge / public-market / licensing content only after phrasing and review are safe for publication.
 
 ## Definition of Done
 
-The current handoff is complete when:
+The current goal is complete when:
 
 - A maintainer can open this file and know the next action without reading the full chat.
 - The repo contains workflows to ingest a whole conversation or a marked governance bundle.
-- The bundle can generate the governance docs and indexes from one source file.
+- The repo contains indexed governance docs sufficient to preserve the design direction.
 - A future session can continue from this file without needing prior chat context.
 
 ## Current Completion Assessment
 
-- Fully developed files: handoff and workflow scaffolds once present.
-- Scaffolding/stubs: governance policy YAML and Markdown drafts are intentionally draft-level until wired to implementation.
-- Activation requires one successful bundle ingestion run and review of generated docs.
+- Fully developed files: handoff, indexes, workflow scaffolds, and first-pass governance drafts.
+- Scaffolding/stubs: all governance YAML/Markdown policy docs remain draft-level until wired to implementation.
+- Activation requires one workflow test run and YAML review.
 
 ## Archive Status
 
-Once the bundle and ingestion workflows are present, this chat thread can be archived for Governance repo continuity; the repo handoff contains enough context to continue.
+This thread is ready for archive handoff for Governance documentation continuity once a future session verifies the workflows from GitHub Actions. The repo handoff contains enough context to continue without the full chat.
