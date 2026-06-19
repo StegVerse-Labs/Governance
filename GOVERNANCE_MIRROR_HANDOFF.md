@@ -24,9 +24,12 @@ The Governance repo now holds:
 5. Conversation capture workflow for preserving working context.
 6. Bundle ingestion workflow scaffold for iPhone-only creation and refresh of multiple docs.
 7. Human-readable documentation indexes.
+8. Documentation validation workflow for required files and governance YAML syntax.
+9. README links for handoff, docs index, and ecosystem-managed continuation.
 
 ## Files Present
 
+- `README.md`
 - `GOVERNANCE_MIRROR_HANDOFF.md`
 - `docs/INDEX.md`
 - `docs/governance/index.md`
@@ -46,6 +49,7 @@ The Governance repo now holds:
 - `docs/policies/risk_register.md`
 - `.github/workflows/ingest_bundle.yml`
 - `.github/workflows/ingest_conversation.yml`
+- `.github/workflows/validate_docs.yml`
 
 Note: when presenting workflow paths to the user, display them without the leading dot and mention that the leading dot was intentionally omitted for readability.
 
@@ -63,12 +67,11 @@ Recommended next approach: add deferred items as smaller, neutral policy notes o
 
 ## Next Actions
 
-1. Validate that both workflows are visible under the GitHub Actions tab.
-2. Run `Ingest Full Conversation` once with a small test snippet to confirm `docs/conversations/INDEX.md` is generated.
-3. Review YAML syntax for all docs under `docs/governance`.
-4. Add a short README if the repo does not already have one.
-5. Decide whether implementation endpoints belong in this Governance repo or in a separate code repo such as StegCore/SCW.
-6. Add deferred vault bridge / public-market / licensing content only after phrasing and review are safe for publication.
+1. Use GitHub Actions to run `Validate Governance Docs` and confirm required docs + YAML pass.
+2. Use GitHub Actions to run `Ingest Full Conversation` once with a small test snippet and confirm `docs/conversations/INDEX.md` is generated.
+3. Review generated validation output and fix any YAML or required-file failures.
+4. Decide whether implementation endpoints belong in this Governance repo or a separate code repo such as StegCore/SCW.
+5. Add deferred vault bridge / public-market / licensing content only after phrasing and review are safe for publication.
 
 ## Definition of Done
 
@@ -77,13 +80,14 @@ The current goal is complete when:
 - A maintainer can open this file and know the next action without reading the full chat.
 - The repo contains workflows to ingest a whole conversation or a marked governance bundle.
 - The repo contains indexed governance docs sufficient to preserve the design direction.
+- The repo can validate required docs and governance YAML through GitHub Actions.
 - A future session can continue from this file without needing prior chat context.
 
 ## Current Completion Assessment
 
-- Fully developed files: handoff, indexes, workflow scaffolds, and first-pass governance drafts.
-- Scaffolding/stubs: all governance YAML/Markdown policy docs remain draft-level until wired to implementation.
-- Activation requires one workflow test run and YAML review.
+- Fully developed files: README integration, handoff, indexes, workflow scaffolds, validation workflow, and first-pass governance drafts.
+- Scaffolding/stubs: governance YAML/Markdown policy docs remain draft-level until wired to implementation.
+- Activation requires GitHub Actions verification runs and optional cleanup of deferred legal/treasury-sensitive docs.
 
 ## Archive Status
 
