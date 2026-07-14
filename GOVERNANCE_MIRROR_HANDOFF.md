@@ -29,12 +29,14 @@ The repository contains:
 10. runtime expectations aligned to StegCore;
 11. validator enforcement of shape, outcomes, replay invariants, and `continuity_receipt_minted=false`;
 12. live StegCore cross-repository verification on push, pull request, and daily schedule;
-13. automated StegCore evidence publication and issue closure.
+13. automated StegCore evidence publication and issue closure;
+14. a durable accountability-stack interoperability position covering collaboration, constitutional build posture, external evidence interfaces, and bounded differentiation.
 
 ## Required Three-Layer Files
 
 ```text
 docs/governance/judgment_signal_execution_architecture.md
+docs/governance/ACCOUNTABILITY_STACK_INTEROP_POSITION.md
 docs/examples/GDR_SCHEMA_MAPPING.md
 docs/examples/fixtures/condition_degraded_judgment_gdr.json
 docs/examples/fixtures/signal_admission_drift_gdr.json
@@ -62,6 +64,22 @@ Human judgment remains essential to meaning, context, purpose, contestability, a
 3. commit-time execution admissibility.
 
 Human approval alone does not repair degraded judgment conditions, incomplete state formation, or shifted reference-state continuity.
+
+## Accountability-Stack Collaboration Decision
+
+StegVerse prefers collaboration where independent accountability architectures overlap, while allowing differentiation to emerge from the areas each system can independently master.
+
+Differentiation is not used to dominate or displace another architecture. Out-execution remains a work-product outcome rather than the governing strategy.
+
+The earlier characterization of StegVerse as only philosophy, scaffolding, or a constitutional blueprint is incomplete. Governance and StegCore already provide implemented constitutional machinery through canonical cases, machine-enforced validation, replay, drift detection, runtime evaluation, evidence publication, ownership boundaries, and fail-closed outcomes.
+
+The remaining goal is to strengthen evidence interfaces and demonstrate bounded interoperability with complementary telemetry, attestation, and verification systems without collapsing proof into authority, admissibility, execution, custody, or adjudication.
+
+Canonical position:
+
+```text
+docs/governance/ACCOUNTABILITY_STACK_INTEROP_POSITION.md
+```
 
 ## Canonical Runtime Cases
 
@@ -109,9 +127,11 @@ A Governance commit is runtime-aligned only when the StegCore evidence record ha
 
 ## Active Ownership
 
-- Governance architecture, schema mapping, canonical fixtures, and validation contract: `StegVerse-Labs/Governance`.
+- Governance architecture, schema mapping, canonical fixtures, validation contract, collaboration posture, and external accountability-stack interpretation: `StegVerse-Labs/Governance`.
 - Runtime evaluator, runtime receipt, tests, live verifier, evidence record, and issue closure: `StegVerse-Labs/StegCore`.
+- External telemetry, attestation, and verification providers retain ownership of their evidence-producing systems and claims.
 - Continuity receipt verification or minting: outside Governance and StegCore authority.
+- Master-record custody, legal adjudication, insurance acceptance, regulatory recognition, and deployment authority: outside current Governance authority.
 - Legal, employment, medical, biometric, or human-performance measurement policy: outside current scope and requires separate review.
 
 ## Manual Tasks Eliminated
@@ -132,8 +152,10 @@ A Governance commit is runtime-aligned only when the StegCore evidence record ha
 2. Allow the first successful StegCore non-PR validation to publish `evidence/runtime-validation.json` and close issue #22.
 3. Correct failures through repository commits without manual execution or evidence copying.
 4. After passing evidence exists, apply the release-readiness gate.
-5. Tag or release only after evidence validity, version uniqueness, authority boundaries, and downstream task declarations pass.
-6. At release readiness, verify applicable updates to Site, Publisher, admissibility-wiki, and stegguardian-wiki.
+5. Build a machine-readable external-evidence-provider interface and canonical interoperability fixtures for valid, stale, drifted, incomplete, and unauthorized evidence.
+6. Preserve the distinction between evidence integrity, current standing, admissibility, execution authority, custody, and adjudication in every integration.
+7. Tag or release only after evidence validity, version uniqueness, authority boundaries, and downstream task declarations pass.
+8. At release readiness, verify applicable updates to Site, Publisher, admissibility-wiki, and stegguardian-wiki.
 
 ## Definition of Done
 
@@ -145,9 +167,12 @@ The Governance side is complete when:
 - StegCore evaluates the canonical fixtures live;
 - Governance consumes passing StegCore evidence by commit-bound reference;
 - both repositories preserve ownership and authority boundaries;
+- the accountability-stack collaboration and interoperability posture is durable;
 - future continuation requires no original chat or manual-only action.
 
 Full runtime activation additionally requires the automatically generated StegCore evidence record and automated issue #22 closure.
+
+The next integration goal is complete when a bounded external evidence envelope can be mapped into a StegVerse commitment candidate and evaluated across ALLOW, DENY, FAIL-CLOSED, drift, stale-evidence, incomplete-evidence, and unauthorized-provider cases without granting the evidence provider execution authority.
 
 ## Current Completion Assessment
 
@@ -161,10 +186,13 @@ Fixture validator: complete
 Ingestion automation: complete
 Live StegCore contract integration: complete
 Automated evidence consumption rule: complete
+Accountability-stack collaboration posture: complete
+External evidence-provider interface: not yet built
+External interoperability fixtures: not yet built
 Passing evidence record: pending first successful StegCore non-PR run
 Manual continuation dependency: none
 ```
 
 ## Archive Status
 
-This conversation's unique decisions, fixtures, implementation boundaries, automation, evidence mechanics, ownership, remaining gates, and continuation scope are durably recorded. The thread is ready for archive.
+This handoff preserves the current decisions, fixtures, implementation boundaries, collaboration posture, external-stack comparison, automation, evidence mechanics, ownership, remaining gates, next integration goal, and continuation scope. Earlier conversation context is not required.
