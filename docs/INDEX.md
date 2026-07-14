@@ -24,6 +24,9 @@
 - [GDR Schema Mapping](examples/GDR_SCHEMA_MAPPING.md)
 - [Dual Quorum Fixture](examples/fixtures/dual_quorum_gdr.json)
 - [Drift Review Fixture](examples/fixtures/drift_review_gdr.json)
+- [Condition-Degraded Judgment Fixture](examples/fixtures/condition_degraded_judgment_gdr.json)
+- [Signal-Admission Drift Fixture](examples/fixtures/signal_admission_drift_gdr.json)
+- [Governance Validation of Drift Fixture](examples/fixtures/governance_validation_of_drift_gdr.json)
 
 ## Policies
 
@@ -41,6 +44,8 @@
 - [Activation status workflow](../.github/workflows/activation_status.yml)
 - [Standalone docs validator](../scripts/validate_docs.py)
 - [GDR examples validator](../scripts/validate_gdr_examples.py)
+- [Conversation ingestion engine](../scripts/ingest_conversation.py)
+- [Conversation ingestion smoke test](../scripts/test_ingest_conversation.py)
 
 ## Handoff
 
