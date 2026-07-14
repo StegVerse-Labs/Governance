@@ -9,6 +9,8 @@ on:
       - 'docs/**'
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
+      - 'scripts/ingest_conversation.py'
+      - 'scripts/test_ingest_conversation.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
       - '.github/workflows/validate_docs.yml'
   pull_request:
@@ -16,6 +18,8 @@ on:
       - 'docs/**'
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
+      - 'scripts/ingest_conversation.py'
+      - 'scripts/test_ingest_conversation.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
       - '.github/workflows/validate_docs.yml'
 
@@ -39,5 +43,8 @@ jobs:
       - name: Validate governance docs
         run: python scripts/validate_docs.py
 
-      - name: Validate GDR examples
+      - name: Validate GDR examples and three-layer invariants
         run: python scripts/validate_gdr_examples.py
+
+      - name: Smoke-test conversation ingestion
+        run: python scripts/test_ingest_conversation.py
