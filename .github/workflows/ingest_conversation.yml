@@ -1,4 +1,5 @@
 name: Ingest Full Conversation (auto-split and index)
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,100 +12,65 @@ on:
       section_hint:
         description: "Optional delimiter, for example ### or --- section:"
         required: false
+  push:
+    branches:
+      - main
+    paths:
+      - 'incoming/conversations/**.md'
+      - 'incoming/conversations/**.txt'
+      - 'scripts/ingest_conversation.py'
+      - '.github/workflows/ingest_conversation.yml'
 
 permissions:
   contents: write
+
+concurrency:
+  group: governance-conversation-ingest-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
-      - name: Prep folders
-        run: mkdir -p docs/conversations
+      - name: Prepare folders
+        run: mkdir -p docs/conversations incoming/conversations
 
-      - name: Split and tag content
+      - name: Ingest workflow-dispatch content
+        if: github.event_name == 'workflow_dispatch'
         env:
           TITLE: ${{ github.event.inputs.title }}
           RAW: ${{ github.event.inputs.content }}
           HINT: ${{ github.event.inputs.section_hint }}
         run: |
-          python - <<'PY'
-          import os, re, json, pathlib, datetime
-          base = pathlib.Path("docs/conversations")
-          base.mkdir(parents=True, exist_ok=True)
-          title = os.environ["TITLE"].strip()
-          raw = os.environ["RAW"]
-          hint = os.environ.get("HINT", "").strip()
-          text = raw.replace("\r\n", "\n").replace("\r", "\n")
-          if hint:
-              parts = [p.strip() for p in re.split(rf"(?:{re.escape(hint)}\s*)", text) if p.strip()]
-          else:
-              parts = re.split(r"(?m)^#{1,6}\s.*$|^\s*—{3,}\s*$|^\s*---+\s*$", text)
-              parts = [p.strip() for p in parts if p.strip()]
-          if not parts:
-              parts = [text.strip() or title]
-          topic_map = {
-              "governance": r"\bconstitution|quorum|invariant|governance|council|verifier\b",
-              "economy": r"\btokens?|treasury|emission|staking|credits?\b",
-              "drift": r"\bdrift|divergence|cusum|monitor|alignment delta\b",
-              "anchoring": r"\banchor|merkle|op_return|calldata|tsa|transparency log\b",
-              "vault-bridge": r"\bbridge|external\s+(tx|purchase|market)|escrow|oracle\b",
-              "citizenship": r"\bcharter|rights|duties|welfare|ai citizenship\b",
-              "security": r"\bcapabilities?|egress|sandbox|slsa|sigstore|sbom|supply[- ]chain\b",
-              "comms": r"\bmatrix|secure messaging|outreach|activitypub\b",
-              "mvp-roadmap": r"\bmvp|pilot|timeline|week\s+\d|roadmap|demo\b",
-              "legal": r"\blicense|foundation|llc|non[- ]profit|compliance|gdpr|ccpa\b",
-          }
-          def tags_for(s):
-              tags = [k for k, pat in topic_map.items() if re.search(pat, s, flags=re.I)]
-              return tags or ["general"]
-          def slugify(s):
-              s = s.lower()
-              s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
-              return s[:60] or "section"
-          ts = datetime.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-          written = []
-          for i, part in enumerate(parts, start=1):
-              sect_title = " ".join(part.split()[:8]) + ("..." if len(part.split()) > 8 else "")
-              tags = tags_for(part)
-              name = f"{ts}-{i:02d}-{slugify(tags[0])}.md"
-              p = base / name
-              date_local = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-              md = []
-              md += ["---"]
-              md += [f'title: "{sect_title}"']
-              md += [f'date: "{date_local}"']
-              md += ['participants: ["Rigel", "Assistant"]']
-              md += [f'tags: {json.dumps(tags)}']
-              md += ["---", ""]
-              md += ["# Next actions (resume here)", "", "- [ ] <fill me>", ""]
-              md += ["# Notes", "", part, ""]
-              p.write_text("\n".join(md), encoding="utf-8")
-              written.append((sect_title, str(p)))
-          index = base / "INDEX.md"
-          if not index.exists():
-              index.write_text("# Conversation Index\n", encoding="utf-8")
-          nowlines = []
-          for sect_title, path in written:
-              now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-              rel = pathlib.Path(path).relative_to(base)
-              nowlines.append(f"- {now} – **{sect_title}** → [open]({rel})\n")
-          existing = index.read_text(encoding="utf-8")
-          index.write_text("".join(nowlines) + "\n" + existing, encoding="utf-8")
-          print("WROTE:", json.dumps(written))
-          PY
+          python scripts/ingest_conversation.py \
+            --title "$TITLE" \
+            --content "$RAW" \
+            --section-hint "$HINT" \
+            --output-dir docs/conversations
 
-      - name: Commit & push
+      - name: Ingest repository inbox
+        if: github.event_name == 'push'
         run: |
-          git config user.name "notes-bot"
-          git config user.email "notes-bot@users.noreply.github.com"
-          git add docs/conversations
+          python scripts/ingest_conversation.py \
+            --input-dir incoming/conversations \
+            --output-dir docs/conversations
+
+      - name: Remove consumed inbox records
+        if: github.event_name == 'push'
+        run: find incoming/conversations -maxdepth 1 -type f \( -name '*.md' -o -name '*.txt' \) -delete
+
+      - name: Commit and push generated records
+        run: |
+          git config user.name "governance-ingestion-bot"
+          git config user.email "governance-ingestion-bot@users.noreply.github.com"
+          git add docs/conversations incoming/conversations
           if ! git diff --cached --quiet; then
-            git commit -m "Ingest full conversation: auto-split and index"
+            git commit -m "Ingest Governance conversation records"
             git push
           else
-            echo "No changes to commit."
+            echo "No generated conversation changes to commit."
           fi
