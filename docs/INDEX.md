@@ -27,6 +27,9 @@
 - [Condition-Degraded Judgment Fixture](examples/fixtures/condition_degraded_judgment_gdr.json)
 - [Signal-Admission Drift Fixture](examples/fixtures/signal_admission_drift_gdr.json)
 - [Governance Validation of Drift Fixture](examples/fixtures/governance_validation_of_drift_gdr.json)
+- [Three-Layer Positive Control](examples/fixtures/three_layer_positive_control_gdr.json)
+- [Three-Layer Replay Baseline](examples/fixtures/three_layer_replay_baseline_gdr.json)
+- [Three-Layer Replay Mutation](examples/fixtures/three_layer_replay_mutated_gdr.json)
 
 ## Policies
 
