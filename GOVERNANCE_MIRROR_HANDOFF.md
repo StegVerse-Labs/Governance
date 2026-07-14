@@ -15,7 +15,7 @@ Continue from this file before changing governance docs, fixtures, validators, w
 
 ## Current Build State
 
-The repository now contains:
+The repository contains:
 
 1. constitutional, dual-quorum, drift, anchoring, identity, lifecycle, economic, registry, and citizenship governance drafts;
 2. indexed documentation and deferred-review tracking;
@@ -25,10 +25,11 @@ The repository now contains:
 6. GDR schema mapping for the three-layer contract;
 7. three negative fixtures;
 8. one positive-control fixture;
-9. a two-part replay fixture preserving policy/authority while changing admitted signals and reference state;
-10. runtime expectations aligned to the StegCore evaluator;
-11. validator enforcement of fixture shape, outcomes, replay invariants, and `continuity_receipt_minted=false`;
-12. live StegCore cross-repository fixture verification on push, pull request, and daily schedule.
+9. a replay pair preserving policy and authority while changing admitted signals and reference state;
+10. runtime expectations aligned to StegCore;
+11. validator enforcement of shape, outcomes, replay invariants, and `continuity_receipt_minted=false`;
+12. live StegCore cross-repository verification on push, pull request, and daily schedule;
+13. automated StegCore evidence publication and issue closure.
 
 ## Required Three-Layer Files
 
@@ -66,10 +67,10 @@ Human approval alone does not repair degraded judgment conditions, incomplete st
 
 - Condition-degraded judgment: `DENY` with `judgment.refusal_unavailable`.
 - Incomplete or unreconstructable signal admission: `DENY` with `signal.inputs_incomplete`.
-- Valid policy/authority over a shifted reference state: `FAIL-CLOSED` with `signal.reference_state_discontinuous`.
+- Valid policy and authority over a shifted reference state: `FAIL-CLOSED` with `signal.reference_state_discontinuous`.
 - Complete positive control: `ALLOW` with `ok`.
 - Replay baseline: `ALLOW`.
-- Replay mutation with unchanged policy, authority, and delegation but changed admitted signals/reference state: `FAIL-CLOSED`.
+- Replay mutation with unchanged policy, authority, and delegation but changed admitted signals and reference state: `FAIL-CLOSED`.
 
 All canonical runtime expectations require `continuity_receipt_minted=false`.
 
@@ -77,18 +78,39 @@ All canonical runtime expectations require `continuity_receipt_minted=false`.
 
 `StegVerse-Labs/StegCore` owns runtime implementation under issue #22.
 
-StegCore now:
+StegCore:
 
 - implements the three-layer evaluator;
 - tests negative, positive, replay, and non-minting behavior;
 - clones Governance during CI;
 - evaluates all six canonical fixtures through the actual runtime;
-- repeats the contract check daily to detect future drift without manual initiation.
+- repeats the contract check daily;
+- writes passing evidence to `evidence/runtime-validation.json`;
+- commits evidence only when the validated StegCore or Governance contract commit changes;
+- closes issue #22 automatically after every required gate passes.
+
+## Evidence Consumption Rule
+
+Governance consumes StegCore runtime evidence by reference to:
+
+```text
+StegVerse-Labs/StegCore/evidence/runtime-validation.json
+```
+
+The evidence record must identify the Governance commit it validated. This handoff does not require copied workflow IDs, copied console output, or a manually edited pass declaration.
+
+A Governance commit is runtime-aligned only when the StegCore evidence record has:
+
+- `status: pass`;
+- `governance_commit` equal to that canonical Governance contract commit;
+- all required checks marked as passing;
+- `continuity_receipt_minted: false`;
+- all authority non-claims preserved.
 
 ## Active Ownership
 
 - Governance architecture, schema mapping, canonical fixtures, and validation contract: `StegVerse-Labs/Governance`.
-- Runtime evaluator, runtime receipt, tests, and live cross-repository verifier: `StegVerse-Labs/StegCore` issue #22.
+- Runtime evaluator, runtime receipt, tests, live verifier, evidence record, and issue closure: `StegVerse-Labs/StegCore`.
 - Continuity receipt verification or minting: outside Governance and StegCore authority.
 - Legal, employment, medical, biometric, or human-performance measurement policy: outside current scope and requires separate review.
 
@@ -97,20 +119,21 @@ StegCore now:
 - Conversation-ingestion smoke testing is automatic.
 - Repository inbox ingestion is push-driven.
 - Fixture presence, field shape, expected outcomes, replay invariants, and receipt boundaries are machine-enforced.
-- Runtime placement and result vocabulary are durably assigned.
-- Governance-to-StegCore alignment is checked against live fixtures rather than manual comparison.
-- Daily scheduled verification detects later cross-repository drift.
+- Governance-to-StegCore alignment is checked against live fixtures.
+- Daily scheduled verification detects later drift.
+- Passing runtime evidence is generated and committed automatically.
+- Governance consumes evidence through a durable pointer rather than manual transcription.
+- Issue #22 closes automatically only after all runtime gates pass.
 - Manual workflow dispatch remains only as a recovery option.
 
 ## Next Actions
 
-1. Capture passing Governance validation evidence.
-2. Capture passing StegCore runtime and live-contract evidence.
-3. Correct failures through repository commits without requiring manual-only execution.
-4. Record passing commit/run evidence in this handoff, the StegCore handoff, and issue #22.
-5. Close issue #22 only after automated evidence passes.
-6. Perform release-readiness and tagging only after all gates pass.
-7. At release readiness, verify applicable updates to Site, Publisher, admissibility-wiki, and stegguardian-wiki.
+1. Allow Governance validation to continue automatically.
+2. Allow the first successful StegCore non-PR validation to publish `evidence/runtime-validation.json` and close issue #22.
+3. Correct failures through repository commits without manual execution or evidence copying.
+4. After passing evidence exists, apply the release-readiness gate.
+5. Tag or release only after evidence validity, version uniqueness, authority boundaries, and downstream task declarations pass.
+6. At release readiness, verify applicable updates to Site, Publisher, admissibility-wiki, and stegguardian-wiki.
 
 ## Definition of Done
 
@@ -120,10 +143,11 @@ The Governance side is complete when:
 - validators enforce all six canonical cases;
 - validation runs automatically;
 - StegCore evaluates the canonical fixtures live;
+- Governance consumes passing StegCore evidence by commit-bound reference;
 - both repositories preserve ownership and authority boundaries;
 - future continuation requires no original chat or manual-only action.
 
-Full runtime activation additionally requires passing workflow evidence and release-boundary recording.
+Full runtime activation additionally requires the automatically generated StegCore evidence record and automated issue #22 closure.
 
 ## Current Completion Assessment
 
@@ -136,10 +160,11 @@ Replay fixtures: complete
 Fixture validator: complete
 Ingestion automation: complete
 Live StegCore contract integration: complete
-Passing workflow evidence: pending
+Automated evidence consumption rule: complete
+Passing evidence record: pending first successful StegCore non-PR run
 Manual continuation dependency: none
 ```
 
 ## Archive Status
 
-This conversation's unique decisions, fixtures, implementation boundaries, automation, ownership, remaining gates, and continuation scope are durably recorded. The thread is ready for archive.
+This conversation's unique decisions, fixtures, implementation boundaries, automation, evidence mechanics, ownership, remaining gates, and continuation scope are durably recorded. The thread is ready for archive.
