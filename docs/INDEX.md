@@ -7,6 +7,7 @@
 - [Dual Quorum Protocol](governance/dual_quorum_protocol.yaml)
 - [Drift Monitor](governance/drift_monitor.yaml)
 - [Predictive Drift](governance/predictive_drift.yaml)
+- [Judgment, Signal Formation, and Execution Architecture](governance/judgment_signal_execution_architecture.md)
 - [Anchoring Policy](governance/anchoring_policy.yaml)
 - [Internal Credit Policy](governance/internal_credit_policy.yaml)
 - [Model Lifecycle Review](governance/model_lifecycle_review.yaml)
