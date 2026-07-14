@@ -24,6 +24,7 @@ REQUIRED_FILES = [
     "docs/governance/dual_quorum_protocol.yaml",
     "docs/governance/drift_monitor.yaml",
     "docs/governance/predictive_drift.yaml",
+    "docs/governance/judgment_signal_execution_architecture.md",
     "docs/governance/anchoring_policy.yaml",
     "docs/governance/internal_credit_policy.yaml",
     "docs/governance/model_lifecycle_review.yaml",
@@ -38,8 +39,13 @@ REQUIRED_FILES = [
     "docs/examples/GDR_SCHEMA_MAPPING.md",
     "docs/examples/fixtures/dual_quorum_gdr.json",
     "docs/examples/fixtures/drift_review_gdr.json",
+    "docs/examples/fixtures/condition_degraded_judgment_gdr.json",
+    "docs/examples/fixtures/signal_admission_drift_gdr.json",
+    "docs/examples/fixtures/governance_validation_of_drift_gdr.json",
     "scripts/validate_docs.py",
     "scripts/validate_gdr_examples.py",
+    "scripts/ingest_conversation.py",
+    "scripts/test_ingest_conversation.py",
     ".github/workflows/ingest_bundle.yml",
     ".github/workflows/ingest_conversation.yml",
     ".github/workflows/validate_docs.yml",
@@ -50,6 +56,15 @@ REQUIRED_HANDOFF_PHRASES = [
     "Next Actions",
     "Definition of Done",
     "Current Completion Assessment",
+    "Judgment-Signal-Execution Workstream",
+    "Permitted continuation scope",
+]
+
+REQUIRED_INDEX_LINKS = [
+    "governance/judgment_signal_execution_architecture.md",
+    "examples/fixtures/condition_degraded_judgment_gdr.json",
+    "examples/fixtures/signal_admission_drift_gdr.json",
+    "examples/fixtures/governance_validation_of_drift_gdr.json",
 ]
 
 
@@ -89,11 +104,20 @@ def validate_handoff() -> list[str]:
     return errors
 
 
+def validate_index() -> list[str]:
+    path = pathlib.Path("docs/INDEX.md")
+    if not path.exists():
+        return ["documentation index missing"]
+    text = path.read_text(encoding="utf-8")
+    return [f"documentation index missing link: {link}" for link in REQUIRED_INDEX_LINKS if link not in text]
+
+
 def main() -> int:
-    errors = []
+    errors: list[str] = []
     errors.extend(validate_required_files())
     errors.extend(validate_yaml())
     errors.extend(validate_handoff())
+    errors.extend(validate_index())
     if errors:
         print("Governance documentation validation failed:")
         for err in errors:
