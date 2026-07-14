@@ -16,7 +16,7 @@
     "bundle_hash": "sha256:replay-mutated-bundle"
   },
   "issued_at": 1794372120,
-  "rationale": "The policy and actor authority are unchanged, but the admitted signal set and reference-state hash changed and cannot be reconciled with the authorized baseline, so execution fails closed.",
+  "rationale": "The policy and actor authority are unchanged, but the admitted signal set forms a different reconstructable reference state than the authorized baseline, so execution fails closed.",
   "expected_failure_class": "governance_validation_of_drift",
   "replay_case_id": "three-layer-replay-001",
   "replay_position": "mutated",
@@ -35,24 +35,20 @@
       "signal:request-v1",
       "signal:policy-v1",
       "signal:delegation-v1",
-      "signal:compressed-context-v2"
+      "signal:context-v2"
     ],
-    "excluded_signal_refs": [
-      "signal:affected-entity-v1"
-    ],
+    "excluded_signal_refs": [],
     "transformations": [
       {
-        "type": "compression",
-        "reconstructable": false
+        "type": "canonicalization",
+        "reconstructable": true
       }
     ],
-    "missing_inputs": [
-      "signal:affected-entity-v1"
-    ],
-    "uncertainty_state": "unbounded",
+    "missing_inputs": [],
+    "uncertainty_state": "bounded",
     "reference_state_hash": "sha256:replay-shifted-state",
     "authorized_reference_state_hash": "sha256:replay-authorized-state",
-    "reconstruction_available": false
+    "reconstruction_available": true
   },
   "execution_boundary": {
     "actor_authority_ref": "authority:replay-current",
@@ -79,7 +75,7 @@
   },
   "runtime_expectation": {
     "result": "FAIL-CLOSED",
-    "reason_code": "signal.reference_state_mismatch",
+    "reason_code": "signal.reference_state_discontinuous",
     "continuity_receipt_minted": false
   }
 }
