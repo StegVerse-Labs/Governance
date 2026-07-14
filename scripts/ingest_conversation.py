@@ -123,6 +123,9 @@ def main() -> int:
         sources.extend((path.stem, path.read_text(encoding="utf-8")) for path in iter_input_files(args.input_dir))
 
     if not sources:
+        if args.input_dir is not None:
+            print(f"No conversation inbox records found in {args.input_dir}; nothing to ingest.")
+            return 0
         parser.error("provide --content, --content-file, or --input-dir")
 
     total = 0
