@@ -6,56 +6,56 @@ Continue building without manual actions needed through completion, or until han
 
 ## Status
 
-Documentation continuity and repository-driven validation are active. Runtime implementation has been durably assigned to StegCore issue #22.
+Documentation continuity, repository-driven validation, canonical runtime fixtures, and cross-repository contract verification are active. StegCore runtime implementation exists; passing workflow evidence remains the release gate.
 
 ## Completed
 
 - Repository handoff source of truth exists.
-- README links to handoff and documentation index.
-- Governance policy drafts are indexed.
-- Deferred review items are tracked in-repo.
-- Example Governance Decision Records exist.
-- Example JSON fixtures are aligned to the current GDR shape.
-- The judgment, signal formation, and execution architecture is preserved at `docs/governance/judgment_signal_execution_architecture.md`.
-- The architecture separates human meaning and judgment conditions, signal admission and state formation, and execution-boundary admissibility.
-- The three-layer extension is mapped in `docs/examples/GDR_SCHEMA_MAPPING.md`.
+- Governance policy drafts, deferred review items, and indexes are repository-resident.
+- The judgment, signal formation, and execution architecture is preserved and mapped to the GDR example shape.
 - Negative fixtures exist for condition-degraded judgment, signal-admission drift, and governance validation of drift.
-- `scripts/validate_gdr_examples.py` enforces the base shape, three-layer fields, and fixture-specific deny/fail-closed invariants.
+- A positive-control fixture defines the valid `ALLOW` path.
+- A replay pair holds policy, authority, and delegation constant while changing admitted signals and the reference-state hash; the expected result changes from `ALLOW` to `FAIL-CLOSED`.
+- Every canonical three-layer fixture includes a StegCore runtime expectation and explicitly forbids Continuity receipt minting.
+- `scripts/validate_gdr_examples.py` enforces fixture presence, required fields, runtime result alignment, replay invariants, and the Continuity boundary.
 - `scripts/validate_docs.py` requires the architecture, mapping, fixtures, ingestion engine, smoke test, and index links.
-- `scripts/ingest_conversation.py` provides reusable conversation ingestion.
-- The ingestion workflow automatically consumes repository inbox records from `incoming/conversations/` and removes consumed source files after indexed records are generated.
-- `scripts/test_ingest_conversation.py` smoke-tests splitting, tagging, record generation, continuation markers, and index generation.
-- The validation workflow automatically runs documentation validation, fixture validation, and the ingestion smoke test on relevant pushes and pull requests.
-- Runtime resolver implementation is assigned to `StegVerse-Labs/StegCore` issue #22 with acceptance tests and an automation requirement.
+- Conversation ingestion is reusable, inbox-driven, and smoke-tested automatically.
+- The validation workflow runs documentation validation, fixture validation, and ingestion testing automatically on relevant pushes and pull requests.
+- StegCore implements the three-layer evaluator and tests.
+- StegCore CI clones the canonical Governance repository and evaluates all six required fixtures through the actual runtime contract.
+- The StegCore cross-repository contract check also runs on a daily schedule, preventing silent drift between repositories.
 
 ## Remaining Automated Work
 
-1. Observe the push-triggered `Validate Governance Docs` result for the current repository state.
-2. Correct any reported validation failure through repository commits; no manual workflow dispatch is required.
-3. Implement StegCore issue #22 and run its tests automatically on relevant pushes and pull requests.
-4. Add a positive-control fixture when the StegCore result object is finalized.
-5. Preserve the final runtime result/receipt shape in both the Governance mapping and StegCore handoff.
+1. Capture passing Governance and StegCore workflow evidence for the current repository states.
+2. Correct any reported failure through repository commits; manual workflow dispatch is not required.
+3. Record passing commit and workflow evidence in both handoffs.
+4. Close StegCore issue #22 only after automated evidence confirms the canonical fixtures and runtime tests pass.
+5. Run release-readiness assessment and tag only after those gates pass.
+6. On release readiness, verify applicable updates to Site, Publisher, admissibility-wiki, and stegguardian-wiki.
 
 ## Eliminated Manual Tasks
 
-- The prior requirement to manually run a small conversation ingestion test has been replaced by an automatic smoke test.
-- Conversation ingestion can now be triggered by repository-delivered inbox records rather than workflow form entry.
-- Fixture presence and three-layer invariants are enforced by code rather than reviewer memory.
-- Runtime placement is no longer an unresolved human choice; it is assigned to StegCore issue #22.
+- Manual conversation-ingestion smoke testing is replaced by an automatic test.
+- Conversation ingestion can be triggered by repository-delivered inbox records.
+- Fixture presence, shape, expected outcomes, replay differences, and receipt boundaries are code-enforced.
+- Runtime placement and runtime result shape are no longer unresolved human choices.
+- StegCore verifies Governance's live canonical fixtures automatically rather than relying on copied expectations or manual comparison.
+- A scheduled cross-repository check detects later contract drift without a person initiating validation.
 - Workflow dispatch remains available only as an optional recovery route.
 
 ## Activation Definition
 
-Governance documentation activation is complete when repository files alone preserve the architecture, examples, automation, ownership, and continuation state.
+Governance documentation activation is complete because repository files preserve the architecture, examples, automation, ownership, and continuation state.
 
-The judgment-signal-execution work reaches runtime activation when:
+Full judgment-signal-execution runtime activation requires:
 
-- StegCore issue #22 is implemented;
-- automated tests distinguish invalid judgment conditions, invalid state formation, and invalid execution authority;
-- decision receipts preserve all three layers;
-- the automated validation paths pass;
-- Governance and StegCore handoffs record the resulting runtime contract.
+- passing Governance validation;
+- passing StegCore runtime tests;
+- passing live Governance-to-StegCore contract verification;
+- result receipts preserving all three layers and `continuity_receipt_minted=false`;
+- both handoffs recording the passing evidence and release boundary.
 
 ## Next Integration Candidate
 
-StegCore issue #22 is the active integration goal. Governance should accept only schema, fixture, documentation, and receipt-contract updates required to keep the policy source aligned with that implementation.
+After passing evidence is recorded, perform release-readiness review for the Governance/StegCore contract and verify downstream documentation synchronization requirements.
