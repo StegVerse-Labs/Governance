@@ -1,0 +1,94 @@
+name: Provider Ephemeral Successor Backends
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'scripts/run_ephemeral_successor_backends.py'
+      - 'scripts/build_provider_promotion_states.py'
+      - 'scripts/run_successor_harnesses.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_provider_inventory_queue.py'
+      - '.github/workflows/provider_ephemeral_backends.yml'
+  pull_request:
+    paths:
+      - 'scripts/run_ephemeral_successor_backends.py'
+      - 'scripts/build_provider_promotion_states.py'
+      - 'scripts/run_successor_harnesses.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_provider_inventory_queue.py'
+      - '.github/workflows/provider_ephemeral_backends.yml'
+  schedule:
+    - cron: '11 7 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: provider-ephemeral-successor-backends
+  cancel-in-progress: false
+
+jobs:
+  isolated-backends:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild deterministic prerequisite chain
+        run: |
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          cp reports/provider-inventory-results.json reports/provider-inventory-evidence.json
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
+          python scripts/run_successor_harnesses.py
+          python scripts/build_provider_promotion_states.py
+      - name: Execute isolated ephemeral backends
+        run: python scripts/run_ephemeral_successor_backends.py
+      - name: Verify deterministic replay
+        run: |
+          cp reports/provider-ephemeral-backend-results.json "$RUNNER_TEMP/first.json"
+          python scripts/run_ephemeral_successor_backends.py
+          cmp "$RUNNER_TEMP/first.json" reports/provider-ephemeral-backend-results.json
+      - name: Upload isolated evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-ephemeral-backend-results
+          path: reports/provider-ephemeral-backend-results.json
+      - name: Reconcile blocked isolated-backend issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python - <<'PY'
+          import json
+          d=json.load(open('reports/provider-ephemeral-backend-results.json'))
+          print(d['blocked_provider_count'])
+          PY
+          )"
+          TITLE='[automation] Provider ephemeral backend blockers'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-owned isolated successor backend execution reports ${COUNT} blocked provider(s). Evidence: reports/provider-ephemeral-backend-results.json. No network access, provider credentials, production state, cutover, cancellation, retirement, or receipt authority is used or granted."
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All eligible provider successor backends pass isolated execution.' >/dev/null 2>&1 || true
+          fi
+      - name: Persist isolated evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'provider-ephemeral-backend-bot'
+          git config user.email 'provider-ephemeral-backend-bot@users.noreply.github.com'
+          git add reports/provider-ephemeral-backend-results.json
+          git diff --cached --quiet || git commit -m 'Record provider ephemeral backend evidence [skip ci]'
+          git push origin HEAD:main
