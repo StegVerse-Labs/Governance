@@ -30,12 +30,15 @@ scripts/validate_external_dependency_registry.py
 scripts/validate_external_cost_evidence.py
 scripts/score_external_dependencies.py
 scripts/validate_metered_replacement_gdrs.py
+scripts/build_metered_replacement_status.py
+scripts/sync_metered_replacement_runtime_issue.py
 docs/examples/fixtures/metered_replacement_selection_gdr.json
 docs/examples/fixtures/metered_replacement_retirement_denied_gdr.json
 .github/workflows/validate_external_dependency_registry.yml
+.github/workflows/metered_replacement_continuation.yml
 ```
 
-The leading dot in the workflow path is retained here because this is a machine continuation record.
+The leading dot in workflow paths is retained here because this is a machine continuation record.
 
 ## Registered External Dependencies
 
@@ -91,9 +94,34 @@ traffic_cutover_verified
 master_records_custody_recorded
 ```
 
+## Machine-Owned Continuation
+
+`.github/workflows/metered_replacement_continuation.yml` owns repository-side continuation after merge.
+
+It automatically:
+
+```text
+validate registry, cost evidence, and canonical GDR fixtures
+-> build deterministic fail-closed status
+-> replay status generation and compare exact output
+-> synchronize the StegCore runtime issue when cross-repository credentials are available
+-> retain changed status on main
+-> repeat daily and on governed-input changes
+```
+
+The workflow does not infer missing financial facts, fabricate cost evidence, authorize cancellation, or perform provider retirement. Absence of a cross-repository token is recorded as a non-mutating fail-closed condition rather than converted into a manual user task.
+
+Generated state:
+
+```text
+reports/metered-platform-replacement-status.json
+```
+
+Every dependency record declares `manual_action_required: false`. Missing evidence remains a machine-readable blocker.
+
 ## Validation State
 
-The original policy, registry, cost-evidence, scoring, documentation, and ingestion integration reached a fully green PR head before the canonical GDR fixture extension.
+The policy, registry, cost-evidence, scoring, documentation, ingestion integration, and original canonical GDR extension reached a fully green PR head before the machine-owned continuation extension.
 
 The current head must pass:
 
@@ -101,6 +129,7 @@ The current head must pass:
 Validate Governance (schema + docs)
 Validate Governance Docs
 Validate External Dependency Registry
+Metered Replacement Continuation
 Test Readiness
 Forward PR to StegVerse AI Bridge
 ```
@@ -117,6 +146,7 @@ StegVerse-Labs/Governance
   deterministic priority rules
   canonical GDR fixtures
   repository validators
+  machine-owned status and task synchronization
 
 StegVerse-Labs/StegCore
   deterministic runtime evaluation
@@ -146,9 +176,8 @@ StegCore issue #26 is sequenced after or independently from the active commit-co
 
 ```text
 StegVerse-Labs/Governance
-  -> observe all current-head PR #3 checks
+  -> observe all current-head PR #3 checks automatically
   -> repair only exact failures without weakening authority boundaries
-  -> add mutation-negative fixture tests if runtime contract requires them
   -> merge only after repository policy permits and checks pass
 
 StegVerse-Labs/StegCore
@@ -157,16 +186,18 @@ StegVerse-Labs/StegCore
   -> publish commit-bound passing runtime evidence
 
 Financial discovery
-  -> normalize actual charges into privacy-safe evidence records
-  -> identify additional merchants and provider accounts
-  -> calculate verified monthly and annual drain
+  -> ingest normalized privacy-safe evidence when available
+  -> identify additional merchants from verified evidence
+  -> calculate verified monthly and annual drain automatically
 
 Provider migration
   -> select first target only from verified evidence and deterministic score
-  -> create provider-specific asset inventory
+  -> generate provider-specific asset inventory through its owning adapter
   -> implement successor and parallel-operation plan
   -> retain rollback until migration and custody are verified
 ```
+
+No repository-side continuation step requires a person to dispatch a workflow, copy status, update the StegCore task, generate a report, or transcribe blockers.
 
 ## Release and Propagation Posture
 
@@ -189,15 +220,18 @@ Dependency registry: implemented
 Privacy-safe cost-evidence contract: implemented
 Deterministic priority scoring: implemented
 Canonical selection and retirement-denial fixtures: implemented
-Repository validation: implemented, current-head observation pending
+Repository validation: implemented
+Machine-owned status generation: implemented
+Automatic StegCore task synchronization: implemented, credential-dependent and fail-closed
 StegCore runtime evaluator: task created, not yet built
 Verified financial costs: not yet recorded
 Provider inventories: not yet built
 Provider replacement runtimes: not yet built
 Migration evidence custody: not yet built
 Provider retirements: none authorized or completed
+Manual repository continuation dependency: none
 ```
 
 ## Archive Status
 
-This handoff, Governance PR #3, StegCore issue #26, canonical fixtures, validators, workflow history, and repository commits preserve all workstream continuation state. No prior conversation context is required.
+This handoff, Governance PR #3, StegCore issue #26, canonical fixtures, validators, workflows, generated status path, workflow history, and repository commits preserve all workstream continuation state. No prior conversation context is required.
