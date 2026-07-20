@@ -1,0 +1,54 @@
+{
+  "gdr_version": "1.0",
+  "decision_id": "gdr-metered-replacement-retirement-denied-001",
+  "decision": "deny",
+  "policy": {
+    "policy_id": "metered-platform-replacement",
+    "policy_version": "1.0.0"
+  },
+  "evaluated_inputs": {
+    "source": "external-dependency-registry",
+    "dependency_id": "render",
+    "registry_ref": "data/external_dependency_registry.json",
+    "migration_phase": "REPLACEMENT_DESIGNED",
+    "retirement_evidence": []
+  },
+  "rationale": "Provider retirement is denied because parallel operation, verified successor health, asset export, secret rotation, rollback proof, and migration evidence are incomplete.",
+  "retirement_boundary": {
+    "required_evidence": [
+      "asset_inventory_complete",
+      "export_verified",
+      "successor_health_verified",
+      "parallel_operation_passed",
+      "rollback_verified",
+      "secrets_rotated",
+      "traffic_cutover_verified",
+      "master_records_custody_recorded"
+    ],
+    "missing_evidence": [
+      "asset_inventory_complete",
+      "export_verified",
+      "successor_health_verified",
+      "parallel_operation_passed",
+      "rollback_verified",
+      "secrets_rotated",
+      "traffic_cutover_verified",
+      "master_records_custody_recorded"
+    ],
+    "fail_closed": true
+  },
+  "execution_boundary": {
+    "result": "DENY",
+    "scope": "PROVIDER_RETIREMENT",
+    "provider_retirement_authority": false,
+    "cancellation_authority": false,
+    "continuity_receipt_minted": false
+  },
+  "runtime_expectation": {
+    "result": "DENY",
+    "reason_code": "retirement.evidence_incomplete",
+    "provider_retirement_authority": false,
+    "cancellation_authority": false,
+    "continuity_receipt_minted": false
+  }
+}
