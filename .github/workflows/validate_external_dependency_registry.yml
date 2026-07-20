@@ -8,6 +8,9 @@ on:
       - "scripts/validate_external_dependency_registry.py"
       - "scripts/validate_external_cost_evidence.py"
       - "scripts/score_external_dependencies.py"
+      - "scripts/validate_metered_replacement_gdrs.py"
+      - "docs/examples/fixtures/metered_replacement_selection_gdr.json"
+      - "docs/examples/fixtures/metered_replacement_retirement_denied_gdr.json"
       - "docs/governance/METERED_PLATFORM_REPLACEMENT.md"
       - ".github/workflows/validate_external_dependency_registry.yml"
   pull_request:
@@ -17,6 +20,9 @@ on:
       - "scripts/validate_external_dependency_registry.py"
       - "scripts/validate_external_cost_evidence.py"
       - "scripts/score_external_dependencies.py"
+      - "scripts/validate_metered_replacement_gdrs.py"
+      - "docs/examples/fixtures/metered_replacement_selection_gdr.json"
+      - "docs/examples/fixtures/metered_replacement_retirement_denied_gdr.json"
       - "docs/governance/METERED_PLATFORM_REPLACEMENT.md"
       - ".github/workflows/validate_external_dependency_registry.yml"
   workflow_dispatch:
@@ -41,6 +47,9 @@ jobs:
 
       - name: Validate privacy-safe cost evidence
         run: python scripts/validate_external_cost_evidence.py
+
+      - name: Validate replacement Governance Decision Records
+        run: python scripts/validate_metered_replacement_gdrs.py
 
       - name: Generate replacement priority report
         run: python scripts/score_external_dependencies.py
