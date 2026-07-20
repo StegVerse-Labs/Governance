@@ -41,6 +41,18 @@ def provider_id(item: dict[str, Any]) -> str:
     return str(item.get("provider_id") or item.get("dependency_id") or item.get("id") or "").strip()
 
 
+def inventory_state(item: dict[str, Any], plan: dict[str, Any]) -> str:
+    return str(
+        item.get("collector_state")
+        or item.get("status")
+        or item.get("state")
+        or item.get("inventory_state")
+        or plan.get("source_inventory_status")
+        or plan.get("inventory_state")
+        or "UNKNOWN"
+    )
+
+
 def main() -> int:
     plans_doc = load(PLANS_PATH)
     inventory_doc = load(INVENTORY_PATH)
@@ -59,10 +71,10 @@ def main() -> int:
         if not pid:
             continue
         inv = inventory.get(pid, {})
-        inv_state = str(inv.get("state") or inv.get("inventory_state") or plan.get("inventory_state") or "UNKNOWN")
+        inv_state = inventory_state(inv, plan)
         destination = str(plan.get("replacement_destination") or plan.get("successor_destination") or "").strip()
         missing_gates = sorted({str(x) for x in plan.get("missing_retirement_gates", plan.get("missing_gates", []))})
-        inventory_ready = inv_state in {"COLLECTED", "COMPLETE", "READY", "AVAILABLE"}
+        inventory_ready = inv_state in {"COLLECTED", "COMPLETE", "READY", "AVAILABLE"} and int(inv.get("asset_count", 0)) > 0
         destination_ready = bool(destination)
         build_state = "READY_FOR_SUCCESSOR_DESIGN" if inventory_ready and destination_ready else "BLOCKED_PREREQUISITES"
         blockers = []
@@ -75,6 +87,8 @@ def main() -> int:
             "provider_id": pid,
             "service_name": plan.get("service_name", pid),
             "successor_destination": destination,
+            "source_inventory_status": inv_state,
+            "source_inventory_payload_hash": inv.get("payload_hash") or plan.get("source_inventory_payload_hash"),
             "state": build_state,
             "bounded_actions": [
                 "generate_successor_interface_contract",
@@ -130,7 +144,7 @@ def main() -> int:
     parallel_plans.sort(key=lambda item: item["provider_id"])
 
     successor_report = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.0.1",
         "queue_id": "metered-platform-successor-build",
         "source_plan_hash": plans_doc.get("plan_set_hash") or plans_doc.get("plans_hash"),
         "tasks": successor_tasks,
@@ -143,7 +157,7 @@ def main() -> int:
     successor_report["queue_hash"] = digest(successor_report)
 
     parallel_report = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.0.1",
         "plan_id": "metered-platform-parallel-operation",
         "source_successor_queue_hash": successor_report["queue_hash"],
         "plans": parallel_plans,
