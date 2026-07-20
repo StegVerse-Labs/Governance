@@ -10,6 +10,7 @@ on:
       - 'scripts/materialize_successor_scaffolds.py'
       - 'scripts/build_successor_and_parallel_queues.py'
       - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/run_provider_inventory_collectors.py'
       - 'scripts/build_provider_inventory_queue.py'
       - '.github/workflows/provider_ephemeral_backends.yml'
   pull_request:
@@ -20,6 +21,7 @@ on:
       - 'scripts/materialize_successor_scaffolds.py'
       - 'scripts/build_successor_and_parallel_queues.py'
       - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/run_provider_inventory_collectors.py'
       - 'scripts/build_provider_inventory_queue.py'
       - '.github/workflows/provider_ephemeral_backends.yml'
   schedule:
@@ -44,6 +46,8 @@ jobs:
         with:
           python-version: '3.11'
       - name: Rebuild deterministic prerequisite chain
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/build_provider_inventory_queue.py
           python scripts/run_provider_inventory_collectors.py
