@@ -8,11 +8,13 @@
   },
   "evaluated_inputs": {
     "source": "external-dependency-registry",
+    "receipt_ids": [],
     "dependency_id": "render",
     "registry_ref": "data/external_dependency_registry.json",
     "migration_phase": "REPLACEMENT_DESIGNED",
     "retirement_evidence": []
   },
+  "issued_at": 1784527200,
   "rationale": "Provider retirement is denied because parallel operation, verified successor health, asset export, secret rotation, rollback proof, and migration evidence are incomplete.",
   "retirement_boundary": {
     "required_evidence": [
