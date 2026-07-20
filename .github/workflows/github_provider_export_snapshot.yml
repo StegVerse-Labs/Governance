@@ -1,0 +1,80 @@
+name: GitHub Provider Export Snapshot
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'scripts/export_github_provider_snapshot.py'
+      - '.github/workflows/github_provider_export_snapshot.yml'
+  pull_request:
+    paths:
+      - 'scripts/export_github_provider_snapshot.py'
+      - '.github/workflows/github_provider_export_snapshot.yml'
+  schedule:
+    - cron: '29 7 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: github-provider-export-snapshot
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Export authenticated read-only provider snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/export_github_provider_snapshot.py
+      - name: Verify deterministic replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp reports/github-provider-export-snapshot.json "$RUNNER_TEMP/first.json"
+          python scripts/export_github_provider_snapshot.py
+          cmp "$RUNNER_TEMP/first.json" reports/github-provider-export-snapshot.json
+      - name: Enforce zero-authority export
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('reports/github-provider-export-snapshot.json'))
+          for field in ('secret_material_included','repository_contents_included','production_mutation_allowed','execution_authority','traffic_cutover_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted','manual_action_required'):
+              assert d[field] is False, field
+          assert d['export_scope'] == 'installation_repository_metadata'
+          PY
+      - name: Upload export evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-provider-export-snapshot
+          path: reports/github-provider-export-snapshot.json
+      - name: Reconcile export blocker issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE="$(python -c "import json; print(json.load(open('reports/github-provider-export-snapshot.json'))['state'])")"
+          TITLE='[automation] GitHub provider export blocked'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Authenticated read-only GitHub export state: ${STATE}. Evidence: reports/github-provider-export-snapshot.json. No manual token handling, repository mutation, cutover, cancellation, retirement, or receipt authority is permitted."
+          if [ "$STATE" != 'AUTHENTICATED_READ_ONLY_EXPORT_COMPLETE' ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'Authenticated read-only GitHub export is complete.' >/dev/null 2>&1 || true
+          fi
+      - name: Persist export evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'github-provider-export-bot'
+          git config user.email 'github-provider-export-bot@users.noreply.github.com'
+          git add reports/github-provider-export-snapshot.json
+          git diff --cached --quiet || git commit -m 'Record GitHub provider export snapshot [skip ci]'
+          git push origin HEAD:main
