@@ -16,6 +16,7 @@
 - [Adaptive Governance](governance/adaptive_governance.yaml)
 - [Plugin Registry](governance/plugin_registry_policy.yaml)
 - [AI Citizenship Charter](governance/ai_citizenship_charter.md)
+- [Metered Platform Replacement and Sovereign Infrastructure](governance/METERED_PLATFORM_REPLACEMENT.md)
 
 ## Examples
 
@@ -44,9 +45,13 @@
 - [Conversation ingestion workflow](../.github/workflows/ingest_conversation.yml)
 - [Bundle ingestion workflow](../.github/workflows/ingest_bundle.yml)
 - [Validation workflow](../.github/workflows/validate_docs.yml)
+- [External dependency validation workflow](../.github/workflows/validate_external_dependency_registry.yml)
 - [Activation status workflow](../.github/workflows/activation_status.yml)
 - [Standalone docs validator](../scripts/validate_docs.py)
 - [GDR examples validator](../scripts/validate_gdr_examples.py)
+- [External dependency registry validator](../scripts/validate_external_dependency_registry.py)
+- [External cost evidence validator](../scripts/validate_external_cost_evidence.py)
+- [External dependency priority scorer](../scripts/score_external_dependencies.py)
 - [Conversation ingestion engine](../scripts/ingest_conversation.py)
 - [Conversation ingestion smoke test](../scripts/test_ingest_conversation.py)
 
