@@ -1,0 +1,43 @@
+name: Provider Inventory Queue
+
+on:
+  push:
+    paths:
+      - "data/external_dependency_registry.json"
+      - "scripts/build_provider_inventory_queue.py"
+      - ".github/workflows/provider_inventory_queue.yml"
+  pull_request:
+    paths:
+      - "data/external_dependency_registry.json"
+      - "scripts/build_provider_inventory_queue.py"
+      - ".github/workflows/provider_inventory_queue.yml"
+  schedule:
+    - cron: "53 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build deterministic provider inventory queue
+        run: python scripts/build_provider_inventory_queue.py
+      - name: Verify deterministic replay
+        run: |
+          cp reports/provider-inventory-queue.json /tmp/provider-inventory-queue.json
+          python scripts/build_provider_inventory_queue.py
+          cmp reports/provider-inventory-queue.json /tmp/provider-inventory-queue.json
+      - name: Persist queue on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "stegverse-inventory-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reports/provider-inventory-queue.json
+          git diff --cached --quiet || git commit -m "Update provider inventory queue"
+          git push
