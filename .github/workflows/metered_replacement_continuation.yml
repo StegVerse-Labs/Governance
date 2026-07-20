@@ -1,0 +1,72 @@
+name: Metered Replacement Continuation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/external_dependency_registry.json"
+      - "data/external_cost_evidence.json"
+      - "docs/examples/fixtures/metered_replacement_*.json"
+      - "scripts/build_metered_replacement_status.py"
+      - "scripts/sync_metered_replacement_runtime_issue.py"
+      - ".github/workflows/metered_replacement_continuation.yml"
+  pull_request:
+    paths:
+      - "data/external_dependency_registry.json"
+      - "data/external_cost_evidence.json"
+      - "docs/examples/fixtures/metered_replacement_*.json"
+      - "scripts/build_metered_replacement_status.py"
+      - "scripts/sync_metered_replacement_runtime_issue.py"
+      - ".github/workflows/metered_replacement_continuation.yml"
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  continue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate governed inputs
+        run: |
+          python scripts/validate_external_dependency_registry.py
+          python scripts/validate_external_cost_evidence.py
+          python scripts/validate_metered_replacement_gdrs.py
+
+      - name: Build deterministic replacement status
+        run: python scripts/build_metered_replacement_status.py
+
+      - name: Verify deterministic replay
+        run: |
+          cp reports/metered-platform-replacement-status.json /tmp/status.json
+          python scripts/build_metered_replacement_status.py
+          cmp reports/metered-platform-replacement-status.json /tmp/status.json
+
+      - name: Synchronize StegCore runtime task
+        if: github.event_name != 'pull_request'
+        env:
+          STEGCORE_TASK_TOKEN: ${{ secrets.STEGCORE_TASK_TOKEN }}
+        run: python scripts/sync_metered_replacement_runtime_issue.py
+
+      - name: Retain generated status on main
+        if: github.event_name != 'pull_request'
+        run: |
+          if git diff --quiet -- reports/metered-platform-replacement-status.json; then
+            echo "Status unchanged."
+            exit 0
+          fi
+          git config user.name "stegverse-governance-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reports/metered-platform-replacement-status.json
+          git commit -m "Update metered replacement status"
+          git push
