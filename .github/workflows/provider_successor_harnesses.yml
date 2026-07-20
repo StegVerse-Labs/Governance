@@ -4,14 +4,22 @@ on:
   push:
     branches: [main, agent/metered-platform-replacement]
     paths:
-      - 'successors/**'
-      - 'reports/provider-successor-scaffolds.json'
+      - 'data/external_dependency_registry.json'
+      - 'scripts/build_provider_inventory_queue.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
       - 'scripts/run_successor_harnesses.py'
       - '.github/workflows/provider_successor_harnesses.yml'
   pull_request:
     paths:
-      - 'successors/**'
-      - 'reports/provider-successor-scaffolds.json'
+      - 'data/external_dependency_registry.json'
+      - 'scripts/build_provider_inventory_queue.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
       - 'scripts/run_successor_harnesses.py'
       - '.github/workflows/provider_successor_harnesses.yml'
   schedule:
@@ -35,11 +43,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Regenerate deterministic prerequisite chain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
       - name: Execute non-production successor harness
         run: python scripts/run_successor_harnesses.py
       - name: Verify deterministic replay
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           cp reports/provider-successor-harness-results.json "$RUNNER_TEMP/first.json"
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
           python scripts/run_successor_harnesses.py
           cmp "$RUNNER_TEMP/first.json" reports/provider-successor-harness-results.json
       - name: Reconcile blocked harness issue
