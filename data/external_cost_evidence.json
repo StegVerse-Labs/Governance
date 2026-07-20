@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_set_id": "stegverse-external-cost-evidence",
+  "status": "AWAITING_VERIFIED_FINANCIAL_INPUTS",
+  "currency": "USD",
+  "privacy": {
+    "raw_statements_permitted_in_repository": false,
+    "credentials_permitted_in_repository": false,
+    "account_numbers_permitted_in_repository": false,
+    "evidence_digests_only": true
+  },
+  "authority": {
+    "cost_evidence_grants_cancellation_authority": false,
+    "cost_evidence_grants_retirement_authority": false,
+    "retirement_requires_gdr": true
+  },
+  "records": []
+}
