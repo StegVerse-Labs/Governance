@@ -1,0 +1,100 @@
+name: Provider Successor Scaffolds
+
+on:
+  push:
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'reports/provider-migration-plans.json'
+      - 'reports/provider-inventory-evidence.json'
+      - 'reports/provider-successor-build-queue.json'
+      - 'reports/provider-parallel-operation-plans.json'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - '.github/workflows/provider_successor_scaffolds.yml'
+  pull_request:
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'reports/provider-migration-plans.json'
+      - 'reports/provider-inventory-evidence.json'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - '.github/workflows/provider_successor_scaffolds.yml'
+  schedule:
+    - cron: '41 7 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: provider-successor-scaffolds
+  cancel-in-progress: false
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Rebuild migration and successor plans
+        run: |
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+
+      - name: Materialize deterministic successor scaffolds
+        run: python scripts/materialize_successor_scaffolds.py
+
+      - name: Verify deterministic replay
+        run: |
+          cp reports/provider-successor-scaffolds.json "$RUNNER_TEMP/scaffolds.json"
+          find successors -type f -name '*.json' -print0 | sort -z | xargs -0 sha256sum > "$RUNNER_TEMP/files.sha256"
+          python scripts/materialize_successor_scaffolds.py
+          cmp "$RUNNER_TEMP/scaffolds.json" reports/provider-successor-scaffolds.json
+          find successors -type f -name '*.json' -print0 | sort -z | xargs -0 sha256sum | cmp "$RUNNER_TEMP/files.sha256" -
+
+      - name: Reconcile blocked scaffold issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE='[automation] Provider successor scaffolds blocked'
+          COUNT="$(python - <<'PY'
+          import json
+          data=json.load(open('reports/provider-successor-scaffolds.json'))
+          print(sum(1 for item in data['records'] if item['state'] != 'SCAFFOLDED_NOT_IMPLEMENTED'))
+          PY
+          )"
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          if [ "$COUNT" -gt 0 ]; then
+            BODY="${COUNT} provider successor scaffolds remain blocked by machine-readable prerequisites. Durable state: reports/provider-successor-scaffolds.json. Resolution remains automation-owned. No execution, production mutation, traffic cutover, cancellation, retirement, or receipt-minting authority is granted."
+            if [ -n "$NUMBER" ]; then
+              gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+              gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All provider successor scaffolds are materialized. This does not authorize implementation, cutover, cancellation, or retirement.'
+          fi
+
+      - name: Persist scaffold state on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet -- reports/provider-successor-scaffolds.json successors; then
+            exit 0
+          fi
+          git config user.name 'provider-successor-scaffold-bot'
+          git config user.email 'provider-successor-scaffold-bot@users.noreply.github.com'
+          git add reports/provider-successor-scaffolds.json successors
+          git commit -m 'Record provider successor scaffold state [skip ci]'
+          git push origin HEAD:main
