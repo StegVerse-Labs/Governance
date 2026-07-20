@@ -1,0 +1,72 @@
+name: Provider Successor and Parallel Plans
+
+on:
+  push:
+    paths:
+      - "reports/provider-migration-plans.json"
+      - "reports/provider-inventory-evidence.json"
+      - "scripts/build_successor_and_parallel_queues.py"
+      - ".github/workflows/provider_successor_parallel.yml"
+  pull_request:
+    paths:
+      - "reports/provider-migration-plans.json"
+      - "reports/provider-inventory-evidence.json"
+      - "scripts/build_successor_and_parallel_queues.py"
+      - ".github/workflows/provider_successor_parallel.yml"
+  schedule:
+    - cron: "47 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build successor and parallel-operation queues
+        run: python scripts/build_successor_and_parallel_queues.py
+      - name: Verify deterministic output
+        run: |
+          cp reports/provider-successor-build-queue.json /tmp/successor.json
+          cp reports/provider-parallel-operation-plans.json /tmp/parallel.json
+          python scripts/build_successor_and_parallel_queues.py
+          cmp reports/provider-successor-build-queue.json /tmp/successor.json
+          cmp reports/provider-parallel-operation-plans.json /tmp/parallel.json
+      - name: Reconcile blocked successor issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python - <<'PY'
+          import json
+          data=json.load(open('reports/provider-successor-build-queue.json'))
+          print(sum(1 for item in data.get('tasks',[]) if str(item.get('state','')).startswith('BLOCKED')))
+          PY
+          )"
+          TITLE="[automation] Provider successor builds blocked"
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          if [ "$COUNT" -gt 0 ]; then
+            BODY="${COUNT} successor build task(s) remain machine-blocked. Durable state: reports/provider-successor-build-queue.json and reports/provider-parallel-operation-plans.json. No manual action, production mutation, cutover, cancellation, or retirement authority is granted."
+            if [ -n "$NUMBER" ]; then
+              gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+              gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment "All successor tasks advanced beyond blocked prerequisites automatically."
+          fi
+      - name: Persist generated state on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "stegverse-successor-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reports/provider-successor-build-queue.json reports/provider-parallel-operation-plans.json
+          git diff --cached --quiet || git commit -m "Update provider successor and parallel-operation state [skip ci]"
+          git push
