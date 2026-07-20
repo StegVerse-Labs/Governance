@@ -4,13 +4,19 @@ on:
   push:
     paths:
       - "data/external_dependency_registry.json"
+      - "data/external_cost_evidence.json"
       - "scripts/validate_external_dependency_registry.py"
+      - "scripts/validate_external_cost_evidence.py"
+      - "scripts/score_external_dependencies.py"
       - "docs/governance/METERED_PLATFORM_REPLACEMENT.md"
       - ".github/workflows/validate_external_dependency_registry.yml"
   pull_request:
     paths:
       - "data/external_dependency_registry.json"
+      - "data/external_cost_evidence.json"
       - "scripts/validate_external_dependency_registry.py"
+      - "scripts/validate_external_cost_evidence.py"
+      - "scripts/score_external_dependencies.py"
       - "docs/governance/METERED_PLATFORM_REPLACEMENT.md"
       - ".github/workflows/validate_external_dependency_registry.yml"
   workflow_dispatch:
@@ -32,3 +38,15 @@ jobs:
 
       - name: Validate registry
         run: python scripts/validate_external_dependency_registry.py
+
+      - name: Validate privacy-safe cost evidence
+        run: python scripts/validate_external_cost_evidence.py
+
+      - name: Generate replacement priority report
+        run: python scripts/score_external_dependencies.py
+
+      - name: Verify generated report is deterministic
+        run: |
+          cp reports/external-dependency-priority.json /tmp/external-dependency-priority.json
+          python scripts/score_external_dependencies.py
+          cmp reports/external-dependency-priority.json /tmp/external-dependency-priority.json
