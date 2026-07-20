@@ -8,11 +8,13 @@
   },
   "evaluated_inputs": {
     "source": "external-dependency-registry",
+    "receipt_ids": [],
     "dependency_id": "render",
     "registry_ref": "data/external_dependency_registry.json",
     "cost_evidence_ref": "data/external_cost_evidence.json",
     "priority_report_ref": "reports/external_dependency_priority.json"
   },
+  "issued_at": 1784527200,
   "rationale": "Render may be selected for replacement design and dependency mapping because it is a critical metered hosting dependency. Selection does not authorize cancellation, retirement, credential revocation, or traffic cutover.",
   "replacement_boundary": {
     "authorized_actions": [
