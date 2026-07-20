@@ -32,6 +32,10 @@ def load_optional(path: Path) -> dict:
     return value if isinstance(value, dict) else {}
 
 
+def collector_state(record: dict) -> str:
+    return str(record.get("collector_state") or record.get("status") or record.get("state") or "NOT_COLLECTED")
+
+
 def main() -> int:
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
     inventory = load_optional(INVENTORY)
@@ -44,7 +48,8 @@ def main() -> int:
     for dependency in registry["dependencies"]:
         provider_id = dependency["id"]
         collected = results.get(provider_id, {})
-        inventory_complete = collected.get("status") == "COLLECTED" and collected.get("asset_count", 0) > 0
+        state = collector_state(collected)
+        inventory_complete = state == "COLLECTED" and collected.get("asset_count", 0) > 0
         gates = {gate: False for gate in REQUIRED_RETIREMENT_GATES}
         gates["asset_inventory_complete"] = inventory_complete
         blockers = set(dependency.get("cancellation_blockers", []))
@@ -52,7 +57,8 @@ def main() -> int:
         plans.append({
             "provider_id": provider_id,
             "service_name": dependency["service_name"],
-            "source_inventory_status": collected.get("status", "NOT_COLLECTED"),
+            "source_inventory_status": state,
+            "source_inventory_payload_hash": collected.get("payload_hash"),
             "replacement_destination": dependency.get("replacement_destination"),
             "migration_state": "READY_FOR_SUCCESSOR_DESIGN" if inventory_complete else "BLOCKED_INVENTORY_INCOMPLETE",
             "phases": [
@@ -70,20 +76,23 @@ def main() -> int:
             "missing_retirement_gates": [gate for gate, passed in gates.items() if not passed],
             "blockers": sorted(blockers),
             "manual_action_required": False,
+            "execution_authority": False,
             "cancellation_authority": False,
             "provider_retirement_authority": False,
             "traffic_cutover_authority": False,
         })
     plans.sort(key=lambda item: item["provider_id"])
     report = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.0.1",
         "plan_set_id": "metered-platform-provider-migration-plans",
         "source_registry": str(REGISTRY),
         "source_inventory": str(INVENTORY),
         "plans": plans,
         "manual_action_required": False,
+        "execution_authority": False,
         "cancellation_authority": False,
         "provider_retirement_authority": False,
+        "traffic_cutover_authority": False,
     }
     report["plan_set_hash"] = hashlib.sha256(canonical(report).encode("utf-8")).hexdigest()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
