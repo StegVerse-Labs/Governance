@@ -1,0 +1,68 @@
+name: Render Provider State
+
+on:
+  pull_request:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+  schedule:
+    - cron: '41 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export Render evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          python scripts/export_render_provider_state.py --output evidence/render-provider-state.json
+      - name: Verify deterministic replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          cp evidence/render-provider-state.json /tmp/first.json
+          python scripts/export_render_provider_state.py --output /tmp/second.json
+          diff -u /tmp/first.json /tmp/second.json
+      - name: Enforce zero authority and secret exclusion
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('evidence/render-provider-state.json'))
+          for key in ['environment_values_retained','deploy_hooks_retained','credentials_retained','raw_secret_material_retained','manual_action_required','production_mutation_allowed','execution_authority','traffic_cutover_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted']:
+              assert p.get(key) is False, (key,p.get(key))
+          assert p.get('state') in {'RENDER_STATE_EXPORTED','BLOCKED_PARTIAL_RENDER_STATE'}
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: render-provider-state
+          path: evidence/render-provider-state.json
+      - name: Reconcile Render blockers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          state=$(python -c "import json; print(json.load(open('evidence/render-provider-state.json'))['state'])")
+          title='[automation] Render provider-state blockers'
+          number=$(gh issue list --state all --search "$title in:title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+          if [ "$state" != 'RENDER_STATE_EXPORTED' ]; then
+            blockers=$(python -c "import json; print('\\n'.join('- '+x for x in json.load(open('evidence/render-provider-state.json')).get('blockers',[])))")
+            body="Render provider-state evidence remains blocked or partial. This workflow retries automatically and creates no manual credential-transfer task.\n\n$blockers"
+            if [ -z "$number" ]; then gh issue create --title "$title" --body "$body"; else gh issue reopen "$number" 2>/dev/null || true; gh issue edit "$number" --body "$body"; fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" --comment 'Authenticated Render metadata evidence recovered. This grants no cutover or retirement authority.' 2>/dev/null || true
+          fi
+      - name: Persist semantic evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'stegverse-automation'
+          git config user.email 'automation@stegverse.invalid'
+          git add evidence/render-provider-state.json
+          if ! git diff --cached --quiet; then git commit -m 'Record Render provider state'; git push; fi

@@ -1,0 +1,67 @@
+name: Acquire Metered Platform Runtime Evidence
+
+on:
+  push:
+    paths:
+      - "scripts/acquire_metered_platform_runtime_evidence.py"
+      - ".github/workflows/acquire_metered_platform_runtime_evidence.yml"
+  pull_request:
+    paths:
+      - "scripts/acquire_metered_platform_runtime_evidence.py"
+      - ".github/workflows/acquire_metered_platform_runtime_evidence.yml"
+  schedule:
+    - cron: "31 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Governance
+        uses: actions/checkout@v4
+        with:
+          path: governance
+
+      - name: Check out StegCore
+        uses: actions/checkout@v4
+        with:
+          repository: StegVerse-Labs/StegCore
+          ref: main
+          path: stegcore
+
+      - name: Capture StegCore commit
+        id: stegcore
+        working-directory: stegcore
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Acquire bounded runtime evidence
+        working-directory: governance
+        run: |
+          python scripts/acquire_metered_platform_runtime_evidence.py \
+            --source ../stegcore/evidence/metered-platform-runtime.json \
+            --source-commit "${{ steps.stegcore.outputs.sha }}"
+
+      - name: Verify deterministic acquisition
+        working-directory: governance
+        run: |
+          cp reports/metered-platform-runtime-acquisition.json /tmp/runtime-acquisition.json
+          python scripts/acquire_metered_platform_runtime_evidence.py \
+            --source ../stegcore/evidence/metered-platform-runtime.json \
+            --source-commit "${{ steps.stegcore.outputs.sha }}"
+          cmp reports/metered-platform-runtime-acquisition.json /tmp/runtime-acquisition.json
+
+      - name: Persist acquisition status on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        working-directory: governance
+        run: |
+          if git diff --quiet -- reports/metered-platform-runtime-acquisition.json; then
+            exit 0
+          fi
+          git config user.name "stegverse-automation"
+          git config user.email "automation@users.noreply.github.com"
+          git add reports/metered-platform-runtime-acquisition.json
+          git commit -m "Update metered platform runtime acquisition status"
+          git push

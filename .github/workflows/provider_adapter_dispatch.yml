@@ -1,0 +1,55 @@
+name: Provider Adapter Dispatch
+
+on:
+  push:
+    paths:
+      - "data/external_dependency_registry.json"
+      - "reports/provider-inventory-queue.json"
+      - "scripts/build_provider_inventory_queue.py"
+      - "scripts/sync_provider_adapter_issues.py"
+      - ".github/workflows/provider_adapter_dispatch.yml"
+  pull_request:
+    paths:
+      - "data/external_dependency_registry.json"
+      - "reports/provider-inventory-queue.json"
+      - "scripts/build_provider_inventory_queue.py"
+      - "scripts/sync_provider_adapter_issues.py"
+      - ".github/workflows/provider_adapter_dispatch.yml"
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build deterministic provider queue
+        run: python scripts/build_provider_inventory_queue.py
+      - name: Build deterministic adapter dispatch
+        run: python scripts/sync_provider_adapter_issues.py
+      - name: Verify deterministic dispatch
+        run: |
+          cp reports/provider-adapter-dispatch.json /tmp/provider-adapter-dispatch.json
+          python scripts/sync_provider_adapter_issues.py
+          cmp reports/provider-adapter-dispatch.json /tmp/provider-adapter-dispatch.json
+      - name: Synchronize provider adapter issues
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/sync_provider_adapter_issues.py --apply
+      - name: Persist dispatch state on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "stegverse-provider-dispatch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reports/provider-inventory-queue.json reports/provider-adapter-dispatch.json
+          git diff --cached --quiet || git commit -m "Update provider adapter dispatch state [skip ci]"
+          git push

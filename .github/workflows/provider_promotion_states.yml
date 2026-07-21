@@ -1,0 +1,100 @@
+name: Provider Promotion States
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'scripts/build_provider_promotion_states.py'
+      - 'scripts/run_successor_harnesses.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_inventory_queue.py'
+      - '.github/workflows/provider_promotion_states.yml'
+  pull_request:
+    paths:
+      - 'scripts/build_provider_promotion_states.py'
+      - 'scripts/run_successor_harnesses.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_inventory_queue.py'
+      - '.github/workflows/provider_promotion_states.yml'
+  schedule:
+    - cron: '53 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: provider-promotion-states
+  cancel-in-progress: false
+
+jobs:
+  promotion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild deterministic prerequisite chain
+        run: |
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
+          python scripts/run_successor_harnesses.py
+      - name: Build provider promotion states
+        run: python scripts/build_provider_promotion_states.py
+      - name: Verify deterministic replay
+        run: |
+          cp reports/provider-promotion-states.json "$RUNNER_TEMP/first.json"
+          python scripts/build_provider_promotion_states.py
+          cmp "$RUNNER_TEMP/first.json" reports/provider-promotion-states.json
+      - name: Enforce automatic promotion ceiling
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('reports/provider-promotion-states.json'))
+          assert d['automatic_maximum_state'] == 'ELIGIBLE_ISOLATED_IMPLEMENTATION_TEST'
+          forbidden=('production_credentials_permitted','production_traffic_permitted','production_mutation_allowed','traffic_cutover_authority','execution_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted','manual_action_required')
+          for field in forbidden:
+              assert d[field] is False, field
+          for state in d['states']:
+              for field in forbidden:
+                  assert state[field] is False, (state['provider_id'], field)
+          PY
+      - name: Reconcile promotion blocker issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python - <<'PY'
+          import json
+          d=json.load(open('reports/provider-promotion-states.json'))
+          print(sum(1 for x in d['states'] if x['promotion_state'] != 'ELIGIBLE_ISOLATED_IMPLEMENTATION_TEST'))
+          PY
+          )"
+          TITLE='[automation] Provider isolated-test promotion blockers'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-owned promotion state reports ${COUNT} blocked provider(s). Automatic promotion is capped at isolated implementation testing. Durable evidence: reports/provider-promotion-states.json. No manual action, production credentials, production traffic, cutover, cancellation, retirement, execution, or receipt-minting authority is granted."
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All providers are eligible for isolated implementation testing only.' >/dev/null 2>&1 || true
+          fi
+      - name: Persist promotion evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'provider-promotion-state-bot'
+          git config user.email 'provider-promotion-state-bot@users.noreply.github.com'
+          git add reports/provider-promotion-states.json
+          git diff --cached --quiet || git commit -m 'Record provider promotion states [skip ci]'
+          git push origin HEAD:main

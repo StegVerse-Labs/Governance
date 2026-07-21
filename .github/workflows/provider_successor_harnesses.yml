@@ -1,0 +1,95 @@
+name: Provider Successor Harnesses
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'scripts/build_provider_inventory_queue.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/run_successor_harnesses.py'
+      - '.github/workflows/provider_successor_harnesses.yml'
+  pull_request:
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'scripts/build_provider_inventory_queue.py'
+      - 'scripts/run_provider_inventory_collectors.py'
+      - 'scripts/build_provider_migration_plans.py'
+      - 'scripts/build_successor_and_parallel_queues.py'
+      - 'scripts/materialize_successor_scaffolds.py'
+      - 'scripts/run_successor_harnesses.py'
+      - '.github/workflows/provider_successor_harnesses.yml'
+  schedule:
+    - cron: '41 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: provider-successor-harnesses
+  cancel-in-progress: false
+
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regenerate deterministic prerequisite chain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
+      - name: Execute non-production successor harness
+        run: python scripts/run_successor_harnesses.py
+      - name: Verify deterministic replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp reports/provider-successor-harness-results.json "$RUNNER_TEMP/first.json"
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
+          python scripts/run_successor_harnesses.py
+          cmp "$RUNNER_TEMP/first.json" reports/provider-successor-harness-results.json
+      - name: Reconcile blocked harness issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python - <<'PY'
+          import json
+          d=json.load(open('reports/provider-successor-harness-results.json'))
+          print(sum(1 for x in d['results'] if x['state'] != 'PASS_NON_PRODUCTION_HARNESS'))
+          PY
+          )"
+          TITLE='[automation] Provider successor harness blockers'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-owned successor harness state reports ${COUNT} blocked provider(s). Durable evidence: reports/provider-successor-harness-results.json. Missing prerequisites remain machine-readable and require no manual task. This grants no production mutation, traffic cutover, cancellation, retirement, execution, or receipt-minting authority."
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All successor harnesses currently pass their non-production contract checks.' >/dev/null 2>&1 || true
+          fi
+      - name: Persist harness evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'provider-successor-harness-bot'
+          git config user.email 'provider-successor-harness-bot@users.noreply.github.com'
+          git add reports/provider-successor-harness-results.json
+          git diff --cached --quiet || git commit -m 'Record provider successor harness evidence [skip ci]'
+          git push origin HEAD:main

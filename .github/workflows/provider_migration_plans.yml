@@ -1,0 +1,71 @@
+name: Provider Migration Plans
+
+on:
+  pull_request:
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'reports/provider-inventory-results.json'
+      - 'scripts/build_provider_migration_plans.py'
+      - '.github/workflows/provider_migration_plans.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/external_dependency_registry.json'
+      - 'reports/provider-inventory-results.json'
+      - 'scripts/build_provider_migration_plans.py'
+      - '.github/workflows/provider_migration_plans.yml'
+  schedule:
+    - cron: '29 7 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build deterministic migration plans
+        run: python scripts/build_provider_migration_plans.py
+      - name: Verify deterministic replay
+        run: |
+          cp reports/provider-migration-plans.json /tmp/provider-migration-plans.json
+          python scripts/build_provider_migration_plans.py
+          cmp reports/provider-migration-plans.json /tmp/provider-migration-plans.json
+      - name: Reconcile blocked migration issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BLOCKED="$(python - <<'PY'
+          import json
+          data=json.load(open('reports/provider-migration-plans.json'))
+          print(sum(1 for p in data['plans'] if p['migration_state'].startswith('BLOCKED')))
+          PY
+          )"
+          TITLE='[automation] Provider migrations blocked by incomplete evidence'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-generated provider migration plans report ${BLOCKED} blocked provider paths. Durable record: reports/provider-migration-plans.json. Resolution remains machine-owned through inventory, successor-health, parallel-operation, rollback, secret-rotation, cutover, and Master-Records custody evidence. This issue grants no cancellation, retirement, DNS-transfer, traffic-cutover, execution, or receipt-minting authority."
+          if [ "$BLOCKED" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then
+              gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+              gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All provider migration plans advanced beyond blocked evidence state.'
+          fi
+      - name: Persist plan state on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'stegverse-migration-plan-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add reports/provider-migration-plans.json
+          git diff --cached --quiet || git commit -m 'Update provider migration plans [skip ci]'
+          git push

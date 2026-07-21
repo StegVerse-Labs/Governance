@@ -33,6 +33,7 @@ REQUIRED_FILES = [
     "docs/governance/adaptive_governance.yaml",
     "docs/governance/plugin_registry_policy.yaml",
     "docs/governance/ai_citizenship_charter.md",
+    "docs/governance/METERED_PLATFORM_REPLACEMENT.md",
     "docs/policies/risk_register.md",
     "docs/examples/dual_quorum_gdr_example.md",
     "docs/examples/drift_review_gdr_example.md",
@@ -42,13 +43,19 @@ REQUIRED_FILES = [
     "docs/examples/fixtures/condition_degraded_judgment_gdr.json",
     "docs/examples/fixtures/signal_admission_drift_gdr.json",
     "docs/examples/fixtures/governance_validation_of_drift_gdr.json",
+    "data/external_dependency_registry.json",
+    "data/external_cost_evidence.json",
     "scripts/validate_docs.py",
     "scripts/validate_gdr_examples.py",
+    "scripts/validate_external_dependency_registry.py",
+    "scripts/validate_external_cost_evidence.py",
+    "scripts/score_external_dependencies.py",
     "scripts/ingest_conversation.py",
     "scripts/test_ingest_conversation.py",
     ".github/workflows/ingest_bundle.yml",
     ".github/workflows/ingest_conversation.yml",
     ".github/workflows/validate_docs.yml",
+    ".github/workflows/validate_external_dependency_registry.yml",
 ]
 
 REQUIRED_HANDOFF_PHRASES = [
@@ -56,15 +63,19 @@ REQUIRED_HANDOFF_PHRASES = [
     "Next Actions",
     "Definition of Done",
     "Current Completion Assessment",
-    "Judgment-Signal-Execution Workstream",
-    "Permitted continuation scope",
+    "Durable Governance Decision",
+    "Active Ownership",
 ]
 
 REQUIRED_INDEX_LINKS = [
     "governance/judgment_signal_execution_architecture.md",
+    "governance/METERED_PLATFORM_REPLACEMENT.md",
     "examples/fixtures/condition_degraded_judgment_gdr.json",
     "examples/fixtures/signal_admission_drift_gdr.json",
     "examples/fixtures/governance_validation_of_drift_gdr.json",
+    "../scripts/validate_external_dependency_registry.py",
+    "../scripts/validate_external_cost_evidence.py",
+    "../scripts/score_external_dependencies.py",
 ]
 
 

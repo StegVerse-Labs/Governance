@@ -1,0 +1,82 @@
+name: GitHub Complete History Export
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'scripts/export_github_complete_history.py'
+      - '.github/workflows/github_complete_history_export.yml'
+  pull_request:
+    paths:
+      - 'scripts/export_github_complete_history.py'
+      - '.github/workflows/github_complete_history_export.yml'
+  schedule:
+    - cron: '37 8 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: github-complete-history-export
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Export bounded complete-history and adjacent-state evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/export_github_complete_history.py
+      - name: Enforce cleanup and zero authority
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('reports/github-complete-history-export.json'))
+          forbidden=('source_material_retained','bundle_retained','secret_material_included','manual_action_required','production_mutation_allowed','execution_authority','traffic_cutover_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted')
+          for field in forbidden:
+              assert d[field] is False, field
+          for record in d['records']:
+              for field in forbidden:
+                  assert record[field] is False, (record.get('full_name'), field)
+          PY
+      - name: Upload hash-only evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-complete-history-export
+          path: reports/github-complete-history-export.json
+      - name: Reconcile blocked history issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python - <<'PY'
+          import json
+          d=json.load(open('reports/github-complete-history-export.json'))
+          print(d['blocked_repository_count'] + len(d['blockers']))
+          PY
+          )"
+          TITLE='[automation] GitHub complete-history export blockers'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-owned complete-history export reports ${COUNT} blocked item(s). Evidence is hash-only; source and bundles are destroyed after verification. No manual credential, mutation, cutover, cancellation, retirement, or receipt authority is created."
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All installation-accessible repositories passed bounded complete-history export.' >/dev/null 2>&1 || true
+          fi
+      - name: Persist hash-only evidence on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name 'github-history-export-bot'
+          git config user.email 'github-history-export-bot@users.noreply.github.com'
+          git add reports/github-complete-history-export.json
+          git diff --cached --quiet || git commit -m 'Record GitHub complete-history export evidence [skip ci]'
+          git push origin HEAD:main

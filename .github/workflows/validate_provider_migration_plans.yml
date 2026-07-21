@@ -1,0 +1,36 @@
+name: Validate Provider Migration Plans
+on:
+  pull_request:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+  workflow_dispatch:
+  schedule:
+    - cron: '37 6 * * *'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run regression tests
+        run: python3 scripts/test_validate_provider_migration_plans.py
+      - name: Rebuild gate registry
+        run: python3 scripts/build_provider_migration_gate_evidence.py > /tmp/registry.json
+      - name: Validate rebuilt registry
+        run: python3 scripts/validate_provider_migration_gate_evidence.py /tmp/registry.json
+      - name: Build migration plans
+        run: python3 scripts/build_provider_migration_plans.py
+      - name: Validate plans against verified evidence
+        run: python3 scripts/validate_provider_migration_plans.py reports/provider-migration-plans.json /tmp/registry.json > reports/provider-migration-plan-validation.json
+      - name: Verify deterministic replay
+        run: |
+          python3 scripts/validate_provider_migration_plans.py reports/provider-migration-plans.json /tmp/registry.json > /tmp/replay.json
+          diff -u reports/provider-migration-plan-validation.json /tmp/replay.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: provider-migration-plan-validation
+          path: reports/provider-migration-plan-validation.json

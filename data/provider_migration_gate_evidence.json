@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "registry_type": "provider_migration_gate_evidence",
+  "required_gates": [
+    "asset_inventory_complete",
+    "export_verified",
+    "successor_health_verified",
+    "parallel_operation_passed",
+    "rollback_verified",
+    "secrets_rotated",
+    "traffic_cutover_verified",
+    "master_records_custody_recorded"
+  ],
+  "providers": [],
+  "manual_action_required": false,
+  "provider_retirement_authority": false,
+  "cancellation_authority": false,
+  "execution_authority": false,
+  "traffic_cutover_authority": false,
+  "continuity_receipt_minted": false
+}

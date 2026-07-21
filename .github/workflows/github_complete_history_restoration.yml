@@ -1,0 +1,61 @@
+name: GitHub Complete History Restoration
+
+on:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+    paths:
+      - 'scripts/verify_github_complete_history_restoration.py'
+      - '.github/workflows/github_complete_history_restoration.yml'
+  pull_request:
+    paths:
+      - 'scripts/verify_github_complete_history_restoration.py'
+      - '.github/workflows/github_complete_history_restoration.yml'
+  schedule:
+    - cron: '47 8 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute isolated complete-history restoration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/verify_github_complete_history_restoration.py
+      - name: Enforce zero-authority and cleanup claims
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('reports/github-complete-history-restoration.json'))
+          for k in ('source_retained','bundle_retained','successor_retained','manual_action_required','production_mutation_allowed','execution_authority','traffic_cutover_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted'):
+              assert d[k] is False, k
+          PY
+      - name: Upload hash-only restoration evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-complete-history-restoration
+          path: reports/github-complete-history-restoration.json
+      - name: Reconcile restoration blockers
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT="$(python -c "import json;print(json.load(open('reports/github-complete-history-restoration.json'))['blocked_count'])")"
+          TITLE='[automation] GitHub complete-history restoration blockers'
+          NUMBER="$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number --jq '.[0].number // empty')"
+          BODY="Machine-owned isolated complete-history restoration reports ${COUNT} blocked repository record(s). No source, bundle, successor, credential, production mutation, cutover, cancellation, retirement, or receipt authority is retained."
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUMBER" ]; then gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"; gh issue reopen "$NUMBER" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"; fi
+          elif [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed --comment 'All installation-accessible repositories pass isolated complete-history restoration.' >/dev/null 2>&1 || true
+          fi

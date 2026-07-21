@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_set_id": "stegverse-external-cost-evidence",
+  "status": "PARTIALLY_VERIFIED",
+  "currency": "USD",
+  "privacy": {
+    "raw_statements_permitted_in_repository": false,
+    "credentials_permitted_in_repository": false,
+    "account_numbers_permitted_in_repository": false,
+    "evidence_digests_only": true
+  },
+  "authority": {
+    "cost_evidence_grants_cancellation_authority": false,
+    "cost_evidence_grants_retirement_authority": false,
+    "retirement_requires_gdr": true
+  },
+  "records": [
+    {
+      "record_id": "render-2025-10-03-27V004HZ-0001",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 15.96,
+      "paid_date": "2025-10-03",
+      "receipt_reference": "2780-7191",
+      "invoice_reference": "27V004HZ-0001",
+      "cost_categories": ["servers", "redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:08877550d7850e807f86764bd51627238071fe1d6a8c0ae1e475e43fc9bb6f86",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-03-02-27V004HZ-0002",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 24.0,
+      "paid_date": "2026-03-02",
+      "receipt_reference": "2748-1495",
+      "invoice_reference": "27V004HZ-0002",
+      "cost_categories": ["servers", "redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:82605142131de5427f5fb19ff90717f9a895e724e1a739ba900dab50e6335338",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-03-02-27V004HZ-0003",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 24.0,
+      "paid_date": "2026-03-02",
+      "receipt_reference": "2049-3361",
+      "invoice_reference": "27V004HZ-0003",
+      "cost_categories": ["servers", "redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:866800f34d428ac60a35c7e8bb2380f6d1e3fc003d1825c54a45dde07fd07bae",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-03-02-27V004HZ-0004",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 23.62,
+      "paid_date": "2026-03-02",
+      "receipt_reference": "2065-7586",
+      "invoice_reference": "27V004HZ-0004",
+      "cost_categories": ["servers", "redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:0cd3f84445f4dcbb1cfc27f5f6a9ff2bc17dba13c307fec2142bf1cd057420b0",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-03-02-27V004HZ-0005",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 10.0,
+      "paid_date": "2026-03-02",
+      "receipt_reference": "2714-1189",
+      "invoice_reference": "27V004HZ-0005",
+      "cost_categories": ["redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:3acc8db14226ee14fc42f1b9f74c14ea166e7dc0aaf29419f8f6bd0a3f248879",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-03-02-27V004HZ-0006",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 10.0,
+      "paid_date": "2026-03-02",
+      "receipt_reference": "2577-1616",
+      "invoice_reference": "27V004HZ-0006",
+      "cost_categories": ["redis"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:0b9be5e0e0950eca7d648465c092cded43946e273773c804a9284581df1a8875",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-04-05-27V004HZ-0007",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 57.92,
+      "paid_date": "2026-04-05",
+      "receipt_reference": "2056-2315",
+      "invoice_reference": "27V004HZ-0007",
+      "cost_categories": ["servers", "redis", "plan"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:e5831e624ef56623e81e3ea33c60aefdbc4cdbe83cbf0d3fe8ed944b09f5da6f",
+      "verified": true
+    },
+    {
+      "record_id": "render-2026-05-05-27V004HZ-0008",
+      "dependency_id": "render",
+      "billing_cadence": "variable",
+      "normalized_monthly_cost": 70.0,
+      "paid_date": "2026-05-05",
+      "receipt_reference": "2711-2982",
+      "invoice_reference": "27V004HZ-0008",
+      "cost_categories": ["servers", "redis", "plan"],
+      "source_type": "provider_receipt_email",
+      "source_digest": "sha256:51bb1aaa80b29795adc5a0478245a05f927be9ade44bb9fc2eec7defafb1d3f3",
+      "verified": true
+    }
+  ],
+  "summary": {
+    "verified_record_count": 8,
+    "verified_total_usd": 235.5,
+    "observed_paid_months": ["2025-10", "2026-03", "2026-04", "2026-05"],
+    "latest_verified_monthly_cost_usd": 70.0,
+    "observed_monthly_totals_usd": {
+      "2025-10": 15.96,
+      "2026-03": 91.62,
+      "2026-04": 57.92,
+      "2026-05": 70.0
+    },
+    "manual_action_required": false,
+    "cancellation_authority": false,
+    "provider_retirement_authority": false
+  }
+}
