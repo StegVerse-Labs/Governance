@@ -1,0 +1,55 @@
+name: Render Successor Specification
+on:
+  pull_request:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+  schedule:
+    - cron: '41 8 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build successor specification
+        run: python scripts/build_render_successor_spec.py
+      - name: Verify deterministic replay
+        run: |
+          cp evidence/render-successor-spec.json /tmp/first.json
+          python scripts/build_render_successor_spec.py --output /tmp/second.json
+          diff -u /tmp/first.json /tmp/second.json
+      - name: Enforce zero authority and no secrets
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('evidence/render-successor-spec.json'))
+          for k in ['manual_action_required','credentials_required_from_user','environment_values_retained','production_mutation_allowed','execution_authority','traffic_cutover_authority','cancellation_authority','provider_retirement_authority','continuity_receipt_minted']:
+              assert p[k] is False,(k,p[k])
+          raw=json.dumps(p).lower()
+          assert 'password' not in raw and 'deployhook' not in raw and 'apikey' not in raw
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: render-successor-spec
+          path: evidence/render-successor-spec.json
+      - name: Reconcile blockers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(python -c "import json;print(json.load(open('evidence/render-successor-spec.json'))['state'])")
+          title='[automation] Render successor specification blockers'
+          n=$(gh issue list --state all --search "$title in:title" --json number,title --jq ".[]|select(.title==\"$title\")|.number"|head -1)
+          if [ "$state" = BLOCKED_SUCCESSOR_SPEC ]; then
+            body=$(python -c "import json; p=json.load(open('evidence/render-successor-spec.json')); print('Automatic Render successor planning remains blocked. No manual action or provider authority is created.\n\n'+'\n'.join('- '+x for x in p['blockers']))")
+            if [ -z "$n" ]; then gh issue create --title "$title" --body "$body"; else gh issue reopen "$n" 2>/dev/null||true; gh issue edit "$n" --body "$body"; fi
+          elif [ -n "$n" ]; then gh issue close "$n" --comment 'Render successor specification recovered; evidence-only and non-authoritative.' 2>/dev/null||true; fi
+      - name: Persist semantic changes on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name stegverse-automation
+          git config user.email automation@stegverse.invalid
+          git add evidence/render-successor-spec.json
+          git diff --cached --quiet || (git commit -m 'Record Render successor specification' && git push)
