@@ -1,0 +1,81 @@
+name: Provider Migration Gate Evidence
+
+on:
+  pull_request:
+  push:
+    branches: [main, agent/metered-platform-replacement]
+  schedule:
+    - cron: '37 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild prerequisite reports
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/build_provider_inventory_queue.py
+          python scripts/run_provider_inventory_collectors.py
+          cp reports/provider-inventory-results.json reports/provider-inventory-evidence.json
+          python scripts/build_provider_migration_plans.py
+          python scripts/build_successor_and_parallel_queues.py
+          python scripts/materialize_successor_scaffolds.py
+          python scripts/run_successor_harnesses.py
+          python scripts/build_provider_promotion_states.py
+          python scripts/run_ephemeral_successor_backends.py
+      - name: Build gate registry
+        run: python scripts/build_provider_migration_gate_evidence.py
+      - name: Validate gate registry
+        run: python scripts/validate_provider_migration_gate_evidence.py
+      - name: Verify deterministic replay
+        run: |
+          cp data/provider_migration_gate_evidence.json /tmp/gates.json
+          python scripts/build_provider_migration_gate_evidence.py
+          diff -u /tmp/gates.json data/provider_migration_gate_evidence.json
+      - name: Upload evidence registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-migration-gate-evidence
+          path: data/provider_migration_gate_evidence.json
+      - name: Reconcile blocked-gate issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          p=json.load(open('data/provider_migration_gate_evidence.json'))
+          blocked=[]
+          for provider in p.get('providers',[]):
+              missing=[g['gate'] for g in provider['gates'] if g['verification_state']!='EVIDENCE_VERIFIED']
+              if missing: blocked.append(f"- {provider['provider_id']}: {', '.join(missing)}")
+          title='[automation] Provider migration gate blockers'
+          q=subprocess.run(['gh','issue','list','--state','all','--search',title,'--json','number,state,title'],capture_output=True,text=True,check=True)
+          issues=[i for i in json.loads(q.stdout) if i['title']==title]
+          if blocked:
+              body='Machine-owned blocked migration gates. No manual action is required.\n\n'+'\n'.join(blocked)+'\n\nNo retirement, cancellation, execution, cutover, or receipt authority is granted.'
+              if issues:
+                  n=str(issues[0]['number']); subprocess.run(['gh','issue','edit',n,'--body',body],check=True)
+                  if issues[0]['state']=='CLOSED': subprocess.run(['gh','issue','reopen',n],check=True)
+              else: subprocess.run(['gh','issue','create','--title',title,'--body',body],check=True)
+          elif issues and issues[0]['state']=='OPEN':
+              subprocess.run(['gh','issue','close',str(issues[0]['number']),'--comment','All required gates now contain verified hash-bound evidence. This closure does not grant retirement authority.'],check=True)
+          PY
+      - name: Persist registry on main
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet -- data/provider_migration_gate_evidence.json; then exit 0; fi
+          git config user.name 'stegverse-automation'
+          git config user.email 'automation@stegverse.invalid'
+          git add data/provider_migration_gate_evidence.json
+          git commit -m 'Update provider migration gate evidence registry'
+          git push
