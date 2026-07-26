@@ -1,0 +1,109 @@
+name: Evaluate StegCore Release Policy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'policies/stegcore-release-policy-v1.json'
+      - 'scripts/evaluate_stegcore_release.py'
+      - '.github/workflows/evaluate-stegcore-release.yml'
+  schedule:
+    - cron: '43 5 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: governance-stegcore-release-policy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out Governance
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Acquire StegCore candidate and evidence
+        run: |
+          mkdir -p "${RUNNER_TEMP}/stegcore/evidence"
+          BASE="https://raw.githubusercontent.com/StegVerse-Labs/StegCore/main"
+          curl --fail --silent --show-error --location "$BASE/evidence/release-candidate-request.json" -o "${RUNNER_TEMP}/stegcore/evidence/release-candidate-request.json"
+          curl --fail --silent --show-error --location "$BASE/evidence/runtime-validation.json" -o "${RUNNER_TEMP}/stegcore/evidence/runtime-validation.json"
+          curl --fail --silent --show-error --location "$BASE/evidence/release-readiness.json" -o "${RUNNER_TEMP}/stegcore/evidence/release-readiness.json"
+          curl --fail --silent --show-error --location "$BASE/evidence/downstream-verification-results.json" -o "${RUNNER_TEMP}/stegcore/evidence/downstream-verification-results.json"
+          curl --fail --silent --show-error --location "$BASE/evidence/governance-freshness.json" -o "${RUNNER_TEMP}/stegcore/evidence/governance-freshness.json"
+          curl --fail --silent --show-error --location "$BASE/pyproject.toml" -o "${RUNNER_TEMP}/stegcore/pyproject.toml"
+
+      - name: Evaluate independent release policy
+        id: decision
+        continue-on-error: true
+        run: |
+          python scripts/evaluate_stegcore_release.py \
+            --policy policies/stegcore-release-policy-v1.json \
+            --candidate "${RUNNER_TEMP}/stegcore/evidence/release-candidate-request.json" \
+            --runtime "${RUNNER_TEMP}/stegcore/evidence/runtime-validation.json" \
+            --readiness "${RUNNER_TEMP}/stegcore/evidence/release-readiness.json" \
+            --downstream "${RUNNER_TEMP}/stegcore/evidence/downstream-verification-results.json" \
+            --freshness "${RUNNER_TEMP}/stegcore/evidence/governance-freshness.json" \
+            --pyproject "${RUNNER_TEMP}/stegcore/pyproject.toml" \
+            --repository-url https://github.com/StegVerse-Labs/StegCore.git \
+            --output evidence/stegcore-release-decision.json
+          echo "decision=$(python -c "import json; print(json.load(open('evidence/stegcore-release-decision.json'))['decision'])")" >> "$GITHUB_OUTPUT"
+
+      - name: Validate decision artifact boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('evidence/stegcore-release-decision.json').read_text())
+          assert value['decision'] in {'ALLOW', 'DENY', 'FAIL-CLOSED'}
+          assert value['release_created'] is False
+          assert value['tag_created'] is False
+          assert value['deployment_authorized'] is False
+          assert value['continuity_receipt_minted'] is False
+          assert value['authority_boundary']['allow_decision_is_tag_creation'] is False
+          PY
+
+      - name: Persist changed decision
+        run: |
+          if git diff --quiet -- evidence/stegcore-release-decision.json && git ls-files --error-unmatch evidence/stegcore-release-decision.json >/dev/null 2>&1; then
+            exit 0
+          fi
+          git config user.name "governance-release-policy-bot"
+          git config user.email "governance-release-policy-bot@users.noreply.github.com"
+          git add evidence/stegcore-release-decision.json
+          git commit -m "Record independent StegCore release decision [skip ci]"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            test "$attempt" -eq 3 && exit 1
+            sleep $((attempt * 2))
+          done
+
+      - name: Reconcile release-policy issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.decision.outputs.decision }}
+        run: |
+          TITLE="[release-policy] StegCore v0.1.0"
+          BODY="Independent Governance release-policy decision: ${DECISION}. Durable artifact: evidence/stegcore-release-decision.json. An ALLOW permits only creation of the declared annotated tag; it does not create the tag, release, deployment, continuity receipt, or execution authority."
+          NUMBER="$(gh issue list --state all --search 'StegCore v0.1.0 in:title' --json number --jq '.[0].number // empty')"
+          if [ -n "$NUMBER" ]; then
+            gh issue edit "$NUMBER" --body "$BODY"
+          else
+            NUMBER="$(gh issue create --title "$TITLE" --body "$BODY" --json number --jq '.number')"
+          fi
+          if [ "$DECISION" = "ALLOW" ]; then
+            gh issue close "$NUMBER" --reason completed --comment "All independent release-policy gates passed. Tag creation remains a separate bounded action."
+          else
+            gh issue reopen "$NUMBER" >/dev/null 2>&1 || true
+          fi
+
+      - name: Fail workflow on denied decision
+        if: steps.decision.outputs.decision != 'ALLOW'
+        run: exit 1
