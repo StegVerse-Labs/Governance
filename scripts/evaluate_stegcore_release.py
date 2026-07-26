@@ -74,19 +74,28 @@ def main() -> int:
 
     version = str(candidate.get("version", ""))
     tag = str(candidate.get("tag", ""))
+    observed_project_version = project_version(args.pyproject)
     check("semantic_version", bool(SEMVER.fullmatch(version)), version)
     check("tag_matches_version", tag == f"v{version}", tag)
-    check("version_matches_project", version == project_version(args.pyproject), project_version(args.pyproject))
+    check("version_matches_project", version == observed_project_version, observed_project_version)
 
     check("runtime_validation", runtime.get("status") == "pass", runtime.get("status"))
     check("runtime_commit_binding", candidate.get("stegcore_commit") == runtime.get("stegcore_commit"), runtime.get("stegcore_commit"))
     check("runtime_hash_binding", candidate.get("runtime_evidence_hash") == runtime.get("evidence_hash"), runtime.get("evidence_hash"))
 
-    check("downstream_verification", downstream.get("status") == "pass" and downstream.get("passing_gates") == downstream.get("required_gates"), downstream.get("status"))
-    check("downstream_hash_binding", candidate.get("downstream_results_hash") == downstream.get("results_hash"), downstream.get("results_hash"))
+    downstream_complete = (
+        downstream.get("status") == "pass"
+        and downstream.get("passed_gate_count") == downstream.get("required_gate_count")
+        and all(item.get("status") == "pass" for item in downstream.get("gates", []))
+    )
+    observed_downstream_hash = canonical_hash(downstream)
+    check("downstream_verification", downstream_complete, {"passed": downstream.get("passed_gate_count"), "required": downstream.get("required_gate_count")})
+    check("downstream_hash_binding", candidate.get("downstream_results_hash") == observed_downstream_hash, observed_downstream_hash)
 
-    check("governance_freshness", freshness.get("status") == "pass" and freshness.get("revalidation_required") is False, freshness.get("status"))
-    check("freshness_hash_binding", candidate.get("governance_freshness_hash") == freshness.get("freshness_hash"), freshness.get("freshness_hash"))
+    freshness_complete = freshness.get("status") == "pass" and freshness.get("revalidation_required") is False
+    observed_freshness_hash = canonical_hash(freshness)
+    check("governance_freshness", freshness_complete, freshness.get("freshness_result"))
+    check("freshness_hash_binding", candidate.get("governance_freshness_hash") == observed_freshness_hash, observed_freshness_hash)
 
     readiness_gates = readiness.get("gates", {})
     check("readiness_runtime", readiness_gates.get("runtime_validation") == "pass", readiness_gates.get("runtime_validation"))
@@ -121,7 +130,7 @@ def main() -> int:
         "release_created": False,
         "tag_created": False,
         "deployment_authorized": False,
-        "continuity_receipt_minted": False,
+        "continuity_receipt_minted": False
     }
     artifact["decision_hash"] = canonical_hash(artifact)
     args.output.parent.mkdir(parents=True, exist_ok=True)
