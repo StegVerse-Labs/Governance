@@ -1,0 +1,33 @@
+{
+  "artifact_type": "governance.release_policy",
+  "schema_version": "1.0",
+  "policy_id": "stegcore-release-policy-v1",
+  "subject_repository": "StegVerse-Labs/StegCore",
+  "decision_owner": "StegVerse-Labs/Governance",
+  "required_candidate_fields": [
+    "repository",
+    "version",
+    "tag",
+    "stegcore_commit",
+    "runtime_evidence_hash",
+    "downstream_results_hash",
+    "governance_freshness_hash"
+  ],
+  "required_gates": {
+    "runtime_validation": "pass",
+    "evidence_integrity": "pass",
+    "downstream_verification": "pass",
+    "governance_freshness": "pass",
+    "version_matches_project": true,
+    "tag_unique": true
+  },
+  "authority_boundary": {
+    "policy_evaluation_is_release": false,
+    "allow_decision_is_tag_creation": false,
+    "allow_decision_is_deployment": false,
+    "governance_claims_execution_authority": false,
+    "governance_claims_continuity_authority": false,
+    "governance_claims_receipt_minting_authority": false
+  },
+  "outcomes": ["ALLOW", "DENY", "FAIL-CLOSED"]
+}
