@@ -1,0 +1,102 @@
+{
+  "artifact_type": "governance.release_decision",
+  "authority_boundary": {
+    "allow_decision_is_deployment": false,
+    "allow_decision_is_tag_creation": false,
+    "governance_claims_continuity_authority": false,
+    "governance_claims_execution_authority": false,
+    "governance_claims_receipt_minting_authority": false,
+    "policy_evaluation_is_release": false
+  },
+  "candidate_commit": "b2290a006cb23e0595388d0ddaa55e7874c16222",
+  "candidate_tag": "v0.1.0",
+  "candidate_version": "0.1.0",
+  "checks": {
+    "candidate_shape": {
+      "observed": {
+        "missing": []
+      },
+      "status": "pass"
+    },
+    "downstream_hash_binding": {
+      "observed": "b6e9b65edaea39bad38f4850594b033e81b5dcff8bcf382a89b149b26d95b416",
+      "status": "pass"
+    },
+    "downstream_verification": {
+      "observed": {
+        "passed": 4,
+        "required": 4
+      },
+      "status": "pass"
+    },
+    "freshness_hash_binding": {
+      "observed": "7700d8aa723e898bc79b756fae026017aefe5ee2b4136ebe6f61493895b0dad4",
+      "status": "pass"
+    },
+    "governance_freshness": {
+      "observed": "unchanged",
+      "status": "pass"
+    },
+    "readiness_downstream": {
+      "observed": "pass",
+      "status": "pass"
+    },
+    "readiness_runtime": {
+      "observed": "pass",
+      "status": "pass"
+    },
+    "release_still_unclaimed": {
+      "observed": {
+        "release_permitted": false,
+        "tag_permitted": false
+      },
+      "status": "pass"
+    },
+    "runtime_commit_binding": {
+      "observed": "b2290a006cb23e0595388d0ddaa55e7874c16222",
+      "status": "pass"
+    },
+    "runtime_hash_binding": {
+      "observed": "3657e5c64eb54e2c928fba81d3c8d35587d2b87747b9b225102b70339d942730",
+      "status": "pass"
+    },
+    "runtime_validation": {
+      "observed": "pass",
+      "status": "pass"
+    },
+    "semantic_version": {
+      "observed": "0.1.0",
+      "status": "pass"
+    },
+    "tag_matches_version": {
+      "observed": "v0.1.0",
+      "status": "pass"
+    },
+    "tag_unique": {
+      "observed": {
+        "exists": false,
+        "tag": "v0.1.0"
+      },
+      "status": "pass"
+    },
+    "version_matches_project": {
+      "observed": "0.1.0",
+      "status": "pass"
+    }
+  },
+  "continuity_receipt_minted": false,
+  "decision": "ALLOW",
+  "decision_hash": "534926c2aef17c443f7100fb96181900ed3a3be6a31f29c0a2986022d5933d68",
+  "decision_owner": "StegVerse-Labs/Governance",
+  "deployment_authorized": false,
+  "evaluated_at": "2026-08-01T07:51:07.525952+00:00",
+  "next_permitted_action": "create annotated tag only",
+  "policy_id": "stegcore-release-policy-v1",
+  "reasons": [
+    "all independent release-policy gates passed"
+  ],
+  "release_created": false,
+  "schema_version": "1.0",
+  "subject_repository": "StegVerse-Labs/StegCore",
+  "tag_created": false
+}
