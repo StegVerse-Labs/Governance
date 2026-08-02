@@ -1,0 +1,23 @@
+{
+  "commitment_version": "1.0.0",
+  "commitment_id": "relationship-constructive-001",
+  "declared_goal": "Recruit participants into preserving and improving a changing community",
+  "target_participants": ["existing residents", "new residents", "local institutions"],
+  "desired_relationship_state": "Shared responsibility and continued participation",
+  "framing_posture": "constructive",
+  "participation_cost": "bounded",
+  "expected_constructive_effect": "Participants can join the desired future without accepting blame for prior change",
+  "known_repulsion_risks": ["The invitation may be perceived as minimizing documented losses"],
+  "observation_signals": ["constructive responses", "new participant commitments", "continued dialogue"],
+  "repair_path": "Publish adverse evidence alongside a specific invitation and observable contribution path",
+  "continuation_owner": "StegVerse-Labs/Governance:automation/governance_task_registry.json",
+  "completion_evidence": "evidence/relationship-outcome/constructive-participation.json",
+  "attention_result": "success",
+  "relationship_effect": "constructive",
+  "outcome_direction": "toward_goal",
+  "decision": "ALLOW",
+  "authority_boundaries": {
+    "grants_execution_authority": false,
+    "mints_continuity_receipt": false
+  }
+}
