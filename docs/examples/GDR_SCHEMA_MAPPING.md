@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This note maps Governance Decision Record examples to the current GDR shape without requiring prior chat context. It also defines the examples-only extension for judgment conditions, signal admission and state formation, and execution-boundary admissibility.
+This note maps Governance Decision Record examples to the current GDR shape without requiring prior chat context. It also defines the examples-only extension for judgment conditions, signal admission and state formation, execution-boundary admissibility, and relationship/outcome commitments.
 
 ## Example fixtures
 
@@ -16,6 +16,11 @@ Three-layer negative examples:
 - `docs/examples/fixtures/condition_degraded_judgment_gdr.json`
 - `docs/examples/fixtures/signal_admission_drift_gdr.json`
 - `docs/examples/fixtures/governance_validation_of_drift_gdr.json`
+
+Relationship/outcome examples:
+
+- `docs/examples/relationship-outcome/constructive_participation_allow.json`
+- `docs/examples/relationship-outcome/attention_success_outcome_failure.json`
 
 ## Base field mapping
 
@@ -37,74 +42,64 @@ The extension is additive. It does not change the allowed top-level GDR decision
 
 ### `judgment_conditions`
 
-| Field | Requirement | Purpose |
-| --- | --- | --- |
-| `workload_state` | required string | Declares whether workload conditions supported meaningful judgment. |
-| `time_pressure` | required string | Declares material timing pressure. |
-| `isolation_state` | required string | Declares access to review, assistance, or contest. |
-| `refusal_available` | required boolean | Records whether refusal was practically available. |
-| `operator_recoverability` | required string | Records whether operator authority could be recovered after degradation or interruption. |
-| `condition_receipt_ids` | required array | References evidence for the condition declaration. |
-
-The section records decision conditions, not a biometric or psychological score. A future implementation must not infer medical, employment, or legal fitness from these example values.
+Records workload, pressure, isolation, practical refusal, operator recoverability, and condition evidence without inferring medical, employment, or legal fitness.
 
 ### `signal_admission`
 
-| Field | Requirement | Purpose |
-| --- | --- | --- |
-| `admitted_signal_refs` | required array | Identifies signals used to construct state. |
-| `excluded_signal_refs` | required array | Identifies known excluded signals. |
-| `transformations` | required array | Preserves filtering, ranking, compression, or other transformations. |
-| `missing_inputs` | required array | Declares inputs known to be absent. |
-| `uncertainty_state` | required string | Declares unresolved uncertainty. |
-| `reference_state_hash` | required string | Identifies the state actually evaluated. |
-| `authorized_reference_state_hash` | conditional string | Identifies the authorized comparison state when continuity is evaluated. |
-| `reconstruction_available` | required boolean | States whether another evaluator can reconstruct the state basis. |
-
-When `reference_state_hash` differs from `authorized_reference_state_hash`, the resolver must not treat otherwise-valid policy or authority checks as sufficient.
+Records admitted and excluded signals, transformations, missing inputs, uncertainty, reference-state hashes, and reconstruction availability. Human approval cannot repair missing or unreconstructable state evidence.
 
 ### `execution_boundary`
 
-| Field | Requirement | Purpose |
-| --- | --- | --- |
-| `actor_authority_ref` | required string | References current actor authority. |
-| `policy_ref` | required string | References the policy applied at commit time. |
-| `delegation_ref` | required string | References current delegation. |
-| `evidence_refs` | required array | References evidence used for the execution result. |
-| `affected_entity_refs` | required array | Identifies affected entities represented in evaluation. |
-| `recoverability_profile` | required string | Declares whether consequences can be recovered. |
-| `validity_window` | required string | Bounds the period in which the result is valid. |
-| `result` | required enum | Bounded to `ALLOW`, `DENY`, or `FAIL-CLOSED`. |
-| `receipt_ref` | required string | References the execution-boundary receipt. |
+Records actor authority, policy, delegation, evidence, affected entities, recoverability, validity, result, and receipt. The uppercase execution result is distinct from the lowercase governance recommendation and remains bounded to `ALLOW`, `DENY`, or `FAIL-CLOSED`.
 
-The uppercase execution result is distinct from the lowercase governance recommendation. A GDR can explain governance reasoning while the execution boundary independently fails closed.
+## Relationship and outcome commitment mapping
+
+The relationship commitment contract is an evidence input to governance reasoning. It does not replace policy, delegation, consent, identity, execution-boundary checks, or admissibility.
+
+| Relationship field | GDR mapping | Rule |
+| --- | --- | --- |
+| `commitment_id` | `evaluated_inputs.relationship_commitment_ref` | Stable reference to the evaluated commitment. |
+| `declared_goal` | `evaluated_inputs.relationship_goal` | Defines the outcome against which direction is measured. |
+| `target_participants` | `evaluated_inputs.affected_entity_refs` | Identifies intended participants; it grants no authority. |
+| `framing_posture` | `evaluated_inputs.relationship_posture` | Records constructive, adverse-evidence, neutral, or outcome-inverting posture. |
+| `observation_signals` | `evaluated_inputs.evidence_refs` | Names observable signals required for later evaluation. |
+| `attention_result` | `trace.relationship_attention_result` | Visibility evidence is diagnostic and cannot independently establish success. |
+| `relationship_effect` | `trace.relationship_effect` | Records constructive, neutral, degrading, or unknown effect. |
+| `outcome_direction` | `trace.relationship_outcome_direction` | Records movement toward, neutral to, or away from the declared goal. |
+| `decision` | `hints.relationship_disposition` | Maps `ALLOW`, `ALLOW_WITH_OBSERVATION`, `REPAIR_REQUIRED`, or `DENY` into bounded governance guidance. |
+| `continuation_owner` | `hints.continuation_owner` | Must name `organization/repository:path`; unnamed external continuation is invalid. |
+| `completion_evidence` | `evaluated_inputs.completion_evidence_ref` | Names the receipt required to prove completion. |
+
+### Relationship invariants
+
+1. Attention success is not equivalent to constructive outcome success.
+2. `attention_result=success` with `outcome_direction=away_from_goal` cannot produce relationship disposition `ALLOW`.
+3. `relationship_effect=degrading` requires `REPAIR_REQUIRED` or `DENY`.
+4. Constructive framing does not suppress adverse evidence; adverse evidence must remain inspectable.
+5. The relationship commitment must preserve `grants_execution_authority=false` and `mints_continuity_receipt=false`.
+6. A relationship disposition cannot override a failed judgment, signal-admission, policy, delegation, consent, identity, evidence, or execution-boundary check.
 
 ## Required invariants
 
-1. The three sections must be separately inspectable.
+1. The architecture layers must remain separately inspectable.
 2. Human approval cannot repair missing or unreconstructable state evidence.
 3. Valid policy and authority checks cannot override failed reference-state continuity.
 4. `reconstruction_available=false` cannot produce `ALLOW`.
-5. `refusal_available=false` with materially degraded recoverability cannot produce `ALLOW` without a separately documented emergency authority path.
-6. A failed reference-state continuity check must produce `DENY` or `FAIL-CLOSED`.
+5. A failed reference-state continuity check must produce `DENY` or `FAIL-CLOSED`.
+6. Relationship evidence cannot grant execution authority or mint Continuity receipts.
 7. Example records must never expand execution authority.
 
 ## Automated enforcement
 
-`scripts/validate_gdr_examples.py` validates:
-
-- the base GDR shape for every JSON fixture;
-- presence of all three required negative fixtures;
-- required fields for all three architecture layers;
-- fixture-specific denial and fail-closed invariants;
-- separation of valid authority/policy checks from failed state continuity.
-
-The `Validate Governance Docs` workflow runs this validator automatically on relevant pushes and pull requests. Manual workflow dispatch remains available only as a recovery mechanism, not as the primary validation path.
+- `scripts/validate_gdr_examples.py` validates the base and three-layer GDR examples.
+- `scripts/validate_relationship_outcomes.py` validates the relationship schema, canonical fixtures, outcome-inversion rules, continuation-owner location, non-authority, and non-minting boundaries.
+- `scripts/validate_docs.py` requires the relationship architecture, handoff, schema, fixtures, validator, task registry, runner, and workflows.
+- `Validate Governance Docs` runs all validators on relevant pushes and pull requests.
 
 ## Runtime placement
 
-The documentation and examples remain owned by `StegVerse-Labs/Governance`. Runtime resolver enforcement should be implemented in a code-bearing boundary repository after placement analysis. Current candidates are StegCore and SCW; Governance should remain the canonical policy and fixture source unless a later handoff records a different assignment.
+Documentation, contracts, examples, and validation remain owned by `StegVerse-Labs/Governance`. A future runtime consumer may evaluate the commitment only by reference and must preserve all authority boundaries. Governance does not claim deployment authority, legal adjudication, or Continuity receipt minting.
 
 ## Rule
 
-Examples demonstrate governance reasoning, evidence boundaries, and expected resolver behavior. They do not authorize actions, infer human fitness, or replace canonical policy, delegation, or evidence artifacts.
+Examples demonstrate governance reasoning, evidence boundaries, expected resolver behavior, and relationship/outcome classification. They do not authorize actions, infer human fitness, or replace canonical policy, delegation, consent, identity, or evidence artifacts.
