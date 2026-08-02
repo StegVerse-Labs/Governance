@@ -1,0 +1,30 @@
+{
+  "registry_version": "1.0.0",
+  "observed_at": "2026-08-02T09:14:28.720695+00:00",
+  "repository": "StegVerse-Labs/Governance",
+  "validation_status": "pass",
+  "validation_errors": [],
+  "tasks": [
+    {
+      "id": "REL-OUTCOME-001",
+      "destination": "StegVerse-Labs/Governance:docs/governance/relationship_outcome_governance.md",
+      "mode": "repository_command",
+      "state": "ready",
+      "completion_evidence": "evidence/task-status/latest.json"
+    },
+    {
+      "id": "REL-OUTCOME-002",
+      "destination": "StegVerse-Labs/Governance:automation/governance_task_registry.json",
+      "mode": "repository_command",
+      "state": "ready",
+      "completion_evidence": "evidence/task-status/latest.json"
+    },
+    {
+      "id": "REL-OUTCOME-003",
+      "destination": "StegVerse-Labs/Governance:.github/workflows/observe-governance-tasks.yml",
+      "mode": "evidence_watch",
+      "state": "blocked",
+      "completion_evidence": "evidence/task-status/latest.json"
+    }
+  ]
+}
