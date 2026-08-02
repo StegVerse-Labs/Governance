@@ -1,0 +1,23 @@
+{
+  "commitment_version": "1.0.0",
+  "commitment_id": "relationship-outcome-inversion-001",
+  "declared_goal": "Increase constructive participation in preserving and improving a changing community",
+  "target_participants": ["existing residents", "new residents", "local institutions"],
+  "desired_relationship_state": "Shared responsibility and continued participation",
+  "framing_posture": "outcome_inverting",
+  "participation_cost": "high",
+  "expected_constructive_effect": "High visibility is expected, but the framing assigns terminal loss and discourages participation",
+  "known_repulsion_risks": ["new participants experience identity cost", "institutions interpret the campaign as rejection", "visibility amplifies resignation"],
+  "observation_signals": ["search visibility", "withdrawal language", "reduced constructive commitments"],
+  "repair_path": "Retain evidence of loss while replacing terminal attribution with a specific constructive invitation",
+  "continuation_owner": "StegVerse-Labs/Governance:automation/governance_task_registry.json",
+  "completion_evidence": "evidence/relationship-outcome/outcome-inversion.json",
+  "attention_result": "success",
+  "relationship_effect": "degrading",
+  "outcome_direction": "away_from_goal",
+  "decision": "REPAIR_REQUIRED",
+  "authority_boundaries": {
+    "grants_execution_authority": false,
+    "mints_continuity_receipt": false
+  }
+}
