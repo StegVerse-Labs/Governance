@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stegverse.org/schemas/relationship-commitment-1.0.0.json",
+  "title": "StegVerse Relationship and Outcome Commitment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "commitment_version", "commitment_id", "declared_goal", "target_participants",
+    "desired_relationship_state", "framing_posture", "participation_cost",
+    "expected_constructive_effect", "known_repulsion_risks", "observation_signals",
+    "repair_path", "continuation_owner", "completion_evidence", "attention_result",
+    "relationship_effect", "outcome_direction", "decision", "authority_boundaries"
+  ],
+  "properties": {
+    "commitment_version": {"const": "1.0.0"},
+    "commitment_id": {"type": "string", "minLength": 3},
+    "declared_goal": {"type": "string", "minLength": 1},
+    "target_participants": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "desired_relationship_state": {"type": "string", "minLength": 1},
+    "framing_posture": {"enum": ["constructive", "adverse_evidence", "neutral", "outcome_inverting"]},
+    "participation_cost": {"enum": ["low", "bounded", "high", "unknown"]},
+    "expected_constructive_effect": {"type": "string", "minLength": 1},
+    "known_repulsion_risks": {"type": "array", "items": {"type": "string"}},
+    "observation_signals": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "repair_path": {"type": "string", "minLength": 1},
+    "continuation_owner": {"type": "string", "pattern": "^[^/]+/[^:]+:.+$"},
+    "completion_evidence": {"type": "string", "minLength": 1},
+    "attention_result": {"enum": ["success", "partial", "none", "unknown"]},
+    "relationship_effect": {"enum": ["constructive", "neutral", "degrading", "unknown"]},
+    "outcome_direction": {"enum": ["toward_goal", "neutral", "away_from_goal", "unknown"]},
+    "decision": {"enum": ["ALLOW", "ALLOW_WITH_OBSERVATION", "REPAIR_REQUIRED", "DENY"]},
+    "authority_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grants_execution_authority", "mints_continuity_receipt"],
+      "properties": {
+        "grants_execution_authority": {"const": false},
+        "mints_continuity_receipt": {"const": false}
+      }
+    }
+  }
+}
