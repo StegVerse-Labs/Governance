@@ -7,9 +7,12 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'automation/**'
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
       - 'scripts/validate_external_evidence_interop.py'
+      - 'scripts/validate_relationship_outcomes.py'
+      - 'scripts/run_governance_tasks.py'
       - 'scripts/ingest_conversation.py'
       - 'scripts/test_ingest_conversation.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
@@ -17,9 +20,12 @@ on:
   pull_request:
     paths:
       - 'docs/**'
+      - 'automation/**'
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
       - 'scripts/validate_external_evidence_interop.py'
+      - 'scripts/validate_relationship_outcomes.py'
+      - 'scripts/run_governance_tasks.py'
       - 'scripts/ingest_conversation.py'
       - 'scripts/test_ingest_conversation.py'
       - 'GOVERNANCE_MIRROR_HANDOFF.md'
@@ -50,6 +56,12 @@ jobs:
 
       - name: Validate external evidence interoperability
         run: python scripts/validate_external_evidence_interop.py
+
+      - name: Validate relationship and outcome governance
+        run: python scripts/validate_relationship_outcomes.py
+
+      - name: Validate repository task registry
+        run: python scripts/run_governance_tasks.py --validate-only
 
       - name: Smoke-test conversation ingestion
         run: python scripts/test_ingest_conversation.py
