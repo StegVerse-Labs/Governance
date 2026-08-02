@@ -5,118 +5,186 @@
 - Organization: `StegVerse-Labs`
 - Repository: `Governance`
 - Branch: `main`
-- Layer: relationship formation, constructive participation, and outcome-direction governance
+- Goal ID: `REL-OUTCOME-SESSION-2026-08-02`
+- Layer: relationship formation, constructive participation, outcome-direction governance, and repository-native anti-halt task continuation
 
 ## Source of Truth
 
-This file is the current handoff and task source of truth for the relationship and outcome governance layer. The repository-level `GOVERNANCE_MIRROR_HANDOFF.md` remains authoritative for shared Governance architecture and release boundaries.
+This file is the canonical handoff for the relationship and outcome governance layer. The repository-level `GOVERNANCE_MIRROR_HANDOFF.md` remains authoritative for shared Governance release and authority boundaries.
+
+Session inventory:
+
+`automation/session-consolidation/relationship-outcome-session.json`
+
+Propagation manifest:
+
+`automation/relationship_outcome_propagation.json`
+
+## Originating session goal
+
+Determine whether StegVerse governs the difference among attention success, relationship effect, outcome direction, and continuation capacity; implement the missing layer; and prevent unnamed or unobservable tasks from halting development.
 
 ## Determination
 
-The layer was **partially present but not operationally complete**.
+The layer was partially present through collaboration and contestability principles, but it was not operationally complete. The missing policy distinction, schema, fixtures, validator, task registry, executor, observer workflow, durable receipts, GDR mapping, and propagation assignments are now repository-resident.
 
-Previously present:
-
-- a collaboration posture favoring overlap, bounded interoperability, and non-domination;
-- human judgment, contestability, and legitimacy boundaries;
-- repository-driven validation and continuation principles.
-
-Previously absent:
-
-- an explicit distinction among attention success, relationship effect, outcome direction, and continuation capacity;
-- machine-readable tasks that always name their organization, repository, path, execution mode, and completion evidence;
-- an automatic observer/executor that rejects unobservable `external` tasks;
-- an evidence receipt exposing ready, blocked, completed, failed, and invalid work.
-
-## Activation committed
-
-The following files activate the initial layer:
+## Canonical implementation
 
 ```text
-StegVerse-Labs/Governance:docs/governance/relationship_outcome_governance.md
-StegVerse-Labs/Governance:automation/governance_task_registry.json
-StegVerse-Labs/Governance:scripts/run_governance_tasks.py
-StegVerse-Labs/Governance:.github/workflows/observe-governance-tasks.yml
-StegVerse-Labs/Governance:docs/governance/RELATIONSHIP_OUTCOME_MIRROR_HANDOFF.md
+docs/governance/relationship_outcome_governance.md
+docs/examples/relationship-outcome/relationship_commitment.schema.json
+docs/examples/relationship-outcome/constructive_participation_allow.json
+docs/examples/relationship-outcome/attention_success_outcome_failure.json
+scripts/validate_relationship_outcomes.py
+scripts/validate_docs.py
+scripts/run_governance_tasks.py
+automation/governance_task_registry.json
+automation/session-consolidation/relationship-outcome-session.json
+automation/relationship_outcome_propagation.json
+.github/workflows/validate_docs.yml
+.github/workflows/observe-governance-tasks.yml
+docs/examples/GDR_SCHEMA_MAPPING.md
+evidence/task-status/validation.json
+evidence/task-status/latest.json
 ```
 
-The leading dot in `.github` may be omitted in user-facing workflow paths for readability, but the repository path retains it.
+## Claims
 
-## Active tasks
+- Implementation claim: `RELEASED` after canonical files were committed and machine execution produced passing receipts.
+- Validation claim: `COMPLETE` for repository documentation validation and registered task execution.
+- Integration claim: `COMPLETE` for Governance-side GDR mapping.
+- Propagation claims: `MERGED_INTO_CANONICAL_WORKSTREAM` for Site, Publisher, and admissibility-wiki; `BLOCKED` for stegguardian-wiki until its exact connected owner/repository is resolved.
 
-### REL-OUTCOME-001
+Claim evidence:
 
-- Destination: `StegVerse-Labs/Governance:docs/governance/relationship_outcome_governance.md`
-- Executor: `StegVerse-Labs/Governance:scripts/run_governance_tasks.py`
-- Command: `python scripts/validate_docs.py`
-- Completion evidence: `StegVerse-Labs/Governance:evidence/task-status/latest.json`
+- Initial layer commits: `9fa03952f1b89dd5d29bc8f6ce3e5821b8206157`, `023c2325161e3c1993e8c1a4a1f3a43f355b14a0`, `588349ec77d9abf5104b972666ebeb83a4e2e165`, `1ff605b35c252797ad2611d277cf3b3a8b91ee73`, `99953709e8d2d18c86a8859554bbce20f90dabb0`.
+- Contract and fixture commits: `e7b72be5db5b3d660cf6311024b012124f796fdf`, `116f83acfc573ca9aa628c0617c4531af9c318fd`, `219fd9a1ac7ea07f4bdbea25cc9a34abef847d4a`.
+- Validator and CI commits: `ac38ed3901bda3bfcc82c2b747f2a9d5e1165df9`, `34cf16a7d3834b598313e9b5736c0cb199d78a84`, `2dda2b583fc711665f2baa809c5a3a624019b445`.
+- Receipt persistence workflow commit: `b91882dbc4f27514ef9e530007b8b503617b33ca`.
+- GDR mapping commit: `0ebe76cbb3f1c241fafdfe9705ac6056903b878e`.
+- First durable passing receipt commits: `851d4cd66ff17b195354e5458ea667ed97f4439f` and `300dbddb25e5d96490847af2dd12f08385d47007`.
+- Propagation assignment commit: `b146ffe098c7d2dff5868db6bdab38b6c4e49b5c`.
 
-### REL-OUTCOME-002
+## Validated operation
 
-- Destination: `StegVerse-Labs/Governance:automation/governance_task_registry.json`
-- Executor: `StegVerse-Labs/Governance:scripts/run_governance_tasks.py`
-- Command: `python scripts/run_governance_tasks.py --validate-only`
-- Completion evidence: `StegVerse-Labs/Governance:evidence/task-status/latest.json`
+The repository-native observer executed registered tasks and committed receipts.
 
-### REL-OUTCOME-003
+`evidence/task-status/latest.json` records:
 
-- Destination: `StegVerse-Labs/Governance:.github/workflows/observe-governance-tasks.yml`
-- Observer: GitHub Actions on push, pull request, daily schedule, or recovery dispatch
-- Completion condition: `StegVerse-Labs/Governance:evidence/task-status/latest.json` exists in the workflow artifact
-- Artifact: `governance-task-status`
+- `validation_status: pass`;
+- `REL-OUTCOME-001: completed` with `python scripts/validate_docs.py` returning `0` and output `Governance documentation validation passed.`;
+- `REL-OUTCOME-002: completed` with registry validation returning `0`;
+- `REL-OUTCOME-003: completed` after the durable receipt existed.
 
-## Anti-halt rule
+The bot-authored receipt commits prove that the workflow progressed beyond file presence into hosted execution and persistent evidence publication. They do not prove downstream publication or deployment.
 
-No task may remain as an unnamed external dependency.
+## Governed invariants
 
-Every task must be represented as one of:
+1. Attention success is not equivalent to constructive outcome success.
+2. A visible or highly ranked result moving conditions away from the declared goal cannot be recorded as an unqualified success.
+3. A degrading relationship effect requires `REPAIR_REQUIRED` or `DENY`.
+4. Constructive framing does not suppress adverse evidence.
+5. Participation, popularity, persuasion, or invitation does not grant execution authority.
+6. The layer cannot mint Continuity receipts.
+7. No task may remain as an unnamed external dependency.
+8. Missing propagation evidence is not treated as completed propagation.
 
-1. `repository_command` — executable by a named script in a named repository;
-2. `evidence_watch` — automatically observed against a named evidence condition;
-3. `invalid` — rejected because its destination or completion condition is missing.
+## Anti-halt continuation
 
-The runner fails closed for invalid or failed tasks. Blocked work remains visible in the receipt and is reevaluated by the scheduled workflow.
+Owner:
 
-## Remaining build
+`StegVerse-Labs/Governance`
 
-1. Add canonical positive and negative fixtures for relationship-effect classification.
-2. Add schema validation for governed outreach and collaboration commitments.
-3. Integrate the layer with the existing GDR commitment-candidate mapping.
-4. Publish task receipts durably rather than only as workflow artifacts.
-5. Verify pertinent downstream representation in:
-   - `StegVerse-Labs/Site`
-   - `GCAT-BCAT-Engine/Publisher`
-   - `StegVerse-Labs/admissibility-wiki`
-   - `stegguardian-wiki` repository owner to be resolved from the connected installation before mutation.
+Trigger:
 
-## Definition of Done
+- relevant push;
+- pull request;
+- daily schedule;
+- recovery dispatch.
 
-The layer is fully activated when:
+Inputs:
 
-- its policy, schema, fixtures, validator, runner, workflow, and receipts are repository-resident;
-- all relationship-effect cases are machine-tested;
-- every active task has a repository destination and observable completion condition;
-- blocked tasks are automatically re-observed;
-- ready repository tasks execute without chat-only or human-memory dependency;
-- downstream public surfaces accurately describe the layer and its authority boundaries.
+- `automation/governance_task_registry.json`;
+- repository paths and commands named by each task.
+
+Outputs:
+
+- `evidence/task-status/validation.json`;
+- `evidence/task-status/latest.json`;
+- workflow artifact `governance-task-status`.
+
+Failure posture:
+
+- invalid and failed tasks fail closed;
+- blocked work remains visible;
+- missing destinations or completion conditions are rejected;
+- recurring observation no longer requires chat memory.
+
+## Cross-repository continuation
+
+Canonical assignment is recorded in:
+
+`automation/relationship_outcome_propagation.json`
+
+Named destinations:
+
+- `StegVerse-Labs/Site`, first read `docs/SITE_MIRROR_HANDOFF.md`;
+- `GCAT-BCAT-Engine/Publisher`, first read its applicable `*_MIRROR_HANDOFF.md`;
+- `StegVerse-Labs/admissibility-wiki`, first read its applicable `*_MIRROR_HANDOFF.md`;
+- `stegguardian-wiki`, blocked until connected installation search resolves the exact owner/repository.
+
+Each consumer requires a commit plus a Governance-side propagation receipt under `evidence/propagation/`. No propagation is implied by this handoff.
+
+## Remaining work
+
+Governance-side implementation and validation are complete. Remaining work belongs to the named consumer repositories and is no longer unique to the originating session.
+
+Machine-observable release conditions and evidence paths are defined in `automation/relationship_outcome_propagation.json`.
+
+## Validation commands
+
+```text
+python scripts/validate_docs.py
+python scripts/validate_gdr_examples.py
+python scripts/validate_external_evidence_interop.py
+python scripts/validate_relationship_outcomes.py
+python scripts/run_governance_tasks.py --validate-only
+python scripts/run_governance_tasks.py
+python scripts/test_ingest_conversation.py
+```
 
 ## Completion assessment
 
 ```text
-Conceptual architecture: complete
-Repository-resident task registry: complete
-Task validation: complete
-Repository-command execution: complete
-Evidence-watch observation: complete
-Automatic workflow activation: complete
-Canonical relationship fixtures: not yet built
-Relationship commitment schema: not yet built
-GDR integration: not yet built
-Durable committed receipts: not yet built
-Downstream publication: not yet verified
-Manual continuation dependency: removed for registered tasks
+Policy architecture: complete
+Relationship commitment schema: complete
+Canonical positive fixture: complete
+Canonical outcome-inverting fixture: complete
+Dedicated validator: complete
+Documentation validator integration: complete
+CI validator integration: complete
+Task registry and runner: complete
+Scheduled observer and durable receipt publication: complete
+Governance-side GDR mapping: complete
+Session inventory and transfer: complete
+Cross-repository propagation assignment: complete
+Downstream propagation execution: pending in named canonical consumer repositories
+Chat-only requirements remaining: none
 ```
 
-## Permitted continuation scope
+## Session consolidation
 
-Future sessions may create the schema, fixtures, validator integration, receipt publication, and downstream synchronization directly in the named repositories. Prior conversation context is not required.
+MERGED INTO: `StegVerse-Labs/Governance:docs/governance/RELATIONSHIP_OUTCOME_MIRROR_HANDOFF.md`
+
+All unique session requirements, implementation history, validation evidence, continuation ownership, blockers, and propagation obligations are preserved in repository state. The originating conversation is not required for continuation.
+
+## Archive conditions
+
+Satisfied for the originating session:
+
+- primary and adjacent goals are implemented or durably transferred;
+- implementation and machine execution have inspectable commit evidence;
+- receipts are persisted;
+- no unnamed tasks remain;
+- remaining propagation has named repositories, durable records, and observable release conditions;
+- no unique session execution role remains.
