@@ -1,0 +1,65 @@
+{
+  "manifest_version": "1.0.0",
+  "source": {
+    "repository": "StegVerse-Labs/Governance",
+    "branch": "main",
+    "handoff": "docs/governance/RELATIONSHIP_OUTCOME_MIRROR_HANDOFF.md",
+    "contract": "docs/examples/relationship-outcome/relationship_commitment.schema.json",
+    "fixtures": [
+      "docs/examples/relationship-outcome/constructive_participation_allow.json",
+      "docs/examples/relationship-outcome/attention_success_outcome_failure.json"
+    ],
+    "validation_receipt": "evidence/task-status/latest.json",
+    "validation_commit": "300dbddb25e5d96490847af2dd12f08385d47007"
+  },
+  "consumers": [
+    {
+      "task_id": "REL-OUTCOME-PROP-SITE",
+      "destination": "StegVerse-Labs/Site",
+      "required_first_read": "docs/SITE_MIRROR_HANDOFF.md",
+      "claim_state": "MERGED_INTO_CANONICAL_WORKSTREAM",
+      "owner": "StegVerse-Labs/Site repository-native continuation lane",
+      "completion_evidence": "Governance-side receipt copy at evidence/propagation/relationship-outcome-site.json",
+      "release_condition": "A Site commit records the imported authority boundaries and the Governance receipt copy identifies that commit."
+    },
+    {
+      "task_id": "REL-OUTCOME-PROP-PUBLISHER",
+      "destination": "GCAT-BCAT-Engine/Publisher",
+      "required_first_read": "applicable *_MIRROR_HANDOFF.md",
+      "claim_state": "MERGED_INTO_CANONICAL_WORKSTREAM",
+      "owner": "GCAT-BCAT-Engine/Publisher repository-native continuation lane",
+      "completion_evidence": "Governance-side receipt copy at evidence/propagation/relationship-outcome-publisher.json",
+      "release_condition": "A Publisher commit records the publication contract and the Governance receipt copy identifies that commit."
+    },
+    {
+      "task_id": "REL-OUTCOME-PROP-ADMISSIBILITY-WIKI",
+      "destination": "StegVerse-Labs/admissibility-wiki",
+      "required_first_read": "applicable *_MIRROR_HANDOFF.md",
+      "claim_state": "MERGED_INTO_CANONICAL_WORKSTREAM",
+      "owner": "StegVerse-Labs/admissibility-wiki repository-native continuation lane",
+      "completion_evidence": "Governance-side receipt copy at evidence/propagation/relationship-outcome-admissibility-wiki.json",
+      "release_condition": "A wiki commit documents the distinction between attention success and governed outcome success and the receipt copy identifies that commit."
+    },
+    {
+      "task_id": "REL-OUTCOME-PROP-STEGGUARDIAN-WIKI",
+      "destination": "stegguardian-wiki owner/repository to be resolved by connected installation search before mutation",
+      "required_first_read": "applicable *_MIRROR_HANDOFF.md",
+      "claim_state": "BLOCKED",
+      "owner": "Governance propagation observer",
+      "completion_evidence": "Governance-side receipt copy at evidence/propagation/relationship-outcome-stegguardian-wiki.json",
+      "release_condition": "The exact connected owner/repository is resolved and its canonical handoff accepts the propagation task."
+    }
+  ],
+  "rules": {
+    "unnamed_external_tasks_allowed": false,
+    "missing_receipt_means_complete": false,
+    "consumer_may_not_gain_execution_authority": true,
+    "consumer_may_not_mint_continuity_receipts": true
+  },
+  "session_transfer": {
+    "originating_session_goal": "Build and activate relationship and outcome governance and prevent unobservable tasks from halting development.",
+    "unique_requirements_transferred": true,
+    "chat_context_required": false,
+    "canonical_continuation": "StegVerse-Labs/Governance:docs/governance/RELATIONSHIP_OUTCOME_MIRROR_HANDOFF.md"
+  }
+}
