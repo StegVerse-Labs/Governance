@@ -1,0 +1,43 @@
+name: Observe Governance Tasks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/**'
+      - 'docs/governance/**'
+      - 'scripts/run_governance_tasks.py'
+      - '.github/workflows/observe-governance-tasks.yml'
+  pull_request:
+    paths:
+      - 'automation/**'
+      - 'docs/governance/**'
+      - 'scripts/run_governance_tasks.py'
+      - '.github/workflows/observe-governance-tasks.yml'
+  schedule:
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observe-and-execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install validation dependency
+        run: python -m pip install --disable-pip-version-check PyYAML
+      - name: Validate task registry
+        run: python scripts/run_governance_tasks.py --validate-only --receipt evidence/task-status/validation.json
+      - name: Execute ready repository tasks and observe dependencies
+        run: python scripts/run_governance_tasks.py --receipt evidence/task-status/latest.json
+      - name: Upload task-state receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-task-status
+          path: evidence/task-status/*.json
+          if-no-files-found: error
