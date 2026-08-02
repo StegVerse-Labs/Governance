@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "observed_at": "2026-08-02T09:19:31.381201+00:00",
+  "observed_at": "2026-08-02T09:20:01.488887+00:00",
   "repository": "StegVerse-Labs/Governance",
   "validation_status": "pass",
   "validation_errors": [],
@@ -24,7 +24,7 @@
       "completion_evidence": "evidence/task-status/latest.json",
       "command_result": {
         "returncode": 0,
-        "output": "{\n  \"registry_version\": \"1.0.0\",\n  \"observed_at\": \"2026-08-02T09:19:31.458006+00:00\",\n  \"repository\": \"StegVerse-Labs/Governance\",\n  \"validation_status\": \"pass\",\n  \"validation_errors\": [],\n  \"tasks\": [\n    {\n      \"id\": \"REL-OUTCOME-001\",\n      \"destination\": \"StegVerse-Labs/Governance:docs/governance/relationship_outcome_governance.md\",\n      \"mode\": \"repository_command\",\n      \"state\": \"ready\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    },\n    {\n      \"id\": \"REL-OUTCOME-002\",\n      \"destination\": \"StegVerse-Labs/Governance:automation/governance_task_registry.json\",\n      \"mode\": \"repository_command\",\n      \"state\": \"ready\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    },\n    {\n      \"id\": \"REL-OUTCOME-003\",\n      \"destination\": \"StegVerse-Labs/Governance:.github/workflows/observe-governance-tasks.yml\",\n      \"mode\": \"evidence_watch\",\n      \"state\": \"blocked\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    }\n  ]\n}\n"
+        "output": "{\n  \"registry_version\": \"1.0.0\",\n  \"observed_at\": \"2026-08-02T09:20:01.596340+00:00\",\n  \"repository\": \"StegVerse-Labs/Governance\",\n  \"validation_status\": \"pass\",\n  \"validation_errors\": [],\n  \"tasks\": [\n    {\n      \"id\": \"REL-OUTCOME-001\",\n      \"destination\": \"StegVerse-Labs/Governance:docs/governance/relationship_outcome_governance.md\",\n      \"mode\": \"repository_command\",\n      \"state\": \"ready\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    },\n    {\n      \"id\": \"REL-OUTCOME-002\",\n      \"destination\": \"StegVerse-Labs/Governance:automation/governance_task_registry.json\",\n      \"mode\": \"repository_command\",\n      \"state\": \"ready\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    },\n    {\n      \"id\": \"REL-OUTCOME-003\",\n      \"destination\": \"StegVerse-Labs/Governance:.github/workflows/observe-governance-tasks.yml\",\n      \"mode\": \"evidence_watch\",\n      \"state\": \"blocked\",\n      \"completion_evidence\": \"evidence/task-status/latest.json\"\n    }\n  ]\n}\n"
       }
     },
     {
