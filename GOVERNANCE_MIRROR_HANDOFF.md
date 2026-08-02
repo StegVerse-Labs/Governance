@@ -2,232 +2,290 @@
 
 ## Repository
 
-- Organization: StegVerse-Labs
-- Repository: Governance
-- Current goal: continue building without manual actions needed through completion OR until task handoff and task completion is capable of being handled by the ecosystem's own management.
-- Current activation target: preserve governance policy, canonical fixtures, validation, ingestion, ownership, cross-repository runtime alignment, and bounded external-evidence interoperability without prior chat context or manual-only verification.
+- Organization: `StegVerse-Labs`
+- Repository: `Governance`
+- Branch: `main`
+- Active session-consolidation branch: `feature/stegtrace-bootstrap-automation`
+- Canonical goal ID: `STEGTRACE-ENGINE-V0`
+- Current goal: preserve Governance authority boundaries while installing a machine-owned continuation path that creates and validates the shared `StegVerse-Labs/StegTrace` engine repository when the repository becomes observable.
 
 ## Source of Truth
 
-This file is the current handoff and task source of truth for Governance work.
+This file is the repository-level source of truth for Governance architecture, release boundaries, and the StegTrace bootstrap continuation.
 
-Continue from this file before changing governance docs, fixtures, validators, workflows, indexes, or integration contracts.
+Read in this order before mutation:
+
+1. `GOVERNANCE_MIRROR_HANDOFF.md`
+2. `docs/governance/STEGTRACE_MIRROR_HANDOFF.md`
+3. `docs/governance/TRACE_INTEGRATION.md`
+4. `docs/governance/TRACE_SIGNAL_BUNDLE.md`
+5. `schemas/trace_signal_bundle.schema.json`
+6. `automation/governance_task_registry.json`
+7. `scripts/bootstrap_stegtrace.py`
+8. `.github/workflows/bootstrap-stegtrace.yml`
+9. `evidence/stegtrace-bootstrap/latest.json`, when present
+10. Governance issue `#1`
+11. Governance PR `#15`
+
+The newest applicable handoff, live repository state, Git history, workflow evidence, and committed receipts override prior chat claims.
+
+## Originating session goal
+
+The originating session established and then hardened the StegVerse Governance layer, requested a compact release record and `CHANGELOG.md`, and selected creation of `StegVerse-Labs/StegTrace` as the next implementation goal.
+
+Unique requirements transferred from that session:
+
+- Governance remains the policy and decision layer, not a truth oracle or execution engine.
+- StegTrace is the shared signal-evaluation engine.
+- `StegTalk/trace`, `StegProv/trace`, and `StegFREEDOM/trace` are application profiles, not separate canonical engines.
+- TRACE outputs are bounded, confidence-scored, non-authoritative, and cannot independently authorize execution.
+- StegID retains continuity and cryptographic-verification responsibility.
+- Governance consumes validated TRACE Signal Bundles and emits governed decisions.
+- Historical evaluations are immutable; reevaluation creates new records and explicit deltas.
+- Repository-native automation must continue without requiring the originating chat session.
+
+MERGED INTO: `StegVerse-Labs/Governance/docs/governance/STEGTRACE_MIRROR_HANDOFF.md`, Governance issue `#1`, and Governance PR `#15`.
 
 ## Current Build State
 
-The repository contains:
+Governance contains:
 
-1. constitutional, dual-quorum, drift, anchoring, identity, lifecycle, economic, registry, and citizenship governance drafts;
-2. indexed documentation and deferred-review tracking;
-3. reusable, inbox-driven conversation ingestion with automatic smoke testing;
-4. push- and pull-request-driven documentation and fixture validation;
-5. the judgment, signal formation, and execution architecture;
-6. GDR schema mapping for the three-layer contract;
-7. three negative fixtures, one positive-control fixture, and one replay pair;
-8. runtime expectations aligned to StegCore;
-9. validator enforcement of shape, outcomes, replay invariants, and `continuity_receipt_minted=false`;
-10. live StegCore cross-repository verification and automated evidence publication;
-11. a durable accountability-stack interoperability position;
-12. a machine-readable external evidence-provider interface contract;
-13. five canonical external-evidence fixtures covering valid, stale, drifted, incomplete, and unauthorized-provider cases;
-14. CI validation of external-evidence shape, expected outcomes, replay invariants, non-minting, and provider non-authority.
+1. constitutional, dual-quorum, drift, anchoring, identity, lifecycle, economic, registry, and citizenship governance documents;
+2. reusable conversation ingestion and smoke testing;
+3. push- and pull-request-driven documentation, schema, and fixture validation;
+4. the judgment, signal-formation, and execution architecture;
+5. GDR schema mappings and canonical positive, negative, and replay fixtures;
+6. external-evidence provider contracts and five canonical interoperability cases;
+7. repository-native task observation and execution;
+8. StegCore runtime-alignment contracts and evidence references;
+9. the StegTrace bootstrap installer, observer workflow, and durable handoff on PR `#15`.
 
-## Required Files
+## Judgment-Signal-Execution Workstream
 
-```text
-docs/governance/judgment_signal_execution_architecture.md
-docs/governance/ACCOUNTABILITY_STACK_INTEROP_POSITION.md
-docs/examples/GDR_SCHEMA_MAPPING.md
-docs/examples/EXTERNAL_EVIDENCE_PROVIDER_INTERFACE.md
-docs/examples/fixtures/condition_degraded_judgment_gdr.json
-docs/examples/fixtures/signal_admission_drift_gdr.json
-docs/examples/fixtures/governance_validation_of_drift_gdr.json
-docs/examples/fixtures/three_layer_positive_control_gdr.json
-docs/examples/fixtures/three_layer_replay_baseline_gdr.json
-docs/examples/fixtures/three_layer_replay_mutated_gdr.json
-docs/examples/interop/external_evidence_valid.json
-docs/examples/interop/external_evidence_stale.json
-docs/examples/interop/external_evidence_drifted.json
-docs/examples/interop/external_evidence_incomplete.json
-docs/examples/interop/external_evidence_unauthorized.json
-scripts/validate_gdr_examples.py
-scripts/validate_external_evidence_interop.py
-scripts/validate_docs.py
-scripts/ingest_conversation.py
-scripts/test_ingest_conversation.py
-.github/workflows/validate_docs.yml
-.github/workflows/ingest_conversation.yml
-docs/ACTIVATION_STATUS.md
-```
-
-When presenting workflow paths to the user, omit the leading dot for readability and state that it was omitted.
-
-## Durable Governance Decision
-
-Human judgment remains essential to meaning, context, purpose, contestability, and legitimacy. Governance separately preserves:
+Governance preserves three independently governable layers:
 
 1. conditions supporting meaningful human judgment;
 2. integrity of signal admission and state formation;
 3. commit-time execution admissibility.
 
-Human approval alone does not repair degraded judgment conditions, incomplete state formation, shifted reference-state continuity, stale evidence, or unauthorized evidence production.
+Human approval alone does not repair degraded judgment conditions, incomplete state formation, stale evidence, shifted reference-state continuity, or unauthorized evidence production.
 
-## Accountability-Stack Collaboration Decision
+TRACE confidence never collapses these layers into a truth assertion or execution grant.
 
-StegVerse prefers collaboration where independent accountability architectures overlap, while allowing differentiation to emerge from the areas each system can independently master.
+## Canonical authority boundaries
 
-Differentiation is not used to dominate or displace another architecture. Out-execution remains a work-product outcome rather than the governing strategy.
+- Governance architecture, schemas, canonical fixtures, validators, consumer contracts, and release decisions: `StegVerse-Labs/Governance`.
+- Runtime evaluator, runtime receipts, and runtime evidence publication: `StegVerse-Labs/StegCore` where assigned by live contracts.
+- Shared signal evaluation and TRACE Signal Bundle production: `StegVerse-Labs/StegTrace` after repository activation.
+- Application adapters: their owning repositories, using StegTrace contracts without duplicating canonical engine authority.
+- Continuity verification or minting: outside Governance and StegTrace authority.
+- Master-record custody, legal adjudication, insurance acceptance, regulatory recognition, and deployment authority: separate scopes.
 
-StegVerse already provides implemented constitutional machinery through canonical cases, machine-enforced validation, replay, drift detection, runtime evaluation, evidence publication, ownership boundaries, and fail-closed outcomes.
-
-The active goal is to strengthen evidence interfaces and demonstrate bounded interoperability with complementary telemetry, attestation, and verification systems without collapsing proof into authority, admissibility, execution, custody, or adjudication.
-
-## Canonical Runtime Cases
-
-Original three-layer cases:
-
-- degraded judgment: `DENY / judgment.refusal_unavailable`;
-- incomplete signal admission: `DENY / signal.inputs_incomplete`;
-- shifted reference state: `FAIL-CLOSED / signal.reference_state_discontinuous`;
-- positive control: `ALLOW / ok`;
-- replay baseline: `ALLOW`;
-- replay mutation: `FAIL-CLOSED`.
-
-External evidence cases:
-
-- valid evidence: `ALLOW / ok`;
-- stale evidence: `DENY / evidence.stale`;
-- drifted reference state: `FAIL-CLOSED / evidence.reference_state_drift`;
-- incomplete evidence: `DENY / evidence.incomplete`;
-- unauthorized provider: `DENY / evidence.provider_unauthorized`.
-
-Every case requires:
+Every external-evidence and TRACE case must preserve:
 
 ```text
 continuity_receipt_minted: false
 evidence_provider_execution_authority: false
+trace_execution_authority: false
 ```
 
-The second field applies to external-evidence fixtures. Evidence integrity, signature validity, or successful verification never grants execution authority.
+## Active task claim
 
-## External Evidence Mapping Boundary
+### `STEGTRACE-ENGINE-V0-BOOTSTRAP`
 
-The external envelope binds provider identity, provider type, subject, capture interval, execution context, claims, evidence digests, chain posture, authorization, freshness, reference state, and prior-hash linkage.
+- Originating goal: create the StegTrace repository and bootstrap the shared engine.
+- Canonical owner repository: `StegVerse-Labs/Governance` until the target root handoff exists on the target default branch.
+- Claim state: `MACHINE_OWNED` after PR `#15` merges.
+- Implementation branch: `feature/stegtrace-bootstrap-automation`.
+- Exact files:
+  - `scripts/bootstrap_stegtrace.py`
+  - `.github/workflows/bootstrap-stegtrace.yml`
+  - `docs/governance/STEGTRACE_MIRROR_HANDOFF.md`
+  - `evidence/stegtrace-bootstrap/latest.json`
+- Trigger: hourly schedule or manual recovery dispatch.
+- Claim release condition: target `StegVerse-Labs/StegTrace/STEGTRACE_MIRROR_HANDOFF.md` exists on the default branch and target validation passes.
+- Collision boundary: no other branch or session should install a competing canonical StegTrace bootstrap while this machine lane is active.
+- Expected evidence: Governance receipt, target bootstrap PR, target workflow run, jobs, logs, and generated example bundle.
 
-It maps into a commitment candidate containing actor, target, scope, action, execution context, policy, delegation, consent, identity, evidence, validity, reference state, recoverability, and provider authorization references.
+## Completed work
 
-The mapper and Governance contract do not grant:
+- Governance-side TRACE consumer boundaries are repository-resident.
+- Governance validation workflow supports pull requests, pushes to `main`, and manual dispatch.
+- A deterministic and idempotent StegTrace bootstrap installer is implemented on PR `#15`.
+- An hourly and manually dispatchable observer workflow is implemented on PR `#15`.
+- The installer creates or updates a fixed target branch, installs the canonical target file set, and creates or reuses one target pull request.
+- The workflow emits explicit `COMPLETE`, `BLOCKED`, `RETRY`, `REVIEW_REQUIRED`, and `FAILED` state receipts.
+- Governance issue `#1` records the human-authority boundary and machine-observable release condition.
+- Obsolete Governance PR `#2` was closed as superseded by PR `#15`.
 
-- execution authority;
-- Master-Records custody;
-- legal adjudication;
-- insurance acceptance;
-- regulatory recognition;
-- Continuity receipt verification or minting.
+## Incomplete work
 
-## Cross-Repository Automation
+### Governance PR `#15`
 
-`StegVerse-Labs/StegCore` owns runtime implementation under issue #22 for the original three-layer evaluator and its evidence publication.
+- Required: all required PR validation must pass.
+- Current failure previously observed: root handoff lacked validator-required phrases.
+- Correction: this consolidated handoff now contains `Judgment-Signal-Execution Workstream` and `Permitted continuation scope` explicitly.
+- Next evidence: passing `Validate Governance Docs` and `Observe Governance Tasks` runs on the corrected commit.
 
-Governance now owns the external evidence-provider interface, canonical interop fixtures, and repository-side validator. StegCore runtime support for the five external-evidence cases is the next cross-repository integration task and must preserve all non-authority and non-minting boundaries.
+### Target repository activation
 
-Governance consumes StegCore runtime evidence by reference to:
+- Target: `StegVerse-Labs/StegTrace`.
+- Current state: repository not observable through the connected GitHub installation.
+- Human-authority boundary: create a public repository with an initialized default branch and access for the configured bootstrap token.
+- Machine-observable release condition: `GET /repos/StegVerse-Labs/StegTrace` returns HTTP `200` to the bootstrap workflow token.
+- Machine next action: install the canonical bootstrap and create the target pull request.
 
-```text
-StegVerse-Labs/StegCore/evidence/runtime-validation.json
+### Runtime engine after bootstrap
+
+Install as target-repository issues or machine-readable task records:
+
+- immutable artifact store;
+- versioned evaluation-record store;
+- dependency and impact graph;
+- calibrated confidence-vector engine;
+- targeted reevaluation and delta generation;
+- `StegTalk/trace` adapter;
+- `StegProv/trace` adapter;
+- `StegFREEDOM/trace` adapter;
+- cross-repository publication contracts and receipts.
+
+## Canonical target bootstrap files
+
+The installer owns creation of:
+
+- `README.md`
+- `STEGTRACE_MIRROR_HANDOFF.md`
+- `CHANGELOG.md`
+- `DISCLAIMER.md`
+- `CONFIDENCE_LABELS.md`
+- `docs/TRACE_OVERVIEW.md`
+- `docs/TRACE_SIGNAL_BUNDLE.md`
+- `docs/TRACE_PROFILES.md`
+- `docs/TRACE_REEVALUATION_AND_DELTAS.md`
+- `schemas/trace_signal_bundle.schema.json`
+- `scripts/emit_bundle_example.py`
+- `scripts/validate_trace.py`
+- `.github/workflows/validate-trace.yml`
+
+These files constitute a validated bootstrap, not a completed production runtime engine.
+
+## Validation commands
+
+Governance:
+
+```bash
+python scripts/validate_docs.py
+python scripts/validate_governance.py
+python -m py_compile scripts/bootstrap_stegtrace.py
+python scripts/run_governance_tasks.py --validate-only
 ```
 
-A Governance commit is runtime-aligned only when the evidence record identifies that Governance commit, reports `status: pass`, marks all required checks passing, preserves `continuity_receipt_minted: false`, and retains all authority non-claims.
+Target bootstrap:
 
-## Active Ownership
+```bash
+python scripts/validate_trace.py
+```
 
-- Governance architecture, schemas, canonical fixtures, validators, collaboration posture, and external evidence contract: `StegVerse-Labs/Governance`.
-- Runtime evaluator, runtime receipts, tests, live verifier, and evidence publication: `StegVerse-Labs/StegCore`.
-- External telemetry, attestation, and verification providers retain ownership of their evidence-producing systems and claims.
-- Continuity receipt verification or minting: outside Governance and StegCore authority.
-- Master-record custody, legal adjudication, insurance acceptance, regulatory recognition, and deployment authority: separate scopes.
-- Legal, employment, medical, biometric, or human-performance measurement policy: outside current scope and requires separate review.
+Do not claim workflow, integration, deployment, governed activation, publication, or release readiness without inspecting the corresponding workflow runs, jobs, logs, artifacts, receipts, and runtime surfaces.
 
-## Manual Tasks Eliminated
+## Cross-repository dependencies and propagation
 
-- Conversation-ingestion smoke testing is automatic.
-- Repository inbox ingestion is push-driven.
-- Original GDR fixture shape, outcomes, replay invariants, and receipt boundaries are machine-enforced.
-- External evidence fixture shape, outcomes, authorization, freshness, reference-state drift, non-minting, and provider non-authority are machine-enforced.
-- Governance validation runs on push and pull request.
-- Governance-to-StegCore alignment is checked against live fixtures for the established runtime contract.
-- Daily verification detects later drift.
-- Passing runtime evidence is generated and committed automatically for the established runtime contract.
-- Manual workflow dispatch remains only as a recovery option.
+- `StegVerse-Labs/Governance`: canonical consumer contract and decision boundary.
+- `StegVerse-Labs/StegCore`: runtime policy decisions informed only by bounded TRACE signals.
+- `StegVerse-Labs/StegTalk`: ephemeral communication profile.
+- `StegVerse-Labs/StegProv`: persistent research profile.
+- `StegVerse-Labs/StegFREEDOM`: oversight profile.
+- `StegVerse-Labs/Site`, `GCAT-BCAT-Engine/Publisher`, `StegVerse-Labs/admissibility-wiki`, and `stegguardian-wiki`: propagation only after engine and profile claims are validated.
+- `master-records`: custody or canonical preservation only under its own live contracts; no custody is implied here.
 
-## Remaining Work
+## Release posture
+
+Governance and StegTrace are not authorized for release solely because bootstrap files exist. Release requires:
+
+- passing current-main Governance validation;
+- merged and active bootstrap automation;
+- a target repository and passing target validation;
+- preserved authority boundaries;
+- runtime-engine completion appropriate to the release claim;
+- downstream propagation review where pertinent;
+- durable release evidence.
+
+## Session consolidation state
+
+Primary session goal, release-note requirement, changelog requirement, workflow-dispatch clarification, StegTrace architecture, target file inventory, authority boundaries, automation ownership, blocker, release condition, and next actions are preserved in repository records.
+
+Canonical continuation location:
 
 ```text
 StegVerse-Labs/Governance
-  -> observe Validate Governance Docs on current main
-  -> repair only exact validator failures without weakening invariants
-  -> keep external evidence schema and canonical fixtures authoritative
-
-StegVerse-Labs/StegCore
-  -> ingest external evidence envelope version 1.0
-  -> map it into the existing commit-time evaluator
-  -> implement ALLOW, DENY, and FAIL-CLOSED behavior for all five cases
-  -> test stale, drifted, incomplete, and unauthorized-provider rejection
-  -> preserve evidence_provider_execution_authority=false
-  -> preserve continuity_receipt_minted=false
-  -> publish commit-bound runtime evidence for the Governance contract
-
-Release propagation after readiness
-  -> verify pertinent updates to StegVerse-Labs/Site
-  -> verify pertinent updates to GCAT-BCAT-Engine/Publisher
-  -> verify pertinent updates to StegVerse-Labs/admissibility-wiki
-  -> verify pertinent updates to stegguardian-wiki
+  GOVERNANCE_MIRROR_HANDOFF.md
+  docs/governance/STEGTRACE_MIRROR_HANDOFF.md
+  scripts/bootstrap_stegtrace.py
+  .github/workflows/bootstrap-stegtrace.yml
+  evidence/stegtrace-bootstrap/latest.json
+  issue #1
+  pull request #15
 ```
+
+The originating conversation must not remain an implementation dependency after PR `#15` is merged and the corrected workflow evidence is preserved.
 
 ## Next Actions
 
-1. Observe the current-main Governance validation containing `scripts/validate_external_evidence_interop.py`.
-2. Correct only exact failures without removing required checks.
-3. Create or extend the StegCore runtime integration task for the five external-evidence cases.
-4. Implement the runtime mapper and evaluator without granting the provider execution authority.
-5. Publish commit-bound passing evidence only after all original and external cases pass.
-6. Apply release-readiness gates only after evidence validity, version uniqueness, ownership, authority boundaries, and downstream declarations pass.
-7. Tag or release only after those gates pass.
+1. Observe corrected PR `#15` workflow runs.
+2. Repair only exact failures without weakening invariants.
+3. Merge PR `#15` after required checks pass.
+4. Inspect the first main-branch bootstrap run and its receipt.
+5. When the target repository becomes observable, inspect the generated target PR and target validation workflow.
+6. Transfer remaining runtime tasks to target-repository issues or task-state records.
+7. Release the temporary Governance claim after the target root handoff and validation become authoritative.
 
 ## Definition of Done
 
-The Governance side of external interoperability is complete when:
+The session-originated StegTrace bootstrap work is durably transferred when:
 
-- the interface contract is repository-resident;
-- all five canonical fixtures are repository-resident;
-- CI validates shape, outcomes, stale evidence, drift, incomplete evidence, provider authorization, non-authority, and non-minting;
-- continuation requires no original chat or manual-only action.
+- PR `#15` is merged;
+- the Governance automation is active;
+- its first receipt is inspectable;
+- the target-repository absence is represented as `BLOCKED`, not success;
+- the target creation boundary and release condition remain durable;
+- all unique session requirements are represented in this handoff, the specialized handoff, issue `#1`, or the automation;
+- no continuation action requires access to the chat.
 
-Full goal activation additionally requires StegCore to evaluate the five fixtures through the actual runtime and publish commit-bound passing evidence.
+Full `STEGTRACE-ENGINE-V0` activation additionally requires the target repository, passing target validation, actual runtime-engine implementation, application-profile integration, and required propagation evidence.
 
 ## Current Completion Assessment
 
 ```text
-Governance architecture: complete
-Original schema and fixtures: complete
-Original fixture validator: complete
-Ingestion automation: complete
-Established StegCore contract integration: complete
-Accountability-stack collaboration posture: complete
-External evidence-provider interface: complete
-External interoperability fixtures: complete
-External interoperability repository validator: complete
-External interoperability CI wiring: complete
-External interoperability StegCore runtime integration: not yet built
-External interoperability runtime evidence: not yet published
-Established passing evidence record: pending successful StegCore non-PR run
-Manual continuation dependency: none
+Governance architecture and established validators: complete
+Governance-side TRACE consumer boundary: complete
+StegTrace architecture transfer: complete
+Bootstrap installer: implemented, PR validation pending
+Bootstrap observer workflow: implemented, PR validation pending
+Temporary specialized handoff: implemented
+Root handoff consolidation: implemented
+Target repository: blocked by named human-authority boundary
+Target bootstrap installation: blocked on repository observation
+Target validation: not run
+Runtime StegTrace engine: not built
+Application-profile integration: not built
+Downstream propagation: not performed
+Session-specific information transfer: complete after this commit
 ```
 
-## Release Posture
+## Permitted continuation scope
 
-No release or tag is authorized solely by the Governance-side external interoperability build. Release requires successful current-main validation, StegCore runtime integration evidence, version and authority checks, and downstream propagation review.
+Future sessions and repository-native automation may:
 
-## Archive Status
+- repair exact CI failures;
+- merge PR `#15` after required checks pass;
+- observe and inspect bootstrap receipts;
+- install the target bootstrap when the repository becomes observable;
+- validate the target pull request;
+- create target runtime-engine and profile tasks;
+- implement runtime and propagation work under the target handoff.
 
-This handoff preserves the current decisions, files, fixtures, validation, ownership, authority boundaries, remaining runtime integration, release posture, and permitted continuation scope. Earlier conversation context is not required.
+They may not weaken Governance invariants, treat TRACE confidence as truth or authority, duplicate the canonical engine in application repositories, claim target activation from templates alone, or claim propagation without direct evidence.
+
+## Archive conditions
+
+This session becomes archive-safe when all unique session requirements are durably committed and no session-specific mutation or validation claim remains. The project may remain incomplete, and the target repository may remain blocked, provided the merged automation, durable task record, machine-observable release condition, and continuation scope are active and independently reconstructable.
