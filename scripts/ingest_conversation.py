@@ -83,7 +83,11 @@ def ingest(
 
     for number, part in enumerate(parts, start=1):
         tags = tags_for(part)
-        filename = f"{stamp}-{number:02d}-{slugify(tags[0])}.md"
+        # Preserve every detected classification in the durable record name.
+        # Using only tags[0] concealed secondary classifications such as
+        # execution when a section also mentioned reference-state drift.
+        tag_slug = slugify("-".join(tags))
+        filename = f"{stamp}-{number:02d}-{tag_slug}.md"
         path = output_dir / filename
         path.write_text(render_section(title, part, tags, when), encoding="utf-8")
         written.append(path)
