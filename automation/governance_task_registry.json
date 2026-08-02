@@ -1,0 +1,62 @@
+{
+  "registry_version": "1.0.0",
+  "owner": "StegVerse-Labs/Governance",
+  "policy": {
+    "external_only_tasks_allowed": false,
+    "require_destination": true,
+    "require_completion_evidence": true,
+    "fail_closed_on_invalid_task": true
+  },
+  "tasks": [
+    {
+      "id": "REL-OUTCOME-001",
+      "title": "Validate relationship and outcome governance architecture",
+      "organization": "StegVerse-Labs",
+      "repository": "Governance",
+      "path": "docs/governance/relationship_outcome_governance.md",
+      "mode": "repository_command",
+      "command": "python scripts/validate_docs.py",
+      "prerequisites": [],
+      "completion_condition": {
+        "type": "command_exit",
+        "expected": 0
+      },
+      "evidence_path": "evidence/task-status/latest.json",
+      "status": "ready"
+    },
+    {
+      "id": "REL-OUTCOME-002",
+      "title": "Verify task registry has no unobservable external-only work",
+      "organization": "StegVerse-Labs",
+      "repository": "Governance",
+      "path": "automation/governance_task_registry.json",
+      "mode": "repository_command",
+      "command": "python scripts/run_governance_tasks.py --validate-only",
+      "prerequisites": [],
+      "completion_condition": {
+        "type": "command_exit",
+        "expected": 0
+      },
+      "evidence_path": "evidence/task-status/latest.json",
+      "status": "ready"
+    },
+    {
+      "id": "REL-OUTCOME-003",
+      "title": "Observe and publish relationship-layer task state",
+      "organization": "StegVerse-Labs",
+      "repository": "Governance",
+      "path": ".github/workflows/observe-governance-tasks.yml",
+      "mode": "evidence_watch",
+      "prerequisites": [
+        "REL-OUTCOME-001",
+        "REL-OUTCOME-002"
+      ],
+      "completion_condition": {
+        "type": "file_exists",
+        "path": "evidence/task-status/latest.json"
+      },
+      "evidence_path": "evidence/task-status/latest.json",
+      "status": "blocked"
+    }
+  ]
+}
