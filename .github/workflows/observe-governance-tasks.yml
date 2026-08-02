@@ -6,26 +6,32 @@ on:
     paths:
       - 'automation/**'
       - 'docs/governance/**'
+      - 'docs/examples/relationship-outcome/**'
       - 'scripts/run_governance_tasks.py'
+      - 'scripts/validate_relationship_outcomes.py'
       - '.github/workflows/observe-governance-tasks.yml'
   pull_request:
     paths:
       - 'automation/**'
       - 'docs/governance/**'
+      - 'docs/examples/relationship-outcome/**'
       - 'scripts/run_governance_tasks.py'
+      - 'scripts/validate_relationship_outcomes.py'
       - '.github/workflows/observe-governance-tasks.yml'
   schedule:
     - cron: '17 8 * * *'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   observe-and-execute:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -41,3 +47,15 @@ jobs:
           name: governance-task-status
           path: evidence/task-status/*.json
           if-no-files-found: error
+      - name: Persist current task receipts
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "stegverse-governance-bot"
+          git config user.email "governance-bot@users.noreply.github.com"
+          git add evidence/task-status/validation.json evidence/task-status/latest.json
+          if git diff --cached --quiet; then
+            echo "No task receipt change"
+          else
+            git commit -m "chore: persist governance task status [skip ci]"
+            git push
+          fi
