@@ -7,6 +7,7 @@
 - Target repository: `StegVerse-Labs/StegTrace`
 - Target branch after repository creation: `bootstrap/stegtrace-v0`
 - Goal: install and validate the shared StegTrace engine bootstrap, then continue toward persistent evaluation, reevaluation, and application-profile integration.
+- Related Governance architecture: Judgment-Signal-Execution Workstream
 
 ## Source of truth
 
@@ -126,6 +127,10 @@ Bootstrap deliverables: 13 target files plus installer, workflow, receipt, hando
 - Validation completion: static GitHub file installation complete; workflow execution pending merge
 - Integration completion: 0/3 application profiles implemented
 - Goal activation: target repository absent, so engine is not activated
+
+## Permitted continuation scope
+
+Future sessions and repository-native automation may merge PR #15 after checks pass, observe or create the target repository when authorized, execute the bootstrap installer, inspect the target PR and validation logs, and create target-owned runtime and profile tasks. They may not claim StegTrace runtime activation, publication propagation, or execution authority without corresponding repository evidence.
 
 ## Archive conditions
 
