@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "transition_id": "taxonomy-positive-control-001",
+  "governance_classes": ["G0", "G1", "G2", "G3", "G4", "G5"],
+  "stages": [
+    {"stage":"A0","name":"formation","status":"PASS","reason_code":"ok","evidence_refs":["fixture://candidate"]},
+    {"stage":"A1","name":"structural","status":"PASS","reason_code":"invariants_preserved","evidence_refs":["fixture://invariants"]},
+    {"stage":"A2","name":"causal","status":"PASS","reason_code":"causal_link_verified","evidence_refs":["fixture://causal-chain"]},
+    {"stage":"A3","name":"evidentiary","status":"PASS","reason_code":"evidence_sufficient","evidence_refs":["fixture://evidence"]},
+    {"stage":"A4","name":"authority","status":"PASS","reason_code":"standing_valid","evidence_refs":["fixture://delegation"]},
+    {"stage":"A5","name":"procedural","status":"PASS","reason_code":"procedure_satisfied","evidence_refs":["fixture://procedure"]},
+    {"stage":"A6","name":"commit_time","status":"PASS","reason_code":"current_conditions_valid","evidence_refs":["fixture://commit-check"]},
+    {"stage":"A7","name":"continuity","status":"PASS","reason_code":"same_thread_verified","evidence_refs":["fixture://post-state"]},
+    {"stage":"A8","name":"reconstruction","status":"PASS","reason_code":"independently_reconstructable","evidence_refs":["fixture://reconstruction"]}
+  ],
+  "aggregate_disposition": "ALLOW",
+  "failure_stage": null,
+  "region_results": [{"region_id":"canonical","disposition":"ALLOW","evidence_refs":["fixture://canonical-view"]}],
+  "authority_boundaries": {
+    "taxonomy_grants_execution_authority": false,
+    "continuity_receipt_minted": false,
+    "certification_granted": false,
+    "custody_granted": false
+  }
+}
