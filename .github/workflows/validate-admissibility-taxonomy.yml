@@ -1,0 +1,42 @@
+name: Validate Admissibility Taxonomy
+
+on:
+  pull_request:
+    paths:
+      - "schemas/admissibility_stage_vector.schema.json"
+      - "docs/governance/GOVERNANCE_CLASSES_AND_ADMISSIBILITY_STAGES.md"
+      - "docs/examples/admissibility/**"
+      - "scripts/validate_admissibility_stage_vectors.py"
+      - ".github/workflows/validate-admissibility-taxonomy.yml"
+  push:
+    branches: [main]
+    paths:
+      - "schemas/admissibility_stage_vector.schema.json"
+      - "docs/governance/GOVERNANCE_CLASSES_AND_ADMISSIBILITY_STAGES.md"
+      - "docs/examples/admissibility/**"
+      - "scripts/validate_admissibility_stage_vectors.py"
+      - ".github/workflows/validate-admissibility-taxonomy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-admissibility-taxonomy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile validator
+        run: python -m py_compile scripts/validate_admissibility_stage_vectors.py
+      - name: Validate fixtures and invariants
+        run: python scripts/validate_admissibility_stage_vectors.py
+      - name: Verify schema JSON syntax
+        run: python -m json.tool schemas/admissibility_stage_vector.schema.json >/dev/null
