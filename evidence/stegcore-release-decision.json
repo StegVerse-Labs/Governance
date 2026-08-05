@@ -86,10 +86,10 @@
   },
   "continuity_receipt_minted": false,
   "decision": "ALLOW",
-  "decision_hash": "25dc8146eb1d6b98707ba13f369b293b6a2c0c7e8f2228619bf99a644d2c6900",
+  "decision_hash": "97362410f842e6cdbcc26dca7b29d760f5f5a9f4e80171f96da46fd3957921b1",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-08-04T08:08:30.240531+00:00",
+  "evaluated_at": "2026-08-05T08:07:54.094856+00:00",
   "next_permitted_action": "create annotated tag only",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
