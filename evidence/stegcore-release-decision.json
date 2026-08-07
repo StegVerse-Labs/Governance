@@ -57,8 +57,8 @@
       "status": "pass"
     },
     "runtime_hash_binding": {
-      "observed": "3657e5c64eb54e2c928fba81d3c8d35587d2b87747b9b225102b70339d942730",
-      "status": "pass"
+      "observed": "1d9b0184a2626f7a3ca2b90c6a0449069427f710b1e9758f0493668d380672fa",
+      "status": "fail"
     },
     "runtime_validation": {
       "observed": "pass",
@@ -85,15 +85,15 @@
     }
   },
   "continuity_receipt_minted": false,
-  "decision": "ALLOW",
-  "decision_hash": "b382fba76f020ed89a0f6dc7297ae81e248c42222e450f955c7efba9ddefc03a",
+  "decision": "DENY",
+  "decision_hash": "aef013f6ea3b3b24665639bc31f3ca9b11da35032eeb60e4f56f190a819d464c",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-08-06T08:06:25.753993+00:00",
-  "next_permitted_action": "create annotated tag only",
+  "evaluated_at": "2026-08-07T06:52:35.580226+00:00",
+  "next_permitted_action": "repair failed gates and re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
-    "all independent release-policy gates passed"
+    "failed gate: runtime_hash_binding"
   ],
   "release_created": false,
   "schema_version": "1.0",
