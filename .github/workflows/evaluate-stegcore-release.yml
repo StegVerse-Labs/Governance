@@ -97,7 +97,7 @@ jobs:
           if [ -n "$NUMBER" ]; then
             gh issue edit "$NUMBER" --body "$BODY"
           else
-            NUMBER="$(gh issue create --title "$TITLE" --body "$BODY" --json number --jq '.[0].number')"
+            NUMBER="$(gh issue create --title "$TITLE" --body "$BODY" --json number --jq '.number')"
           fi
           if [ "$DECISION" = "ALLOW" ]; then
             gh issue close "$NUMBER" --reason completed --comment "All independent release-policy gates passed. Tag creation remains a separate bounded action."
