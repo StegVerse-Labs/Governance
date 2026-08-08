@@ -1,4 +1,5 @@
 name: Evaluate StegCore Release Policy
+# Candidate binding refresh trigger: 2026-08-08T15:08Z
 
 on:
   push:
@@ -96,7 +97,7 @@ jobs:
           if [ -n "$NUMBER" ]; then
             gh issue edit "$NUMBER" --body "$BODY"
           else
-            NUMBER="$(gh issue create --title "$TITLE" --body "$BODY" --json number --jq '.number')"
+            NUMBER="$(gh issue create --title "$TITLE" --body "$BODY" --json number --jq '.[0].number')"
           fi
           if [ "$DECISION" = "ALLOW" ]; then
             gh issue close "$NUMBER" --reason completed --comment "All independent release-policy gates passed. Tag creation remains a separate bounded action."
