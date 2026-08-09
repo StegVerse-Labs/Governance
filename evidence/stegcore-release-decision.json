@@ -48,9 +48,9 @@
     "release_still_unclaimed": {
       "observed": {
         "release_permitted": false,
-        "tag_permitted": false
+        "tag_permitted": true
       },
-      "status": "pass"
+      "status": "fail"
     },
     "runtime_commit_binding": {
       "observed": "70bbb0eb8a5dec4f27ee7aca5cf09cdb17a924af",
@@ -74,10 +74,10 @@
     },
     "tag_unique": {
       "observed": {
-        "exists": false,
+        "exists": true,
         "tag": "v0.1.0"
       },
-      "status": "pass"
+      "status": "fail"
     },
     "version_matches_project": {
       "observed": "0.1.0",
@@ -85,15 +85,16 @@
     }
   },
   "continuity_receipt_minted": false,
-  "decision": "ALLOW",
-  "decision_hash": "7b90b85d4c9a4fe0666dd72a13dd1e26e672d5cd57aa88ad98b4ac08a23e768c",
+  "decision": "DENY",
+  "decision_hash": "6ec13f31a0cc671682b07c56d2f1ab3c67866870f0a28fa25ffbf19cf2c6091e",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-08-08T15:59:48.534891+00:00",
-  "next_permitted_action": "create annotated tag only",
+  "evaluated_at": "2026-08-09T06:28:08.131599+00:00",
+  "next_permitted_action": "repair failed gates and re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
-    "all independent release-policy gates passed"
+    "failed gate: release_still_unclaimed",
+    "failed gate: tag_unique"
   ],
   "release_created": false,
   "schema_version": "1.0",
