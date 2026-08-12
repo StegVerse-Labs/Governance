@@ -286,6 +286,59 @@ Future sessions and repository-native automation may:
 
 They may not weaken Governance invariants, treat TRACE confidence as truth or authority, duplicate the canonical engine in application repositories, claim target activation from templates alone, or claim propagation without direct evidence.
 
+## Execution ownership and collision partition
+
+Standard: `StegVerse-Labs/Continuity/docs/REPOSITORY_HANDOFF_STANDARD.md` / `stegverse.handoff-execution-ownership/v1`.
+
+### MANUAL / SESSION-STARTABLE
+
+No current Governance or StegTrace bootstrap implementation task is manually startable by default. Validation-only work requires an explicit nonoverlapping claim after a concrete workflow/run exists.
+
+### WORKER-OWNED / DO NOT COMPETE
+
+```yaml
+- task_id: STEGTRACE-ENGINE-V0-BOOTSTRAP
+  execution_owner: StegVerse-Labs/Governance bootstrap automation
+  claim_state: MACHINE_OWNED
+  worker_registry_ref: Governance issue #1 + docs/governance/STEGTRACE_MIRROR_HANDOFF.md + .github/workflows/bootstrap-stegtrace.yml + evidence/stegtrace-bootstrap/latest.json
+  manual_execution_allowed: false
+  manual_allowed_role: observation
+  collision_scope: StegTrace target observation, bootstrap installation, target branch/PR lifecycle, bootstrap receipt mutation, and transfer to the target root handoff
+  release_condition: StegVerse-Labs/StegTrace root handoff exists on its default branch and target validation passes
+  next_executable_action: canonical Governance automation continues target observation and installs/validates the bootstrap when the target becomes observable
+```
+
+### ESCALATED / AUTHORITY-OWNED
+
+```yaml
+- task_id: STEGTRACE-TARGET-REPOSITORY-CREATION
+  execution_owner: repository/organization administration human authority
+  claim_state: ESCALATED
+  worker_registry_ref: Governance issue #1
+  manual_execution_allowed: false
+  manual_allowed_role: NONE
+  collision_scope: repository creation/default-branch initialization/access grant for StegVerse-Labs/StegTrace
+  release_condition: GET /repos/StegVerse-Labs/StegTrace returns HTTP 200 to the canonical bootstrap identity and the initialized default branch is observable
+  next_executable_action: authorized repository administration creates/enables the target; installed Governance automation detects the release condition
+
+- task_id: STEGTRACE-RUNTIME-ENGINE-AFTER-BOOTSTRAP
+  execution_owner: future StegVerse-Labs/StegTrace repository owner and target task registry
+  claim_state: ESCALATED
+  worker_registry_ref: future StegVerse-Labs/StegTrace/STEGTRACE_MIRROR_HANDOFF.md + target issues/task records
+  manual_execution_allowed: false
+  manual_allowed_role: implementation
+  collision_scope: immutable artifact/evaluation stores, dependency graph, confidence engine, reevaluation/deltas, application adapters, publication contracts, and runtime activation
+  release_condition: target bootstrap and validation are authoritative and explicit target-owned executable claims are created for each remaining scope
+  next_executable_action: transfer runtime/profile work into target-owned task records after successful bootstrap rather than implementing it inside Governance
+```
+
+### COMPLETED / SUPERSEDED
+
+- Governance architecture and TRACE consumer boundaries: complete.
+- PR #15 bootstrap installer/observer implementation and merge: complete according to the specialized handoff.
+- Originating chat validation claim: released.
+- Competing application-specific canonical TRACE engines: superseded/prohibited.
+
 ## Archive conditions
 
 This session becomes archive-safe when all unique session requirements are durably committed and no session-specific mutation or validation claim remains. The project may remain incomplete, and the target repository may remain blocked, provided the merged automation, durable task record, machine-observable release condition, and continuation scope are active and independently reconstructable.
