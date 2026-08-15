@@ -80,19 +80,20 @@
       "status": "fail"
     },
     "version_matches_project": {
-      "observed": "0.1.0",
-      "status": "pass"
+      "observed": "0.2.0",
+      "status": "fail"
     }
   },
   "continuity_receipt_minted": false,
   "decision": "DENY",
-  "decision_hash": "2baf8d7237b72439579329b1a9f1f1f287881664c25ec64476e03406b740a28a",
+  "decision_hash": "65b3c5547433501e98ff088dad3a7a2977ca7836f62ff2d04a1d5f2a1c08bd93",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-08-10T06:56:16.851955+00:00",
+  "evaluated_at": "2026-08-15T05:59:47.071215+00:00",
   "next_permitted_action": "repair failed gates and re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
+    "failed gate: version_matches_project",
     "failed gate: release_still_unclaimed",
     "failed gate: tag_unique"
   ],
