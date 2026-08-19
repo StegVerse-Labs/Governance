@@ -57,6 +57,21 @@
       },
       "evidence_path": "evidence/task-status/latest.json",
       "status": "blocked"
+    },
+    {
+      "id": "CGE-DECISION-ISSUER-ARCHITECTURE-OWNERSHIP-001",
+      "title": "Observe canonical CGE decision-issuer architecture ownership decision",
+      "organization": "StegVerse-Labs",
+      "repository": "Governance",
+      "path": "docs/governance/CGE_DECISION_ISSUER_ARCHITECTURE_MIRROR_HANDOFF.md",
+      "mode": "evidence_watch",
+      "prerequisites": [],
+      "completion_condition": {
+        "type": "file_exists",
+        "path": "evidence/cge-decision-issuer-architecture/latest.json"
+      },
+      "evidence_path": "evidence/cge-decision-issuer-architecture/latest.json",
+      "status": "blocked"
     }
   ]
 }
