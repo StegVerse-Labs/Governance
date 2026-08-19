@@ -1,61 +1,22 @@
-name: Observe Governance Tasks
+name: Observe Governance Tasks - Hosted Guard Only
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'automation/**'
-      - 'docs/governance/**'
-      - 'docs/examples/relationship-outcome/**'
-      - 'scripts/run_governance_tasks.py'
-      - 'scripts/validate_relationship_outcomes.py'
-      - '.github/workflows/observe-governance-tasks.yml'
-  pull_request:
-    paths:
-      - 'automation/**'
-      - 'docs/governance/**'
-      - 'docs/examples/relationship-outcome/**'
-      - 'scripts/run_governance_tasks.py'
-      - 'scripts/validate_relationship_outcomes.py'
-      - '.github/workflows/observe-governance-tasks.yml'
-  schedule:
-    - cron: '17 8 * * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
-  observe-and-execute:
+  hosted-observer-disabled:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install validation dependency
-        run: python -m pip install --disable-pip-version-check PyYAML
-      - name: Validate task registry
-        run: python scripts/run_governance_tasks.py --validate-only --receipt evidence/task-status/validation.json
-      - name: Execute ready repository tasks and observe dependencies
-        run: python scripts/run_governance_tasks.py --receipt evidence/task-status/latest.json
-      - name: Upload task-state receipts
-        uses: actions/upload-artifact@v4
-        with:
-          name: governance-task-status
-          path: evidence/task-status/*.json
-          if-no-files-found: error
-      - name: Persist current task receipts
-        if: github.event_name != 'pull_request'
+      - name: Prove hosted surface is non-authorizing and non-executing
+        env:
+          GITHUB_TOKEN: ""
+          GH_TOKEN: ""
         run: |
-          git config user.name "stegverse-governance-bot"
-          git config user.email "governance-bot@users.noreply.github.com"
-          git add evidence/task-status/validation.json evidence/task-status/latest.json
-          if git diff --cached --quiet; then
-            echo "No task receipt change"
-          else
-            git commit -m "chore: persist governance task status [skip ci]"
-            git push
-          fi
+          set -euo pipefail
+          test -z "${GITHUB_TOKEN:-}"
+          test -z "${GH_TOKEN:-}"
+          echo "HOSTED_GOVERNANCE_TASK_OBSERVER_DISABLED_TV_TVC_ONLY"
+          echo "This workflow does not checkout source, execute Governance tasks, persist receipts, schedule work, or grant repository/runtime authority."
+          echo "Canonical continuation is the sovereign Governance task observer handoff and central WorkerCoordinator path."
