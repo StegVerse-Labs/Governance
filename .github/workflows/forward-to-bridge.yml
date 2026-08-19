@@ -1,45 +1,19 @@
-name: Forward PR to StegVerse AI Bridge
+name: Forward PR to StegVerse AI Bridge [CONTAINED — TV/TVC AUTHORITY REQUIRED]
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "PR number to forward (optional; for manual testing)"
-        required: false
-        default: ""
+  workflow_dispatch: {}
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
-  forward:
+  contained:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch to hybrid-collab-bridge
-        env:
-          GH_TOKEN: ${{ secrets.GH_STEGVERSE_AI_TOKEN }}
-          TARGET_REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          MANUAL_PR: ${{ github.event.inputs.pr_number }}
+      - name: Block stale bridge dispatch
+        shell: bash
         run: |
           set -euo pipefail
-
-          # Decide PR number: PR event > manual input > 0
-          if [ -n "${PR_NUMBER:-}" ]; then
-            N="${PR_NUMBER}"
-          elif [ -n "${MANUAL_PR:-}" ]; then
-            N="${MANUAL_PR}"
-          else
-            N="0"
-          fi
-
-          echo "Forwarding repo=${TARGET_REPO} pr_number=${N}"
-
-          curl -sSL -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            https://api.github.com/repos/StegVerse/hybrid-collab-bridge/dispatches \
-            -d "{\"event_type\":\"stegverse-ai-review\",\"client_payload\":{\"target_repo\":\"${TARGET_REPO}\",\"pr_number\":${N}}}"
+          echo "::error::This legacy forwarder is contained because it used a generic non-TV/TVC credential and targeted the superseded StegVerse/hybrid-collab-bridge repository path."
+          echo "Any future review transport must be bound to current repository identity and admitted TV/TVC route authority; it may not grant Governance execution authority."
+          exit 1
