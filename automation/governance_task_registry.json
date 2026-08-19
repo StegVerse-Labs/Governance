@@ -42,10 +42,10 @@
     },
     {
       "id": "REL-OUTCOME-003",
-      "title": "Observe and publish relationship-layer task state",
+      "title": "Observe relationship-layer task state through sovereign runtime",
       "organization": "StegVerse-Labs",
       "repository": "Governance",
-      "path": ".github/workflows/observe-governance-tasks.yml",
+      "path": "docs/governance/GOVERNANCE_TASK_OBSERVER_SOVEREIGN_MIRROR_HANDOFF.md",
       "mode": "evidence_watch",
       "prerequisites": [
         "REL-OUTCOME-001",
@@ -53,9 +53,9 @@
       ],
       "completion_condition": {
         "type": "file_exists",
-        "path": "evidence/task-status/latest.json"
+        "path": "evidence/sovereign-task-observer/latest.json"
       },
-      "evidence_path": "evidence/task-status/latest.json",
+      "evidence_path": "evidence/sovereign-task-observer/latest.json",
       "status": "blocked"
     },
     {
