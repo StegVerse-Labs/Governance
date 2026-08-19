@@ -1,6 +1,6 @@
 # Governance Task Observer Sovereign Mirror Handoff
 
-Updated: 2026-08-19T01:05:00-05:00
+Updated: 2026-08-19T07:24:00-05:00
 Repository: `StegVerse-Labs/Governance`
 Goal: `GOVERNANCE-SOVEREIGN-TASK-OBSERVER-001`
 
@@ -10,37 +10,36 @@ Replace the former hosted GitHub Actions Governance task executor/observer with 
 
 ## Superseded hosted behavior
 
-The former `.github/workflows/observe-governance-tasks.yml`:
+The former `.github/workflows/observe-governance-tasks.yml` used hosted checkout/token authority, executed Governance tasks, persisted task-state receipts, and could commit/push those receipts. That production continuation has been removed. The remaining hosted surface is validation/guard evidence only and grants no runtime or repository authority.
 
-- used `actions/checkout@v4` against the private repository;
-- received a GitHub Actions token;
-- declared `contents: write`;
-- executed ready Governance repository tasks;
-- generated task-state receipts;
-- could commit and push those receipts;
-- ran on push, pull request, schedule, and manual dispatch.
-
-That surface is no longer admissible under the current TV/TVC-only credential policy. It has been reduced to a manual, zero-permission, non-checkout guard that performs no source execution or repository mutation.
-
-Hosted guard success is not task observation, runtime proof, or activation.
+Hosted guard success is not task observation, runtime proof, activation, or release.
 
 ## Implemented sovereign architecture
 
 ```text
-Governance repository task registry
-  -> existing TVC tvc.private-source-read.v1 exact read-only materialization
-  -> canonical local StegVerse source/workload path
-  -> central StegVerse WorkerCoordinator fresh claim/fence
+Governance task registry
+  -> TVC tvc.private-source-read.v1 credential-admission owner
+  -> scripts/execute_private_source_read_consumer.py
+       resolve current ref
+       -> create fresh in-memory <=900s request
+       -> grant issuance with ref re-resolution
+       -> exact materialization with ref re-resolution
+       -> secret-free execution receipt
+  -> canonical local StegVerse Governance source path
+  -> non-authorizing heartbeat assignment packet
+  -> WorkerCoordinator authorization/reconstruction/budget/worker checks
+  -> fresh claim/fence
   -> governance-sovereign-task-observer-worker
-  -> local sovereign task-status / observer receipt
-  -> bounded TVC repository-operation path only if persistence is separately admitted
+  -> ProcessWorkerAdapter fenced bound-state projection
+       observed/latest.json
+       receipts/latest.json
 ```
 
-The worker runs `scripts/run_governance_tasks.py` only from an exact already-materialized Governance source tree. It may not receive `GITHUB_TOKEN`, `GH_TOKEN`, PAT/provider/mailbox/wallet credentials, or any other NON-TV/TVC secret/token material.
+No source-binding worker, second scheduler, extra heartbeat path, GitHub Actions runtime executor, or second credential broker is required.
 
-The worker supports canonical local source discovery directly; WorkerCoordinator does not need to synthesize an environment binding. `STEGVERSE_GOVERNANCE_SOURCE_ROOT` is retained only as an optional non-secret explicit locator override.
+## Canonical local source discovery
 
-Canonical local discovery includes user- and system-owned StegVerse source/workload paths such as:
+The observer consumes only already-materialized exact Governance source. It supports an optional non-secret `STEGVERSE_GOVERNANCE_SOURCE_ROOT` locator and canonical StegVerse local paths including:
 
 ```text
 ~/.stegverse/source/Governance
@@ -49,73 +48,140 @@ Canonical local discovery includes user- and system-owned StegVerse source/workl
 /var/lib/stegverse/workloads/Governance
 ```
 
-Lower-case `governance` equivalents and central-runtime workload paths are also supported. A candidate source root is accepted only when all required Governance files exist.
+Lower-case equivalents and central-runtime workload paths are also supported. A candidate is accepted only when the canonical Governance handoff, task registry, observer script, and CGE architecture handoff all exist.
 
 ## Durable implementation bindings
 
-Central StegVerse `.github`:
+Central `StegVerse-Labs/.github`:
 
 ```text
 worker:
   workers/governance_sovereign_task_observer_worker.py
-handoff:
+executable handoff:
   handoffs/GOVERNANCE-SOVEREIGN-TASK-OBSERVER-001.json
 registry fragment:
   control/worker-registry.d/governance-sovereign-task-observer-001.json
 adapter:
   control/process-worker-adapters.d/governance-sovereign-task-observer-001.json
+least-privilege profile:
+  control/worker-capability-profiles.json#governance-sovereign-observer-v1
+finite cost basis:
+  cost-basis/worker-runtime/governance-sovereign-task-observer.json
 tests:
   tests/test_governance_sovereign_task_observer.py
-source-validation receipt:
+validation receipts:
   docs/receipts/governance-sovereign-task-observer-source-validation-2026-08-19.json
-canonical-discovery validation receipt:
   docs/receipts/governance-sovereign-task-observer-source-discovery-validation-2026-08-19.json
+  docs/receipts/governance-sovereign-task-observer-runtime-contract-validation-2026-08-19.json
 ```
 
 TVC source producer:
 
 ```text
-parent capability task:
+capability task:
   StegVerse-Labs/TVC:tasks/TVC-PRIVATE-SOURCE-READ-001.json
-consumer-specific handoff:
+canonical handoff:
+  StegVerse-Labs/TVC:docs/PRIVATE_SOURCE_READ_MIRROR_HANDOFF.md
+Governance consumer handoff:
   StegVerse-Labs/TVC:docs/GOVERNANCE_SOURCE_MATERIALIZATION_MIRROR_HANDOFF.md
+machine executor:
+  StegVerse-Labs/TVC:scripts/execute_private_source_read_consumer.py
+executor tests:
+  StegVerse-Labs/TVC:tests/test_execute_private_source_read_consumer.py
 capability:
   tvc.private-source-read.v1
-canonical issue:
+issue:
   StegVerse-Labs/TVC#33
 ```
 
-Governance is registered as a pending consumer of the existing TVC capability. No second credential broker, scheduler, source binder, or heartbeat path was created.
+## Observer runtime-contract validation
 
-## Source validation evidence
-
-Credential-clean exact-head validation established:
+Credential-clean exact-head validation now proves the actual WorkerCoordinator + ProcessWorkerAdapter path rather than only the internal worker function.
 
 ```text
-observer source compile: PASS
+Governance observer tests: 10/10 PASS
+anonymous checkout without GitHub credential token: PASS
+compile: PASS
 canonical JSON parsing: PASS
-executable handoff validation: PASS
-AE exact effective denominator: PASS
-explicit non-secret source locator: PASS
-canonical local source discovery without env binding: PASS
-incomplete local source candidate rejection: PASS
-hosted environment rejection: PASS
-GitHub token/PAT environment rejection: PASS
+executable-handoff validation: PASS
+unique WorkerCoordinator worker selection: PASS
+finite 16-unit cost basis: PASS
+least-privilege capability profile: PASS
+bound-state adapter scope observed/** + receipts/**: PASS
+missing source -> HANDOFF_READY without duplicate resolution task: PASS
+real observer defect -> valid sandbox-resolution contract: PASS
+COMPLETED response + transition sequence: PASS
+hosted execution rejection: PASS
+GitHub token environment rejection: PASS
 repository writeback authority rejection: PASS
-heartbeat authority rejection: PASS
+heartbeat execution-authority rejection: PASS
+CGE watch requires actual architecture-decision receipt: PASS
 ```
 
-The validation runner explicitly proved `NO_GITHUB_CREDENTIAL_TOKEN_PRESENT`.
-
-The broader central repository suite remains red on a separate pre-existing heartbeat-v12/state-transition semantic-debt cluster. Those legacy failures are not observer failures and do not become observer success by omission.
-
-Source validation state:
+Exact retained state:
 
 ```text
-SOURCE_VALIDATED_BOUNDED_CANONICAL_DISCOVERY
+SOURCE_VALIDATED_BOUNDED_RUNTIME_CONTRACT
 ```
 
-This is not runtime proof.
+The validation workflow as a whole remains red only because of a separate pre-existing heartbeat/state-transition compatibility cluster (10 failures / 16 errors in the 444-test repository suite). Those failures are not Governance-observer failures and are not hidden.
+
+## TVC executor state
+
+The TVC machine lane now has a concrete generic executor instead of an instruction-only transition from credential admission to the low-level materializer.
+
+The executor:
+
+- requires TV/TVC injection at execution time and acquires no credential itself;
+- emits `BLOCKED_DEPENDENCY` with no fallback when injection is absent;
+- creates the request in memory only after resolving the current tracked ref;
+- re-resolves during grant issuance and again during materialization;
+- defaults to 600s and rejects TTL >900s;
+- never places the credential in arguments or receipts;
+- may idempotently reuse an existing checkout only if local HEAD equals the currently resolved exact SHA;
+- refuses implicit deletion/replacement of a different occupied destination;
+- grants no write/release/publication/runtime/production authority.
+
+Its deterministic tests are installed in TVC, but TVC validation-only PR #85 received **no Actions run** even with a `tests/**` change. Therefore:
+
+```text
+TVC machine executor source: IMPLEMENTED
+TVC machine executor hosted validation: UNVALIDATED_NO_RUN
+TVC authority injection: NOT_OBSERVED
+TVC grant activation: NOT_OBSERVED
+exact Governance materialization: NOT_OBSERVED
+```
+
+No PASS is inferred from the no-run condition.
+
+## Observer process semantics
+
+Missing exact local Governance source is not represented as a `BLOCKED` worker defect. The observer returns:
+
+```text
+HANDOFF_READY / GOVERNANCE_SOURCE_MATERIALIZATION_PENDING
+```
+
+This releases the claim and preserves `TVC-PRIVATE-SOURCE-READ-001` as the existing source owner instead of manufacturing a duplicate resolution task.
+
+A real internal observer/runtime defect returns `BLOCKED` with a machine-readable resolution contract. If the assigned worker cannot repair it, the canonical runtime derives the sandbox-resolution successor with `repository_resolution` + `sandbox_validation`; no generic retry/credential fallback is substituted.
+
+Successful observation returns `COMPLETED` only after registry validation and CGE-watch predicates pass.
+
+## Fenced local state
+
+The observer no longer writes directly to host `HOME`. The adapter uses:
+
+```text
+process_json_bound_state_v0.1
+bound_state_root:
+  ~/.stegverse/state/governance-sovereign-task-observer
+allowed relative paths:
+  observed/**
+  receipts/**
+```
+
+The worker sees only a sandbox-local `STEGVERSE_BOUND_STATE_ROOT`; the authoritative host path is not exposed. State changes are projected only after current claim/fence and path-scope validation.
 
 ## Authority boundary
 
@@ -123,101 +189,94 @@ This is not runtime proof.
 credential authority: TV/TVC ONLY
 GitHub token runtime/repository authority: NONE
 heartbeat grants execution authority: false
-WorkerCoordinator is downstream observer/executor under separate admitted authority
-Governance task observation grants no CGE authority
-Governance task observation grants no architecture-decision authority
-Governance task observation grants no transition authority
-hosted GitHub Actions execution authority: NONE
-repository writeback authority: NONE in observer
+assignment packet grants execution authority: false
+capability profile grants authority: false
+worker availability grants authority: false
+Governance repository writeback authority: false
+CGE decision authority: false
+architecture-decision authority: false
+release/deployment authority: false
 ```
 
-The independent heartbeat oscillator is unaffected by task state, source availability, observation state, source materialization, WorkerCoordinator claims, or this migration.
+The independent heartbeat oscillator progresses at its canonical 10ms reference cadence regardless of source availability, task state, claims, WorkerCoordinator activity, TVC injection, or observer execution. This lane never causes or gates heartbeat progression.
 
-## Required runtime sequence
-
-The remaining live path is now bounded and direct:
+## Required live sequence
 
 ```text
-1. TVC sole-host credential-admission owner observes the pending Governance consumer.
-2. It re-resolves StegVerse-Labs/Governance refs/heads/main immediately before grant issuance.
-3. It issues a <=900 second TV/TVC-only private-source-read request/grant bound to the exact re-resolved SHA, caller, source and consumer task.
-4. scripts/private_source_read.py materializes the source read-only to a canonical local path and emits a secret-free materialization receipt.
-5. WorkerCoordinator separately binds a collision-safe claim/fence to GOVERNANCE-SOVEREIGN-TASK-OBSERVER-001.
-6. governance-sovereign-task-observer-worker discovers the local source and executes repository task observation with a stripped credential-free child environment.
-7. The worker retains a local sovereign observer receipt.
-8. CGE-DECISION-ISSUER-ARCHITECTURE-OWNERSHIP-001 remains blocked unless the actual architecture-decision receipt exists.
+1. Existing TVC credential-admission/sole-host owner gets a genuine TV/TVC private-source injection opportunity.
+2. It invokes scripts/execute_private_source_read_consumer.py for the Governance pending consumer.
+3. Executor resolves then-current StegVerse-Labs/Governance refs/heads/main.
+4. It creates a fresh <=900s request, issues the policy-bound grant, re-resolves, materializes, re-resolves, and emits secret-free exact-source evidence.
+5. Governance source is present at a canonical local path.
+6. Heartbeat may carry a non-authorizing assignment packet; heartbeat itself grants nothing.
+7. WorkerCoordinator separately rechecks execution authorization, lineage/reconstruction, finite budget, profile/capability match, unique AVAILABLE worker, then binds a fresh claim/fence.
+8. ProcessWorkerAdapter invokes the observer in its fenced sandbox/bound-state envelope.
+9. Observer validates the Governance task registry and CGE watch, then returns COMPLETED with fenced evidence.
+10. CGE-DECISION-ISSUER-ARCHITECTURE-OWNERSHIP-001 remains blocked unless its actual architecture-decision receipt exists.
 ```
 
-Materialization does not complete the observer task. Claim assignment does not complete it. Source validation does not complete it.
+Materialization does not complete the observer. Assignment does not complete it. Claiming does not complete it. Source/runtime-contract validation does not complete it.
 
 ## Current state
 
 ```text
 hosted observer/token authority: REMOVED_FROM_ACTIVE_EXECUTION_PATH
-hosted schedule: REMOVED
-hosted push/PR execution: REMOVED
-hosted repository mutation: REMOVED
-sovereign observer source: IMPLEMENTED
-central worker registry binding: INSTALLED
-central process adapter: INSTALLED
-observer source validation: SOURCE_VALIDATED_BOUNDED_CANONICAL_DISCOVERY
-TVC private-source consumer registration: INSTALLED
-TVC consumer workflow validation this session: UNVALIDATED_NO_RUN
-authority injection/grant issuance: NOT_OBSERVED
+sovereign observer implementation: COMPLETE_SOURCE
+executable handoff: INSTALLED
+registry binding: INSTALLED
+least-privilege profile: INSTALLED
+finite cost basis: INSTALLED
+bound-state adapter: INSTALLED
+observer runtime contract: SOURCE_VALIDATED_BOUNDED_RUNTIME_CONTRACT
+TVC generic machine executor: IMPLEMENTED
+TVC generic machine executor hosted validation: UNVALIDATED_NO_RUN
+TVC authority injection: NOT_OBSERVED
 exact Governance source materialization: NOT_OBSERVED
-WorkerCoordinator claim: NOT_OBSERVED
-live sovereign observer execution: NOT_OBSERVED
-live sovereign observation receipt: NOT_OBSERVED
+WorkerCoordinator live claim/fence: NOT_OBSERVED
+sovereign observer live execution: NOT_OBSERVED
+sovereign observer live receipt: NOT_OBSERVED
+CGE architecture decision receipt: NOT_OBSERVED
 migration state: BLOCKED_DEPENDENCY_MACHINE_OWNED
 ```
-
-The absence of TVC workflow validation for the new consumer registration is preserved truthfully: TVC PR #82 produced no attached workflow run and was closed without merge. The parent private-source-read capability implementation remains separately established; this consumer binding is not promoted to workflow-validated state by inference.
-
-## Downstream relationship
-
-`CGE-DECISION-ISSUER-ARCHITECTURE-OWNERSHIP-001` remains a blocked Governance evidence-watch task. The sovereign observer is permitted to observe that task but cannot become the CGE issuer, Master Records authority, architecture-decision authority, or canonical transition executor.
-
-Governance issue #19 remains the architecture-ownership decision surface for `MR.GAP.CGE_DECISION_ISSUER.001`.
-
-## Failure policy
-
-- exact source unavailable -> BLOCK on `TVC-PRIVATE-SOURCE-READ-001`;
-- TV/TVC source materialization unavailable -> BLOCK;
-- stale source SHA at grant time -> FAIL_CLOSED and re-resolve; do not reuse stale grant;
-- any GitHub-generated or NON-TV/TVC credential requirement -> FAIL_CLOSED;
-- worker cannot safely observe/repair -> submit the canonical sandbox-resolution successor task;
-- missing architecture-decision receipt -> keep CGE architecture watch BLOCKED;
-- hosted workflow success -> never substitute for sovereign observation;
-- missing TVC consumer workflow run -> remain `UNVALIDATED_NO_RUN`, not PASS.
 
 ## Execution ownership and collision partition
 
 ### MANUAL / SESSION-STARTABLE
 
-No direct Governance task execution is manually startable from hosted Actions.
+Hosted/manual Actions are not a production execution path. This session may inspect and improve source/contract evidence but may not invent or expose credential values.
 
-### WORKER-OWNED / DO NOT COMPETE
+### MACHINE-OWNED / DO NOT COMPETE
 
 ```yaml
+- source_task: TVC-PRIVATE-SOURCE-READ-001
+  owner: TVC credential_admission / sole-host StegVerse control plane
+  executor: scripts/execute_private_source_read_consumer.py
+  release_condition: secret-free exact Governance materialization receipt under a current TV/TVC grant
+
 - task_id: GOVERNANCE-SOVEREIGN-TASK-OBSERVER-001
-  execution_owner: central StegVerse WorkerCoordinator / governance-sovereign-task-observer-worker
-  claim_state: HANDOFF_READY
-  worker_registry_ref: StegVerse-Labs/.github:control/worker-registry.d/governance-sovereign-task-observer-001.json
+  owner: central WorkerCoordinator / governance-sovereign-task-observer-worker
+  state: HANDOFF_READY
   manual_execution_allowed: false
-  manual_allowed_role: observation and source/evidence review only
-  collision_scope: Governance task-registry observation and sovereign task-status receipt production
-  release_condition: TV/TVC exact Governance materialization is present, WorkerCoordinator binds a fresh claim/fence, and the worker produces a credential-clean sovereign observer receipt
-  next_executable_action: existing TVC credential-admission/sole-host owner materializes the current exact Governance source; then WorkerCoordinator claims and executes the already-validated observer
+  release_condition: exact local source + fresh claim/fence + COMPLETED observer receipt
 ```
 
 ### ESCALATED / AUTHORITY-OWNED
 
-Credential-bearing private-source materialization or repository persistence remains TV/TVC-owned. Actual CGE/Master Records decision issuance remains unresolved under Governance #19 / StegDB `MR.GAP.CGE_DECISION_ISSUER.001`.
+Actual CGE/Master Records decision issuance remains unresolved under Governance #19 / `MR.GAP.CGE_DECISION_ISSUER.001`.
 
-### COMPLETED / SUPERSEDED
+## Failure policy
 
-The former hosted scheduled/push/PR task execution and receipt-push behavior is superseded and must not be restored as production continuation.
+- missing TVC injection -> remain machine-owned dependency; no generic credential fallback;
+- stale source ref/SHA -> fail closed and re-resolve;
+- occupied different materialization destination -> fail closed; no implicit destructive replacement;
+- missing local source at observer invocation -> HANDOFF_READY and release claim; do not duplicate TVC ownership;
+- real observer defect -> BLOCKED with resolution contract;
+- unable/impossible observer repair -> sandbox-resolution successor;
+- missing CGE architecture decision receipt -> keep CGE watch blocked;
+- hosted workflow/no-run condition -> never substitute for live proof.
 
 ## Completion
 
-This migration completes only when the implemented sovereign observer executes under a fresh WorkerCoordinator claim with exact TV/TVC-materialized source and produces durable sovereign task-state evidence. Source implementation, source validation, consumer registration, handoff readiness, or hosted guard success is not completion.
+This migration completes only when the already-built observer consumes exact TV/TVC-materialized Governance source under a fresh WorkerCoordinator claim/fence and emits its fenced sovereign task-state receipt. The TVC machine executor must first be source-validated through the strongest available path and then actually execute under real TV/TVC authority. None of those live predicates have yet occurred.
+
+`DO NOT ARCHIVE THIS SESSION — REQUIRED MACHINE EXECUTION REMAINS.`
