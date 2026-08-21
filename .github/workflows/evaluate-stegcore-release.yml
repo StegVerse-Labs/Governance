@@ -30,19 +30,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Acquire StegCore candidate and evidence
+      - name: Acquire StegCore candidate and evidence without adding credential authority
+        id: acquire
         run: |
+          set -u
           mkdir -p "${RUNNER_TEMP}/stegcore/evidence"
           BASE="https://raw.githubusercontent.com/StegVerse-Labs/StegCore/main"
-          curl --fail --silent --show-error --location "$BASE/evidence/release-candidate-request.json" -o "${RUNNER_TEMP}/stegcore/evidence/release-candidate-request.json"
-          curl --fail --silent --show-error --location "$BASE/evidence/runtime-validation.json" -o "${RUNNER_TEMP}/stegcore/evidence/runtime-validation.json"
-          curl --fail --silent --show-error --location "$BASE/evidence/release-readiness.json" -o "${RUNNER_TEMP}/stegcore/evidence/release-readiness.json"
-          curl --fail --silent --show-error --location "$BASE/evidence/downstream-verification-results.json" -o "${RUNNER_TEMP}/stegcore/evidence/downstream-verification-results.json"
-          curl --fail --silent --show-error --location "$BASE/evidence/governance-freshness.json" -o "${RUNNER_TEMP}/stegcore/evidence/governance-freshness.json"
-          curl --fail --silent --show-error --location "$BASE/pyproject.toml" -o "${RUNNER_TEMP}/stegcore/pyproject.toml"
+          missing=()
+          for path in \
+            evidence/release-candidate-request.json \
+            evidence/runtime-validation.json \
+            evidence/release-readiness.json \
+            evidence/downstream-verification-results.json \
+            evidence/governance-freshness.json \
+            pyproject.toml
+          do
+            target="${RUNNER_TEMP}/stegcore/${path}"
+            mkdir -p "$(dirname "$target")"
+            if ! curl --fail --silent --show-error --location "$BASE/$path" -o "$target"; then
+              rm -f "$target"
+              missing+=("$path")
+            fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf 'available=false\n' >> "$GITHUB_OUTPUT"
+            printf 'missing=%s\n' "$(IFS=,; echo "${missing[*]}")" >> "$GITHUB_OUTPUT"
+            echo "StegCore release evidence is not anonymously readable: ${missing[*]}"
+          else
+            printf 'available=true\n' >> "$GITHUB_OUTPUT"
+            printf 'missing=\n' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Evaluate independent release policy
-        id: decision
+        if: steps.acquire.outputs.available == 'true'
         continue-on-error: true
         run: |
           python scripts/evaluate_stegcore_release.py \
@@ -55,6 +75,60 @@ jobs:
             --pyproject "${RUNNER_TEMP}/stegcore/pyproject.toml" \
             --repository-url https://github.com/StegVerse-Labs/StegCore.git \
             --output evidence/stegcore-release-decision.json
+
+      - name: Record fail-closed evidence acquisition boundary
+        if: steps.acquire.outputs.available != 'true'
+        env:
+          MISSING: ${{ steps.acquire.outputs.missing }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          policy = json.loads(Path('policies/stegcore-release-policy-v1.json').read_text())
+          missing = [item for item in os.environ.get('MISSING', '').split(',') if item]
+          artifact = {
+              'artifact_type': 'governance.release_decision',
+              'schema_version': '1.0',
+              'policy_id': policy.get('policy_id'),
+              'decision_owner': policy.get('decision_owner'),
+              'subject_repository': 'StegVerse-Labs/StegCore',
+              'candidate_version': None,
+              'candidate_tag': None,
+              'candidate_commit': None,
+              'decision': 'FAIL-CLOSED',
+              'checks': {
+                  'evidence_acquisition': {
+                      'status': 'fail',
+                      'observed': {
+                          'missing_or_inaccessible': missing,
+                          'credential_escalation_attempted': False,
+                          'anonymous_raw_boundary_only': True,
+                      },
+                  }
+              },
+              'reasons': ['required StegCore release evidence was not readable at the configured non-credentialed acquisition boundary'],
+              'evaluated_at': datetime.now(timezone.utc).isoformat(),
+              'next_permitted_action': 'restore a TV/TVC-governed evidence projection or other authorized repository-readable transfer, then re-evaluate',
+              'authority_boundary': policy.get('authority_boundary'),
+              'release_created': False,
+              'tag_created': False,
+              'deployment_authorized': False,
+              'continuity_receipt_minted': False,
+          }
+          canonical = json.dumps(artifact, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+          artifact['decision_hash'] = hashlib.sha256(canonical.encode()).hexdigest()
+          Path('evidence').mkdir(exist_ok=True)
+          Path('evidence/stegcore-release-decision.json').write_text(json.dumps(artifact, indent=2, sort_keys=True) + '\n')
+          print('FAIL-CLOSED: required StegCore release evidence is inaccessible without credential escalation')
+          PY
+
+      - name: Resolve decision output
+        id: decision
+        run: |
           echo "decision=$(python -c "import json; print(json.load(open('evidence/stegcore-release-decision.json'))['decision'])")" >> "$GITHUB_OUTPUT"
 
       - name: Validate decision artifact boundary
