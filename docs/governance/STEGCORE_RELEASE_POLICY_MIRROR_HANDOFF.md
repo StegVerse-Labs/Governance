@@ -17,7 +17,7 @@ Workflow run `32452877938` on Governance main commit `aec49c63be87a193f0e4bf52b8
 
 Connected repository inspection confirms at least `StegVerse-Labs/StegCore/evidence/release-candidate-request.json` exists on StegCore main. Therefore the failure is an acquisition-boundary failure, not evidence that the candidate file is absent and not a release-policy denial.
 
-## Repair installed
+## Repair installed and verified
 
 Commit `5fd6737a66245c9f9d03bc0b198c50bdb86f6abb` updates `.github/workflows/evaluate-stegcore-release.yml` so the acquisition path:
 
@@ -27,14 +27,19 @@ Commit `5fd6737a66245c9f9d03bc0b198c50bdb86f6abb` updates `.github/workflows/eva
 4. preserves `release_created=false`, `tag_created=false`, `deployment_authorized=false`, and `continuity_receipt_minted=false`;
 5. permits normal independent policy evaluation only when the complete required evidence set is actually readable.
 
+Hosted run `32454014552` proved the repair. Acquisition completed successfully as an observation step, normal policy evaluation was skipped because the evidence set was inaccessible, the fail-closed artifact was created, decision output resolved, artifact-boundary validation passed, the changed decision persisted, and release-policy issue reconciliation passed. The run remained red only because the final policy gate intentionally fails whenever the decision is not `ALLOW`.
+
+The persisted decision is `FAIL-CLOSED`, decision hash `7d41889bfdbdf11f40669d9e7316e512ba01c89a0de59ea3969f6072b222e324`. It records all six required StegCore inputs as inaccessible at the anonymous raw boundary, `credential_escalation_attempted=false`, and no release/tag/deployment/continuity authority.
+
 An inaccessible projection is not treated as a failed StegCore runtime gate and is not converted into release authority.
 
 ## Current state
 
 ```text
 repair_implemented: true
-hosted_repair_validation: pending
-release_decision: not inferred
+hosted_repair_validation: verified
+workflow_run: 32454014552
+release_decision: FAIL-CLOSED
 release_created: false
 tag_created: false
 deployment_authorized: false
@@ -44,12 +49,11 @@ credential_escalation_authorized: false
 
 ## Exact next actions
 
-1. Observe the hosted run triggered by commit `5fd6737a66245c9f9d03bc0b198c50bdb86f6abb`.
-2. Verify that inaccessible StegCore evidence produces and persists `evidence/stegcore-release-decision.json` with `decision: FAIL-CLOSED` rather than failing before artifact creation.
-3. Keep the release goal open while the acquisition boundary remains fail-closed.
-4. Restore evidence availability only through a TV/TVC-governed projection or another explicitly authorized repository-readable transfer; do not add a GitHub-token runtime authority merely to make the evaluator pass.
-5. Re-run the actual independent release gates only after all required evidence is readable and commit/hash bindings can be verified.
-6. An `ALLOW` decision, if eventually produced, permits only the separately governed annotated-tag action declared by policy. It is not itself a tag, release, deployment, runtime proof, continuity receipt, or activation.
+1. Keep the release goal open while the acquisition boundary remains fail-closed.
+2. Restore evidence availability only through a TV/TVC-governed projection or another explicitly authorized repository-readable transfer; do not add a GitHub-token runtime authority merely to make the evaluator pass.
+3. Re-run the actual independent release gates only after all required evidence is readable and commit/hash bindings can be verified.
+4. An `ALLOW` decision, if eventually produced, permits only the separately governed annotated-tag action declared by policy. It is not itself a tag, release, deployment, runtime proof, continuity receipt, or activation.
+5. Propagate release evidence to Site, Publisher, admissibility-wiki, and stegguardian-wiki only if and when the exact release contract reaches the required released state.
 
 ## Remaining required evidence inputs
 
