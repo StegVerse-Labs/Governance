@@ -8,94 +8,36 @@
     "governance_claims_receipt_minting_authority": false,
     "policy_evaluation_is_release": false
   },
-  "candidate_commit": "70bbb0eb8a5dec4f27ee7aca5cf09cdb17a924af",
-  "candidate_tag": "v0.1.0",
-  "candidate_version": "0.1.0",
+  "candidate_commit": null,
+  "candidate_tag": null,
+  "candidate_version": null,
   "checks": {
-    "candidate_shape": {
+    "evidence_acquisition": {
       "observed": {
-        "missing": []
+        "anonymous_raw_boundary_only": true,
+        "credential_escalation_attempted": false,
+        "missing_or_inaccessible": [
+          "evidence/release-candidate-request.json",
+          "evidence/runtime-validation.json",
+          "evidence/release-readiness.json",
+          "evidence/downstream-verification-results.json",
+          "evidence/governance-freshness.json",
+          "pyproject.toml"
+        ]
       },
-      "status": "pass"
-    },
-    "downstream_hash_binding": {
-      "observed": "f258cc36c534ad30361c0ba1278578fcf74b3533b9d254efb7b1a667c3c5b40e",
-      "status": "pass"
-    },
-    "downstream_verification": {
-      "observed": {
-        "passed": 4,
-        "required": 4
-      },
-      "status": "pass"
-    },
-    "freshness_hash_binding": {
-      "observed": "3d4a84a1d3fa5e280d32d6d634026f7a6b33387b663a1ac16c44cb9ce6c9aaab",
-      "status": "pass"
-    },
-    "governance_freshness": {
-      "observed": "unchanged",
-      "status": "pass"
-    },
-    "readiness_downstream": {
-      "observed": "pass",
-      "status": "pass"
-    },
-    "readiness_runtime": {
-      "observed": "pass",
-      "status": "pass"
-    },
-    "release_still_unclaimed": {
-      "observed": {
-        "release_permitted": false,
-        "tag_permitted": true
-      },
-      "status": "fail"
-    },
-    "runtime_commit_binding": {
-      "observed": "70bbb0eb8a5dec4f27ee7aca5cf09cdb17a924af",
-      "status": "pass"
-    },
-    "runtime_hash_binding": {
-      "observed": "7d03c0eb769fafafb57d940465274560e811ebf0850fb2c6e94e96e7b0d2bcfb",
-      "status": "pass"
-    },
-    "runtime_validation": {
-      "observed": "pass",
-      "status": "pass"
-    },
-    "semantic_version": {
-      "observed": "0.1.0",
-      "status": "pass"
-    },
-    "tag_matches_version": {
-      "observed": "v0.1.0",
-      "status": "pass"
-    },
-    "tag_unique": {
-      "observed": {
-        "exists": true,
-        "tag": "v0.1.0"
-      },
-      "status": "fail"
-    },
-    "version_matches_project": {
-      "observed": "0.2.0",
       "status": "fail"
     }
   },
   "continuity_receipt_minted": false,
-  "decision": "DENY",
-  "decision_hash": "1de5588c2a9a9146e695ae0acea6128e748734f6bce81abbda9258731fbc4a3e",
+  "decision": "FAIL-CLOSED",
+  "decision_hash": "7d41889bfdbdf11f40669d9e7316e512ba01c89a0de59ea3969f6072b222e324",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-08-17T06:04:35.673797+00:00",
-  "next_permitted_action": "repair failed gates and re-evaluate",
+  "evaluated_at": "2026-08-21T06:20:45.351181+00:00",
+  "next_permitted_action": "restore a TV/TVC-governed evidence projection or other authorized repository-readable transfer, then re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
-    "failed gate: version_matches_project",
-    "failed gate: release_still_unclaimed",
-    "failed gate: tag_unique"
+    "required StegCore release evidence was not readable at the configured non-credentialed acquisition boundary"
   ],
   "release_created": false,
   "schema_version": "1.0",
