@@ -1,0 +1,24 @@
+{
+  "profile_version": "1.0",
+  "external_formalism_id": "VERFI-HUMAN-TRANSITION-EVIDENCE-001",
+  "provider_profile": "verfi.transition-evidence.test-candidate",
+  "authority_effect": "NONE_VALIDATION_ONLY",
+  "cases": [
+    {"id":"CLEAN_SEQUENCE","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"ALLOW","reason_code":"ok"}},
+    {"id":"COMPREHENSION_MISSING","disclosure":true,"comprehension":"ABSENT","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"DENY","reason_code":"evidence.comprehension_not_established"}},
+    {"id":"DISCLOSURE_DRIFT","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v2","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"FAIL-CLOSED","reason_code":"evidence.disclosure_drift"}},
+    {"id":"AUTHORIZATION_LAPSED","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":false,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"DENY","reason_code":"authorization.lapsed"}},
+    {"id":"EVIDENCE_TAMPER","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":false,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":false,"expected":{"result":"FAIL-CLOSED","reason_code":"evidence.integrity_failure"}},
+    {"id":"TEMPORAL_DISORDER","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":false,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"FAIL-CLOSED","reason_code":"evidence.temporal_disorder"}},
+    {"id":"AMBIGUOUS_COMPREHENSION","disclosure":true,"comprehension":"ACKNOWLEDGEMENT_ONLY","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"DENY","reason_code":"evidence.comprehension_ambiguous"}},
+    {"id":"OVER_COLLECTION","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":false,"reconstructable":true,"expected":{"result":"DENY","reason_code":"evidence.minimization_failure"}},
+    {"id":"INDEPENDENT_RECONSTRUCTION","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"expected":{"result":"ALLOW","reason_code":"ok"}},
+    {"id":"HUMAN_MACHINE_SYMMETRY","disclosure":true,"comprehension":"DISTINGUISHABLE","authorization_valid_at_commit":true,"signature":true,"presented_hash":"doc:v1","authorized_hash":"doc:v1","evidence_integrity":true,"temporal_order_valid":true,"minimum_information_satisfied":true,"reconstructable":true,"comparison_only":true,"expected":{"result":"DENY","reason_code":"comparison.no_execution_authority"}}
+  ],
+  "mandatory_invariants": {
+    "signature_cannot_substitute_for_comprehension": true,
+    "external_provider_execution_authority": false,
+    "continuity_receipt_minted": false,
+    "human_machine_comparison_grants_authority": false
+  }
+}
