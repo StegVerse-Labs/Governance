@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate external evidence envelopes and their bounded commitment mappings."""
+"""Validate external evidence envelopes and bounded provider-specific governance lanes."""
 from __future__ import annotations
 
 import json
@@ -8,6 +8,7 @@ import sys
 from typing import Any
 
 FIXTURE_DIR = pathlib.Path("docs/examples/interop")
+VERFI_PROFILE = FIXTURE_DIR / "verfi_transition_cases.json"
 EXPECTED = {
     "external_evidence_valid.json": ("ALLOW", "ok"),
     "external_evidence_stale.json": ("DENY", "evidence.stale"),
@@ -17,6 +18,18 @@ EXPECTED = {
 }
 PROVIDER_TYPES = {"telemetry", "attestation", "verification", "composite"}
 RESULTS = {"ALLOW", "DENY", "FAIL-CLOSED"}
+VERFI_CASES = {
+    "CLEAN_SEQUENCE": ("ALLOW", "ok"),
+    "COMPREHENSION_MISSING": ("DENY", "evidence.comprehension_not_established"),
+    "DISCLOSURE_DRIFT": ("FAIL-CLOSED", "evidence.disclosure_drift"),
+    "AUTHORIZATION_LAPSED": ("DENY", "authorization.lapsed"),
+    "EVIDENCE_TAMPER": ("FAIL-CLOSED", "evidence.integrity_failure"),
+    "TEMPORAL_DISORDER": ("FAIL-CLOSED", "evidence.temporal_disorder"),
+    "AMBIGUOUS_COMPREHENSION": ("DENY", "evidence.comprehension_ambiguous"),
+    "OVER_COLLECTION": ("DENY", "evidence.minimization_failure"),
+    "INDEPENDENT_RECONSTRUCTION": ("ALLOW", "ok"),
+    "HUMAN_MACHINE_SYMMETRY": ("DENY", "comparison.no_execution_authority"),
+}
 
 
 def require(obj: Any, fields: tuple[str, ...], label: str, errors: list[str], path: pathlib.Path) -> None:
@@ -115,6 +128,97 @@ def validate(path: pathlib.Path, data: dict[str, Any]) -> list[str]:
     return errors
 
 
+def evaluate_verfi(case: dict[str, Any]) -> tuple[str, str]:
+    if case.get("id") == "HUMAN_MACHINE_SYMMETRY":
+        return "DENY", "comparison.no_execution_authority"
+    if case.get("evidence_integrity") is not True:
+        return "FAIL-CLOSED", "evidence.integrity_failure"
+    if case.get("temporal_order_valid") is not True:
+        return "FAIL-CLOSED", "evidence.temporal_disorder"
+    if case.get("presented_hash") != case.get("authorized_hash"):
+        return "FAIL-CLOSED", "evidence.disclosure_drift"
+    if case.get("comprehension") == "ABSENT":
+        return "DENY", "evidence.comprehension_not_established"
+    if case.get("comprehension") != "DISTINGUISHABLE":
+        return "DENY", "evidence.comprehension_ambiguous"
+    if case.get("authorization_valid_at_commit") is not True:
+        return "DENY", "authorization.lapsed"
+    if case.get("minimum_information_satisfied") is not True:
+        return "DENY", "evidence.minimization_failure"
+    if case.get("reconstructable") is not True:
+        return "FAIL-CLOSED", "evidence.reconstruction_failure"
+    return "ALLOW", "ok"
+
+
+def validate_verfi_profile(path: pathlib.Path, data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    require(data, ("profile_version", "external_formalism_id", "provider_profile", "authority_effect", "cases", "mandatory_invariants"), "VerFi profile", errors, path)
+    if data.get("profile_version") != "1.0":
+        errors.append(f"{path}: profile_version must be 1.0")
+    if data.get("external_formalism_id") != "VERFI-HUMAN-TRANSITION-EVIDENCE-001":
+        errors.append(f"{path}: unexpected external_formalism_id")
+    if data.get("authority_effect") != "NONE_VALIDATION_ONLY":
+        errors.append(f"{path}: external profile must remain validation-only")
+
+    invariants = data.get("mandatory_invariants")
+    require(invariants, (
+        "signature_cannot_substitute_for_comprehension",
+        "external_provider_execution_authority",
+        "continuity_receipt_minted",
+        "human_machine_comparison_grants_authority",
+    ), "mandatory_invariants", errors, path)
+    if isinstance(invariants, dict):
+        if invariants.get("signature_cannot_substitute_for_comprehension") is not True:
+            errors.append(f"{path}: signature/comprehension separation must be true")
+        for field in ("external_provider_execution_authority", "continuity_receipt_minted", "human_machine_comparison_grants_authority"):
+            if invariants.get(field) is not False:
+                errors.append(f"{path}: {field} must remain false")
+
+    cases = data.get("cases")
+    if not isinstance(cases, list):
+        errors.append(f"{path}: cases must be a list")
+        return errors
+    if len(cases) != 10:
+        errors.append(f"{path}: expected 10 VerFi governance-lane cases")
+
+    by_id: dict[str, dict[str, Any]] = {}
+    for index, case in enumerate(cases):
+        require(case, (
+            "id", "disclosure", "comprehension", "authorization_valid_at_commit", "signature",
+            "presented_hash", "authorized_hash", "evidence_integrity", "temporal_order_valid",
+            "minimum_information_satisfied", "reconstructable", "expected",
+        ), f"cases[{index}]", errors, path)
+        if isinstance(case, dict) and isinstance(case.get("id"), str):
+            by_id[case["id"]] = case
+
+    if set(by_id) != set(VERFI_CASES):
+        errors.append(f"{path}: VerFi case identifiers do not match required governance matrix")
+
+    for case_id, expected in VERFI_CASES.items():
+        case = by_id.get(case_id)
+        if not case:
+            continue
+        declared = case.get("expected", {})
+        if not isinstance(declared, dict) or (declared.get("result"), declared.get("reason_code")) != expected:
+            errors.append(f"{path}: {case_id} declared expectation must be {expected}")
+        observed = evaluate_verfi(case)
+        if observed != expected:
+            errors.append(f"{path}: {case_id} deterministic result {observed} != {expected}")
+
+    missing = by_id.get("COMPREHENSION_MISSING")
+    if missing:
+        if missing.get("signature") is not True or missing.get("disclosure") is not True:
+            errors.append(f"{path}: comprehension-missing negative lane must retain disclosure and signature")
+        if evaluate_verfi(missing) != ("DENY", "evidence.comprehension_not_established"):
+            errors.append(f"{path}: signature must not substitute for comprehension evidence")
+
+    symmetry = by_id.get("HUMAN_MACHINE_SYMMETRY")
+    if symmetry and symmetry.get("comparison_only") is not True:
+        errors.append(f"{path}: HUMAN_MACHINE_SYMMETRY must remain comparison_only")
+
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     loaded: dict[str, dict[str, Any]] = {}
@@ -136,13 +240,18 @@ def main() -> int:
             if valid.get(section, {}).get(field) != drifted.get(section, {}).get(field):
                 errors.append(f"{FIXTURE_DIR}: drift replay must preserve {section}.{field}")
 
+    verfi, verfi_load_errors = load(VERFI_PROFILE)
+    errors.extend(verfi_load_errors)
+    if verfi is not None:
+        errors.extend(validate_verfi_profile(VERFI_PROFILE, verfi))
+
     if errors:
         print("External evidence interoperability validation failed:")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print(f"External evidence interoperability validation passed for {len(EXPECTED)} canonical cases.")
+    print(f"External evidence interoperability validation passed for {len(EXPECTED)} canonical envelopes plus {len(VERFI_CASES)} VerFi governance-lane cases.")
     return 0
 
 
