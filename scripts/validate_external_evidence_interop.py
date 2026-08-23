@@ -135,6 +135,8 @@ def evaluate_verfi(case: dict[str, Any]) -> tuple[str, str]:
         return "FAIL-CLOSED", "evidence.integrity_failure"
     if case.get("temporal_order_valid") is not True:
         return "FAIL-CLOSED", "evidence.temporal_disorder"
+    if case.get("disclosure") is not True:
+        return "DENY", "evidence.disclosure_not_established"
     if case.get("presented_hash") != case.get("authorized_hash"):
         return "FAIL-CLOSED", "evidence.disclosure_drift"
     if case.get("comprehension") == "ABSENT":
@@ -143,6 +145,8 @@ def evaluate_verfi(case: dict[str, Any]) -> tuple[str, str]:
         return "DENY", "evidence.comprehension_ambiguous"
     if case.get("authorization_valid_at_commit") is not True:
         return "DENY", "authorization.lapsed"
+    if case.get("signature") is not True:
+        return "DENY", "evidence.signature_not_established"
     if case.get("minimum_information_satisfied") is not True:
         return "DENY", "evidence.minimization_failure"
     if case.get("reconstructable") is not True:
@@ -211,6 +215,17 @@ def validate_verfi_profile(path: pathlib.Path, data: dict[str, Any]) -> list[str
             errors.append(f"{path}: comprehension-missing negative lane must retain disclosure and signature")
         if evaluate_verfi(missing) != ("DENY", "evidence.comprehension_not_established"):
             errors.append(f"{path}: signature must not substitute for comprehension evidence")
+
+    clean = by_id.get("CLEAN_SEQUENCE")
+    if clean:
+        without_disclosure = dict(clean)
+        without_disclosure["disclosure"] = False
+        if evaluate_verfi(without_disclosure) != ("DENY", "evidence.disclosure_not_established"):
+            errors.append(f"{path}: missing disclosure must not be allowed")
+        without_signature = dict(clean)
+        without_signature["signature"] = False
+        if evaluate_verfi(without_signature) != ("DENY", "evidence.signature_not_established"):
+            errors.append(f"{path}: missing signature must not be allowed")
 
     symmetry = by_id.get("HUMAN_MACHINE_SYMMETRY")
     if symmetry and symmetry.get("comparison_only") is not True:
