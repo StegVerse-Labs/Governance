@@ -24,3 +24,49 @@ jobs:
       - name: Run governance validation
         run: |
           python scripts/validate_governance.py
+
+      - name: Validate KnowledgeVault GDR persistence boundary
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/knowledge_vault_gdr.py
+          rm -rf build/kv-governance
+          mkdir -p build
+          cat > build/gdr.json <<'JSON'
+          {
+            "gdr_version": "1.0",
+            "decision_id": "gdr-kv-example-001",
+            "decision": "allow",
+            "policy": {
+              "policy_id": "policy.accept_valid_receipt_chain",
+              "policy_version": "1.0"
+            },
+            "evaluated_inputs": {
+              "source": "stegid.continuity_receipts",
+              "receipt_ids": ["continuity-example-001"],
+              "bundle_hash": null
+            },
+            "issued_at": 1766530000,
+            "rationale": "Validated continuity receipt supplied to bounded governance evaluation."
+          }
+          JSON
+          python scripts/knowledge_vault_gdr.py create build/kv-governance build/gdr.json \
+            --continuity-record-ref _System/Identity/Continuity/continuity-example-001.json
+          package=build/kv-governance/_System/Governance/Decisions/gdr-kv-example-001.json
+          python scripts/knowledge_vault_gdr.py verify "$package"
+          python - <<'PY'
+          import json
+          p='build/kv-governance/_System/Governance/Decisions/gdr-kv-example-001.json'
+          data=json.load(open(p))
+          assert data['knowledge_vault_role'] == 'durable_persistence_only'
+          assert data['knowledge_vault_governance_authority'] is False
+          assert data['knowledge_vault_continuity_authority'] is False
+          assert data['governance_execution_authority'] is False
+          assert data['continuity_receipt_minted'] is False
+          assert data['cryptographic_verification_performed'] is False
+          data['governance_execution_authority']=True
+          json.dump(data,open('build/kv-governance/tampered.json','w'),sort_keys=True)
+          PY
+          if python scripts/knowledge_vault_gdr.py verify build/kv-governance/tampered.json; then
+            echo "KnowledgeVault/Governance authority escalation was incorrectly accepted" >&2
+            exit 1
+          fi
