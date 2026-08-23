@@ -1,0 +1,26 @@
+{
+  "translation_version": "1.0",
+  "external_formalism_id": "VERFI-HUMAN-TRANSITION-EVIDENCE-001",
+  "source_layer": "Admissible-Existence/.github external-formalism candidate",
+  "target_layer": "StegVerse-Labs/Governance external-evidence decision",
+  "authority_effect": "NONE_VALIDATION_ONLY",
+  "translation_is_identity": false,
+  "rules": [
+    {"case_id":"CLEAN_SEQUENCE","candidate_class":"ALLOW_CANDIDATE","governance_result":"ALLOW","reason_code":"ok"},
+    {"case_id":"COMPREHENSION_MISSING","candidate_class":"AUTHORIZATION_INADMISSIBLE","governance_result":"DENY","reason_code":"evidence.comprehension_not_established"},
+    {"case_id":"DISCLOSURE_DRIFT","candidate_class":"REVIEW","governance_result":"FAIL-CLOSED","reason_code":"evidence.disclosure_drift"},
+    {"case_id":"AUTHORIZATION_LAPSED","candidate_class":"DENY","governance_result":"DENY","reason_code":"authorization.lapsed"},
+    {"case_id":"EVIDENCE_TAMPER","candidate_class":"FAIL_CLOSED","governance_result":"FAIL-CLOSED","reason_code":"evidence.integrity_failure"},
+    {"case_id":"TEMPORAL_DISORDER","candidate_class":"FAIL_CLOSED","governance_result":"FAIL-CLOSED","reason_code":"evidence.temporal_disorder"},
+    {"case_id":"AMBIGUOUS_COMPREHENSION","candidate_class":"REVIEW","governance_result":"DENY","reason_code":"evidence.comprehension_ambiguous"},
+    {"case_id":"OVER_COLLECTION","candidate_class":"REVIEW_MINIMIZATION","governance_result":"DENY","reason_code":"evidence.minimization_failure"},
+    {"case_id":"INDEPENDENT_RECONSTRUCTION","candidate_class":"ALLOW_CANDIDATE","governance_result":"ALLOW","reason_code":"ok"},
+    {"case_id":"HUMAN_MACHINE_SYMMETRY","candidate_class":"STRUCTURAL_COMPARISON_ONLY","governance_result":"DENY","reason_code":"comparison.no_execution_authority"}
+  ],
+  "invariants": {
+    "candidate_class_does_not_equal_execution_authority": true,
+    "review_may_resolve_to_deny_or_fail_closed_at_governance": true,
+    "allow_candidate_requires_governance_evaluation_before_allow": true,
+    "comparison_only_can_never_authorize_execution": true
+  }
+}
