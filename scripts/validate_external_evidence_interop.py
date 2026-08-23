@@ -9,6 +9,7 @@ from typing import Any
 
 FIXTURE_DIR = pathlib.Path("docs/examples/interop")
 VERFI_PROFILE = FIXTURE_DIR / "verfi_transition_cases.json"
+VERFI_TRANSLATION = FIXTURE_DIR / "verfi_semantic_translation.json"
 EXPECTED = {
     "external_evidence_valid.json": ("ALLOW", "ok"),
     "external_evidence_stale.json": ("DENY", "evidence.stale"),
@@ -29,6 +30,18 @@ VERFI_CASES = {
     "OVER_COLLECTION": ("DENY", "evidence.minimization_failure"),
     "INDEPENDENT_RECONSTRUCTION": ("ALLOW", "ok"),
     "HUMAN_MACHINE_SYMMETRY": ("DENY", "comparison.no_execution_authority"),
+}
+VERFI_CANDIDATE_CLASSES = {
+    "CLEAN_SEQUENCE": "ALLOW_CANDIDATE",
+    "COMPREHENSION_MISSING": "AUTHORIZATION_INADMISSIBLE",
+    "DISCLOSURE_DRIFT": "REVIEW",
+    "AUTHORIZATION_LAPSED": "DENY",
+    "EVIDENCE_TAMPER": "FAIL_CLOSED",
+    "TEMPORAL_DISORDER": "FAIL_CLOSED",
+    "AMBIGUOUS_COMPREHENSION": "REVIEW",
+    "OVER_COLLECTION": "REVIEW_MINIMIZATION",
+    "INDEPENDENT_RECONSTRUCTION": "ALLOW_CANDIDATE",
+    "HUMAN_MACHINE_SYMMETRY": "STRUCTURAL_COMPARISON_ONLY",
 }
 
 
@@ -234,6 +247,53 @@ def validate_verfi_profile(path: pathlib.Path, data: dict[str, Any]) -> list[str
     return errors
 
 
+def validate_verfi_translation(path: pathlib.Path, data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    require(data, ("translation_version", "external_formalism_id", "source_layer", "target_layer", "authority_effect", "translation_is_identity", "rules", "invariants"), "VerFi translation", errors, path)
+    if data.get("translation_version") != "1.0":
+        errors.append(f"{path}: translation_version must be 1.0")
+    if data.get("external_formalism_id") != "VERFI-HUMAN-TRANSITION-EVIDENCE-001":
+        errors.append(f"{path}: unexpected external_formalism_id")
+    if data.get("authority_effect") != "NONE_VALIDATION_ONLY":
+        errors.append(f"{path}: translation must remain validation-only")
+    if data.get("translation_is_identity") is not False:
+        errors.append(f"{path}: candidate classes and Governance terminal results must not be declared identical")
+
+    rules = data.get("rules")
+    if not isinstance(rules, list):
+        errors.append(f"{path}: rules must be a list")
+        return errors
+    by_id = {rule.get("case_id"): rule for rule in rules if isinstance(rule, dict)}
+    if set(by_id) != set(VERFI_CASES):
+        errors.append(f"{path}: translation rules must cover exactly the ten canonical VerFi cases")
+    for case_id, governance_expected in VERFI_CASES.items():
+        rule = by_id.get(case_id)
+        if not isinstance(rule, dict):
+            continue
+        if rule.get("candidate_class") != VERFI_CANDIDATE_CLASSES[case_id]:
+            errors.append(f"{path}: {case_id} candidate class mismatch")
+        if (rule.get("governance_result"), rule.get("reason_code")) != governance_expected:
+            errors.append(f"{path}: {case_id} Governance translation mismatch")
+
+    invariants = data.get("invariants")
+    require(invariants, (
+        "candidate_class_does_not_equal_execution_authority",
+        "review_may_resolve_to_deny_or_fail_closed_at_governance",
+        "allow_candidate_requires_governance_evaluation_before_allow",
+        "comparison_only_can_never_authorize_execution",
+    ), "translation invariants", errors, path)
+    if isinstance(invariants, dict):
+        for field in (
+            "candidate_class_does_not_equal_execution_authority",
+            "review_may_resolve_to_deny_or_fail_closed_at_governance",
+            "allow_candidate_requires_governance_evaluation_before_allow",
+            "comparison_only_can_never_authorize_execution",
+        ):
+            if invariants.get(field) is not True:
+                errors.append(f"{path}: invariant {field} must remain true")
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     loaded: dict[str, dict[str, Any]] = {}
@@ -260,13 +320,18 @@ def main() -> int:
     if verfi is not None:
         errors.extend(validate_verfi_profile(VERFI_PROFILE, verfi))
 
+    translation, translation_load_errors = load(VERFI_TRANSLATION)
+    errors.extend(translation_load_errors)
+    if translation is not None:
+        errors.extend(validate_verfi_translation(VERFI_TRANSLATION, translation))
+
     if errors:
         print("External evidence interoperability validation failed:")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print(f"External evidence interoperability validation passed for {len(EXPECTED)} canonical envelopes plus {len(VERFI_CASES)} VerFi governance-lane cases.")
+    print(f"External evidence interoperability validation passed for {len(EXPECTED)} canonical envelopes plus {len(VERFI_CASES)} VerFi governance-lane cases and the cross-layer semantic translation.")
     return 0
 
 
