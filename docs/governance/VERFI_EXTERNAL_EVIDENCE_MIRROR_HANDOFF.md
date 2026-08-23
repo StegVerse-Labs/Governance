@@ -21,7 +21,7 @@ The existing `.github/workflows/validate_docs.yml` already runs `scripts/validat
 
 ## Governance lanes
 
-Ten deterministic VerFi-oriented cases are now executable through the Governance validator:
+Ten deterministic VerFi-oriented cases are executable through the Governance validator:
 
 ```text
 CLEAN_SEQUENCE
@@ -63,6 +63,26 @@ DENY / evidence.comprehension_not_established
 
 This proves the test surface does not collapse motor/signature evidence into comprehension evidence.
 
+## Transition prerequisite hardening — 2026-08-22
+
+Review of the first implementation exposed a sequencing gap: the evaluator could reach `ALLOW` when invoked directly with disclosure absent or signature absent, because the canonical fixtures happened to keep those fields true but the evaluator did not independently enforce them.
+
+Repair commit:
+
+```text
+3b24001e8017b1487d7c033d29289d1149fdf9c5
+```
+
+The Governance evaluator now preserves explicit non-ALLOW outcomes:
+
+```text
+disclosure absent -> DENY / evidence.disclosure_not_established
+signature absent -> DENY / evidence.signature_not_established
+comprehension absent despite signature -> DENY / evidence.comprehension_not_established
+```
+
+`validate_verfi_profile()` also derives negative variants from the clean canonical case and asserts both disclosure and signature omissions remain denied. This is a regression guard even though the ten canonical fixture identities remain stable.
+
 ## Cross-repository source relationship
 
 The external-formalism candidate definition is maintained at:
@@ -90,8 +110,8 @@ The current lane validates StegVerse behavior against a declared external-formal
 
 ## Next validation gate
 
-1. Inspect the `Validate Governance Docs` run for the exact current `main` head.
-2. Verify the `Validate external evidence interoperability` step passes all five existing generic envelopes plus all ten VerFi cases.
+1. Inspect the `Validate Governance Docs` run for the exact current `main` head at or after `3b24001e8017b1487d7c033d29289d1149fdf9c5`.
+2. Verify the `Validate external evidence interoperability` step passes all five existing generic envelopes plus all ten VerFi cases and the two derived prerequisite-regression checks.
 3. Bind run, job, head SHA, and relevant logs here.
 4. If an actual VerFi evidence artifact becomes available, add immutable artifact identity and run independent reconstruction/negative tests without promoting provider authority.
 
@@ -101,7 +121,7 @@ Denominator: 5 deliverables.
 
 ```text
 1 governance fixture profile: COMPLETE
-2 deterministic validator integration: COMPLETE
+2 deterministic validator integration: COMPLETE_HARDENED
 3 provider-interface documentation: COMPLETE
 4 durable handoff: COMPLETE
 5 exact-current-main hosted validation evidence: PENDING
