@@ -2,7 +2,7 @@
 
 Goal: `GOV-VERFI-SEMANTIC-TRANSLATION-001`
 Parent: `docs/governance/VERFI_EXTERNAL_EVIDENCE_MIRROR_HANDOFF.md`
-Status: `IMPLEMENTED_PENDING_HOSTED_VALIDATION`
+Status: `HOSTED_VALIDATED_MERGED`
 
 Installed:
 - `docs/examples/interop/verfi_semantic_translation.json`
@@ -24,8 +24,21 @@ Required invariants:
 - ALLOW_CANDIDATE is not ALLOW until Governance evaluates it;
 - comparison-only can never authorize execution.
 
-Commits:
+Implementation commits:
 - translation artifact: `0004b9416a61e1d8ff44a1cad970cb656e50de38`
 - validator integration: `417567d31d5721c390c1285182a4640aa1ace97a`
 
-Next gate: run the existing `Validate Governance Docs` path against this exact tree, bind run/job/head evidence, then update the parent VerFi handoff and issue #21. No VerFi product, legal, cognitive-state, Continuity, or execution authority is created by this lane.
+Hosted validation:
+- PR: `StegVerse-Labs/Governance#23`
+- PR head: `2e26905c0ce38f7e56360e3033647a24f4ea8395`
+- `Validate Governance Docs` run: `32669126177`
+- job: `97267075849`
+- result: `SUCCESS`
+- validator output: `External evidence interoperability validation passed for 5 canonical envelopes plus 10 VerFi governance-lane cases and the cross-layer semantic translation.`
+- `Validate Governance (schema + docs)` run: `32669126147` — `SUCCESS`
+- `Test Readiness` run: `32669126154` — `SUCCESS`
+- merge commit: `41448f9089a3edd81cb11b95565663631dd7a481`
+
+This lane is complete within bounded semantic-translation scope. It creates no provider, Continuity, legal, cognitive-state, publication, release, or execution authority.
+
+Parent continuation: bind this result into issue #21 and preserve the real-VerFi-artifact reconstruction gate as open.
