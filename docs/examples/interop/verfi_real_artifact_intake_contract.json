@@ -1,0 +1,58 @@
+{
+  "contract_version": "1.0",
+  "external_formalism_id": "VERFI-HUMAN-TRANSITION-EVIDENCE-001",
+  "status": "READY_FOR_REAL_ARTIFACT_NO_ARTIFACT_BOUND",
+  "authority_effect": "NONE_VALIDATION_ONLY",
+  "artifact_instance_present": false,
+  "accepted_artifact_types": [
+    "consent_record",
+    "evidence_package",
+    "implementation_schema",
+    "api_output",
+    "execution_verified_token_specimen"
+  ],
+  "required_identity_fields": [
+    "artifact_type",
+    "source_uri_or_transfer_ref",
+    "sha256",
+    "byte_length",
+    "observed_at",
+    "producer_asserted"
+  ],
+  "required_semantic_observables": [
+    "identity_binding",
+    "disclosure_version",
+    "comprehension_checkpoint_events",
+    "checkpoint_correction_history",
+    "authorization_enablement_event",
+    "signature_or_commit_event",
+    "integrity_proof",
+    "temporal_order"
+  ],
+  "required_tests": [
+    "ARTIFACT_IDENTITY_BINDING",
+    "DIGEST_REPRODUCIBILITY",
+    "DISCLOSURE_VERSION_CONTINUITY",
+    "CHECKPOINT_CORRECTION_PRESERVATION",
+    "AUTHORIZATION_ENABLEMENT_CAUSALITY",
+    "COMPREHENSION_MISSING_NEGATIVE",
+    "TAMPER_FAIL_CLOSED",
+    "TEMPORAL_ORDER_VALIDATION",
+    "INDEPENDENT_RECONSTRUCTION",
+    "EXTERNAL_TOKEN_NO_AUTHORITY"
+  ],
+  "mandatory_outcomes": {
+    "missing_comprehension": ["DENY", "evidence.comprehension_not_established"],
+    "integrity_failure": ["FAIL-CLOSED", "evidence.integrity_failure"],
+    "temporal_disorder": ["FAIL-CLOSED", "evidence.temporal_disorder"],
+    "reconstruction_failure": ["FAIL-CLOSED", "evidence.reconstruction_failure"]
+  },
+  "authority_invariants": {
+    "external_provider_execution_authority": false,
+    "external_token_execution_authority": false,
+    "external_token_admissibility_authority": false,
+    "continuity_receipt_minted_by_governance": false,
+    "legal_admissibility_inferred": false,
+    "cognitive_state_proven": false
+  }
+}
