@@ -11,6 +11,7 @@ on:
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
       - 'scripts/validate_external_evidence_interop.py'
+      - 'scripts/validate_verfi_real_artifact_intake.py'
       - 'scripts/validate_relationship_outcomes.py'
       - 'scripts/run_governance_tasks.py'
       - 'scripts/ingest_conversation.py'
@@ -24,6 +25,7 @@ on:
       - 'scripts/validate_docs.py'
       - 'scripts/validate_gdr_examples.py'
       - 'scripts/validate_external_evidence_interop.py'
+      - 'scripts/validate_verfi_real_artifact_intake.py'
       - 'scripts/validate_relationship_outcomes.py'
       - 'scripts/run_governance_tasks.py'
       - 'scripts/ingest_conversation.py'
@@ -56,6 +58,9 @@ jobs:
 
       - name: Validate external evidence interoperability
         run: python scripts/validate_external_evidence_interop.py
+
+      - name: Validate VerFi real-artifact intake contract
+        run: python scripts/validate_verfi_real_artifact_intake.py
 
       - name: Validate relationship and outcome governance
         run: python scripts/validate_relationship_outcomes.py
