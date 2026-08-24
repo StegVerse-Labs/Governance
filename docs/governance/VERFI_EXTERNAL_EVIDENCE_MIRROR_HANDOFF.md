@@ -5,23 +5,26 @@
 - Goal ID: `GOV-VERFI-EXTERNAL-EVIDENCE-001`
 - Repository: `StegVerse-Labs/Governance`
 - Parent source of truth: `GOVERNANCE_MIRROR_HANDOFF.md`
-- Status: `IMPLEMENTED_PENDING_HOSTED_VALIDATION`
-- Scope: exercise a bounded VerFi human-transition evidence profile through existing Governance external-evidence validation without granting the provider execution authority.
+- Status: `SYNTHETIC_AND_INTAKE_LANES_HOSTED_VALIDATED_PENDING_REAL_VERFI_ARTIFACT`
+- Scope: exercise a bounded VerFi human-transition evidence profile through Governance without granting provider or token execution authority.
 
-## Installed surfaces
+## Implemented and validated surfaces
 
 ```text
 docs/examples/interop/verfi_transition_cases.json
 scripts/validate_external_evidence_interop.py
-docs/examples/EXTERNAL_EVIDENCE_PROVIDER_INTERFACE.md
-docs/governance/VERFI_EXTERNAL_EVIDENCE_MIRROR_HANDOFF.md
+docs/examples/interop/verfi_semantic_translation.json
+docs/governance/VERFI_SEMANTIC_TRANSLATION_MIRROR_HANDOFF.md
+docs/examples/interop/verfi_real_artifact_intake_contract.json
+docs/examples/VERFI_REAL_ARTIFACT_TEST_PROTOCOL.md
+scripts/validate_verfi_real_artifact_intake.py
+docs/governance/VERFI_REAL_ARTIFACT_INTAKE_MIRROR_HANDOFF.md
+.github/workflows/validate_docs.yml
 ```
 
-The existing `.github/workflows/validate_docs.yml` already runs `scripts/validate_external_evidence_interop.py` on relevant pushes and pull requests; no second workflow or control plane was created.
+## Proven bounded behavior
 
-## Governance lanes
-
-Ten deterministic VerFi-oriented cases are executable through the Governance validator:
+Ten deterministic VerFi-oriented governance cases are executable and hosted-tested:
 
 ```text
 CLEAN_SEQUENCE
@@ -36,97 +39,96 @@ INDEPENDENT_RECONSTRUCTION
 HUMAN_MACHINE_SYMMETRY
 ```
 
-Expected terminal classes remain bounded to existing Governance semantics:
-
-```text
-ALLOW
-DENY
-FAIL-CLOSED
-```
-
-Provider-specific reason codes preserve why a transition-evidence candidate was denied or failed closed.
-
-## Mandatory invariants
+Mandatory invariants remain enforced:
 
 ```text
 signature_cannot_substitute_for_comprehension = true
 external_provider_execution_authority = false
 continuity_receipt_minted = false
 human_machine_comparison_grants_authority = false
+external_token_execution_authority = false
+external_token_admissibility_authority = false
 ```
 
-The negative case intentionally retains both disclosure and signature while producing:
+The negative case retains disclosure and signature while producing:
 
 ```text
 DENY / evidence.comprehension_not_established
 ```
 
-This proves the test surface does not collapse motor/signature evidence into comprehension evidence.
+The evaluator also rejects missing disclosure and missing signature directly. Candidate-layer classes are explicitly translated into Governance terminal decisions rather than treated as identity-equivalent.
 
-## Transition prerequisite hardening — 2026-08-22
+## Hosted evidence
 
-Review of the first implementation exposed a sequencing gap: the evaluator could reach `ALLOW` when invoked directly with disclosure absent or signature absent, because the canonical fixtures happened to keep those fields true but the evaluator did not independently enforce them.
+Semantic-translation validation:
+- PR `#23`
+- `Validate Governance Docs` run `32669126177`, job `97267075849` — SUCCESS
+- merge `41448f9089a3edd81cb11b95565663631dd7a481`
 
-Repair commit:
+Real-artifact intake readiness:
+- PR `#24`
+- PR head `4c6ac5b60f0d15e8340fa17d225059cb5ae03c76`
+- `Validate Governance Docs` run `32691506708`, job `97325897367` — SUCCESS
+- `Validate Governance (schema + docs)` run `32691506664` — SUCCESS
+- `Test Readiness` run `32691506637` — SUCCESS
+- merge `79bac7916b9fd08d60a456581954e7917af2625d`
+- validator result: no artifact fabricated, immutable identity required, ten-test matrix preserved, authority `NONE_VALIDATION_ONLY`
+
+## Real-artifact intake gate
+
+The repository is now prepared to ingest one actual VerFi artifact without changing the test contract. Accepted first artifacts are:
 
 ```text
-3b24001e8017b1487d7c033d29289d1149fdf9c5
+consent_record
+evidence_package
+implementation_schema
+api_output
+execution_verified_token_specimen
 ```
 
-The Governance evaluator now preserves explicit non-ALLOW outcomes:
+Before semantic interpretation, an artifact must be bound by type, source/transfer reference, SHA-256 digest, byte length, observation time, and producer-asserted provenance posture.
+
+The required implementation tests are:
 
 ```text
-disclosure absent -> DENY / evidence.disclosure_not_established
-signature absent -> DENY / evidence.signature_not_established
-comprehension absent despite signature -> DENY / evidence.comprehension_not_established
+ARTIFACT_IDENTITY_BINDING
+DIGEST_REPRODUCIBILITY
+DISCLOSURE_VERSION_CONTINUITY
+CHECKPOINT_CORRECTION_PRESERVATION
+AUTHORIZATION_ENABLEMENT_CAUSALITY
+COMPREHENSION_MISSING_NEGATIVE
+TAMPER_FAIL_CLOSED
+TEMPORAL_ORDER_VALIDATION
+INDEPENDENT_RECONSTRUCTION
+EXTERNAL_TOKEN_NO_AUTHORITY
 ```
 
-`validate_verfi_profile()` also derives negative variants from the clean canonical case and asserts both disclosure and signature omissions remain denied. This is a regression guard even though the ten canonical fixture identities remain stable.
+## Remaining limitation
 
-## Cross-repository source relationship
-
-The external-formalism candidate definition is maintained at:
+No actual VerFi production artifact has been supplied or independently inspected. Therefore:
 
 ```text
-Admissible-Existence/.github/docs/external-formalisms/VERFI.md
-Admissible-Existence/.github/data/external-formalisms/verfi.json
-Admissible-Existence/.github/docs/external-formalisms/VERFI_MIRROR_HANDOFF.md
-```
-
-Governance consumes the bounded comparison semantics only. It does not become the source of VerFi's product claims or Admissible-Existence mathematics.
-
-## Current limitation
-
-No actual VerFi evidence envelope, implementation schema, API output, or independently reconstructable production artifact has been supplied. Therefore:
-
-```text
+artifact_instance_present = false
 production_interoperability_proven = false
 external_product_claims_validated = false
 legal_admissibility_proven = false
 cognitive_state_proven = false
 ```
 
-The current lane validates StegVerse behavior against a declared external-formalism candidate, not VerFi's implementation.
-
-## Next validation gate
-
-1. Inspect the `Validate Governance Docs` run for the exact current `main` head at or after `3b24001e8017b1487d7c033d29289d1149fdf9c5`.
-2. Verify the `Validate external evidence interoperability` step passes all five existing generic envelopes plus all ten VerFi cases and the two derived prerequisite-regression checks.
-3. Bind run, job, head SHA, and relevant logs here.
-4. If an actual VerFi evidence artifact becomes available, add immutable artifact identity and run independent reconstruction/negative tests without promoting provider authority.
+This is now the only substantive VerFi implementation-level dependency. Receipt of a real artifact is required to advance beyond the bounded synthetic/public-source/intake-preparation lanes.
 
 ## Completion accounting
 
-Denominator: 5 deliverables.
+For StegVerse-controlled VerFi preparation, all declared source/control work is complete and hosted validated. Real-world interoperability remains externally gated.
 
 ```text
-1 governance fixture profile: COMPLETE
-2 deterministic validator integration: COMPLETE_HARDENED
-3 provider-interface documentation: COMPLETE
-4 durable handoff: COMPLETE
-5 exact-current-main hosted validation evidence: PENDING
+synthetic governance profile: COMPLETE_HOSTED_VALIDATED
+prerequisite hardening: COMPLETE_HOSTED_VALIDATED
+cross-layer semantic translation: COMPLETE_HOSTED_VALIDATED
+real-artifact intake contract: COMPLETE_HOSTED_VALIDATED
+real-artifact test protocol: COMPLETE_HOSTED_VALIDATED
+actual VerFi artifact binding: PENDING_EXTERNAL_ARTIFACT
+implementation-level reconstruction: PENDING_EXTERNAL_ARTIFACT
 ```
 
-Current completion: `4/5 = 80%`.
-
-Developed files: `4/4 = 100%`; scaffolding/stubs: `0`; missing planned source files: `0`.
+Developed source/control surfaces: complete for declared preparation scope. Scaffolding/stubs: `0` in this lane.
