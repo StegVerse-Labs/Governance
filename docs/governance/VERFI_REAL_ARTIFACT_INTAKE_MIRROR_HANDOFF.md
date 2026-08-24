@@ -2,7 +2,7 @@
 
 Goal: `GOV-VERFI-REAL-ARTIFACT-INTAKE-001`
 Parent: `docs/governance/VERFI_EXTERNAL_EVIDENCE_MIRROR_HANDOFF.md`
-Status: `IMPLEMENTED_PENDING_HOSTED_VALIDATION`
+Status: `HOSTED_VALIDATED_MERGED_READY_FOR_REAL_ARTIFACT`
 
 Installed surfaces:
 - `docs/examples/interop/verfi_real_artifact_intake_contract.json`
@@ -10,7 +10,7 @@ Installed surfaces:
 - `scripts/validate_verfi_real_artifact_intake.py`
 - `.github/workflows/validate_docs.yml`
 
-Purpose: remove implementation-preparation ambiguity before a real VerFi artifact arrives. The lane now defines immutable artifact identity, accepted artifact classes, mandatory observables, deterministic negative/fail-closed outcomes, and the exact ten-test protocol to execute against a real artifact.
+Purpose: remove implementation-preparation ambiguity before a real VerFi artifact arrives. The lane defines immutable artifact identity, accepted artifact classes, mandatory observables, deterministic negative/fail-closed outcomes, and the exact ten-test protocol to execute against a real artifact.
 
 The repository explicitly preserves `artifact_instance_present=false`. No production VerFi record, evidence package, API output, schema, or Execution Verified Token specimen is claimed to exist.
 
@@ -42,4 +42,18 @@ Implementation commits:
 - validator: `e1dc3017229ca6b4e995247694b62cc36d90ee24`
 - workflow integration: `d882cd3b289d95acfa2edd1cb3cbe90bc6b61e22`
 
-Next gate: hosted validation of this exact tree, then bind run/job/head/merge evidence here and into Governance issue #21. After that, only receipt of a real VerFi artifact can advance implementation-level interoperability.
+Hosted validation:
+- PR: `StegVerse-Labs/Governance#24`
+- PR head: `4c6ac5b60f0d15e8340fa17d225059cb5ae03c76`
+- Validate Governance Docs run: `32691506708`
+- job: `97325897367`
+- result: `SUCCESS`
+- intake validator output: `VerFi real-artifact intake contract validation passed: no artifact fabricated, immutable identity required, 10-test matrix preserved, authority remains NONE_VALIDATION_ONLY.`
+- existing external-evidence validator also passed 5 canonical envelopes + 10 VerFi governance-lane cases + cross-layer semantic translation.
+- Validate Governance (schema + docs) run: `32691506664` — `SUCCESS`
+- Test Readiness run: `32691506637` — `SUCCESS`
+- merge commit: `79bac7916b9fd08d60a456581954e7917af2625d`
+
+Bounded completion: `100%` for real-artifact intake preparation. This does not equal VerFi implementation interoperability.
+
+Next gate: receive one actual VerFi artifact, bind its immutable identity, then execute the ten tests above. Until a real artifact exists, implementation-level interoperability remains open by design.
