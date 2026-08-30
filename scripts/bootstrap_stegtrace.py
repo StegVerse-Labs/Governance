@@ -64,8 +64,8 @@ def api_exists(path: str) -> bool:
 
 def main() -> int:
     if not os.environ.get("GH_TOKEN"):
-        write_receipt("FAILED", "GH_TOKEN unavailable")
-        return 2
+        write_receipt("BLOCKED", "GitHub mutation credential unavailable; TV/TVC-only credential boundary preserved", credential_authority="TV/TVC", github_token_runtime_authority="NONE")
+        return 0
     if not api_exists(f"repos/{FULL_REPO}"):
         write_receipt("BLOCKED", "target repository does not exist or token cannot observe it", release_condition=f"GET /repos/{FULL_REPO} returns 200")
         return 0
