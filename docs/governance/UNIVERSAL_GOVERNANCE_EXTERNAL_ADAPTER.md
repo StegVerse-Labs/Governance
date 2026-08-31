@@ -45,3 +45,28 @@ An adapter may declare `ENFORCED` only when:
 - the live deployment is separately observed before any activation claim.
 
 Source validation cannot establish live ENFORCED activation.
+
+
+## Exact candidate hash
+
+The external adapter uses `stegverse.external-native-action-candidate.v1`.
+
+Before requesting Governance, it canonicalizes:
+
+```json
+{
+  "candidate_ref": "<stable native candidate reference>",
+  "native_operation": "<native operation>",
+  "parameters": {}
+}
+```
+
+and binds the SHA-256 digest into `candidate_hash` on the Governance request.
+
+The exact hash must later match the StegGate deterministic execution request. This closes the parameter-substitution gap between governance admission and target consequence.
+
+```text
+candidate identity != exact candidate state
+candidate_ref + candidate_hash are both required
+hash binding != authority
+```
