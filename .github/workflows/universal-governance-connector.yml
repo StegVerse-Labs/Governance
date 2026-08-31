@@ -6,6 +6,8 @@ on:
       - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
       - "schemas/universal_governance_connector_profile.schema.json"
       - "schemas/universal_governance_connector_request.schema.json"
+      - "schemas/universal_governance_connector_registry.schema.json"
+      - "specs/universal-governance-connector-profiles.v1.json"
       - "fixtures/universal-governance-connector/profile.example.json"
       - "fixtures/universal-governance-connector/request.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
@@ -16,6 +18,8 @@ on:
       - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
       - "schemas/universal_governance_connector_profile.schema.json"
       - "schemas/universal_governance_connector_request.schema.json"
+      - "schemas/universal_governance_connector_registry.schema.json"
+      - "specs/universal-governance-connector-profiles.v1.json"
       - "fixtures/universal-governance-connector/profile.example.json"
       - "fixtures/universal-governance-connector/request.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
@@ -48,6 +52,8 @@ jobs:
               Path("fixtures/universal-governance-connector/profile.example.json"),
               Path("schemas/universal_governance_connector_request.schema.json"),
               Path("fixtures/universal-governance-connector/request.example.json"),
+              Path("schemas/universal_governance_connector_registry.schema.json"),
+              Path("specs/universal-governance-connector-profiles.v1.json"),
           ]:
               json.loads(p.read_text())
               print("JSON_OK", p)

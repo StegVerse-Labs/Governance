@@ -8,6 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "fixtures/universal-governance-connector/profile.example.json"
 REQUEST_FIXTURE = ROOT / "fixtures/universal-governance-connector/request.example.json"
+REGISTRY = ROOT / "specs/universal-governance-connector-profiles.v1.json"
 
 REQUIRED_GOV = {"G0","G1","G2","G3","G4","G5","G6"}
 REQUIRED_ADM = {"A0","A1","A2","A3","A4","A5","A6","A7","A8"}
@@ -75,11 +76,51 @@ def validate(p: dict) -> None:
         raise ValueError("credential authority")
 
 
+def validate_registry(registry: dict, expected_profile: dict) -> None:
+    if registry.get("schema_version") != "stegverse.governance-connector-registry.v1":
+        raise ValueError("registry schema_version")
+    if registry.get("credential_authority") != "TV/TVC":
+        raise ValueError("registry credential authority")
+    if registry.get("authority_effect") != "NONE":
+        raise ValueError("registry authority effect")
+    profiles = registry.get("profiles")
+    if not isinstance(profiles, list) or not profiles:
+        raise ValueError("registry profiles required")
+    seen=set()
+    for profile in profiles:
+        validate(profile)
+        pid=profile.get("profile_id")
+        if not pid or pid in seen:
+            raise ValueError("registry profile ids must be unique")
+        seen.add(pid)
+    if expected_profile.get("profile_id") not in seen:
+        raise ValueError("reference profile absent from registry")
+    registered=next(x for x in profiles if x.get("profile_id")==expected_profile.get("profile_id"))
+    if registered != expected_profile:
+        raise ValueError("reference profile registry drift")
+
+
+def resolve_profile(registry: dict, profile_id: str) -> dict:
+    profiles=registry.get("profiles")
+    if not isinstance(profiles, list):
+        raise ValueError("registry profiles required")
+    for profile in profiles:
+        if profile.get("profile_id") == profile_id:
+            validate(profile)
+            return profile
+    raise ValueError("registry profile unknown")
+
+
 def main() -> int:
     try:
         profile=load(FIXTURE)
         validate(profile)
         request=load(REQUEST_FIXTURE)
+        registry=load(REGISTRY)
+        validate_registry(registry, profile)
+        resolved_profile=resolve_profile(registry, request["profile_id"])
+        if resolved_profile != profile:
+            raise ValueError("registry resolution drift")
         if profile["interlock"]["intr_profile_ref"] != "governance-external-action":
             raise ValueError("canonical governance InTr profile binding")
         if request.get("schema_version") != "stegverse.governance-connector.request/v1":
@@ -124,6 +165,22 @@ def main() -> int:
         except ValueError as exc:
             if "protected consequence" not in str(exc):
                 raise
+
+        bad_registry=json.loads(json.dumps(registry))
+        bad_registry["profiles"].append(json.loads(json.dumps(profile)))
+        try:
+            validate_registry(bad_registry, profile)
+            raise ValueError("negative control: duplicate registry profile accepted")
+        except ValueError as exc:
+            if "unique" not in str(exc):
+                raise
+
+        try:
+            resolve_profile(registry, "unknown.profile")
+            raise ValueError("negative control: unknown profile resolved")
+        except ValueError as exc:
+            if "unknown" not in str(exc):
+                raise
     except Exception as exc:
         print(f"UNIVERSAL_GOVERNANCE_CONNECTOR_PROFILE: FAIL: {exc}")
         return 1
@@ -131,7 +188,9 @@ def main() -> int:
     print(f"operations={len(profile['operations'])}")
     print("request_contract=PASS")
     print("intr_profile=governance-external-action")
-    print("negative_controls=3")
+    print(f"registry_profiles={len(registry['profiles'])}")
+    print("registry_resolution=PASS")
+    print("negative_controls=5")
     print("authority_effect=NONE")
     return 0
 
