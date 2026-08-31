@@ -174,3 +174,30 @@ InTr profile: governance-external-action
 Transport-owned values such as the Interlock exchange id, InTr packet id, hop receipts, and HB-derived carrier signal are not self-asserted by this payload. They are supplied/verified by the transport boundary.
 
 The payload carries only the per-transition governance candidate and already-resolved facts required by the canonical StegCore three-layer evaluator.
+
+
+## Canonical profile registry — issue #30
+
+The reusable Governance connector now has an explicit discovery/selection surface:
+
+```text
+schema: stegverse.governance-connector-registry.v1
+schema file: schemas/universal_governance_connector_registry.schema.json
+registry: specs/universal-governance-connector-profiles.v1.json
+credential_authority: TV/TVC
+authority_effect: NONE
+```
+
+The registry contains exact connector-profile objects. `profile_id` values must be unique. Each embedded profile is validated by the existing connector-profile validator. Unknown profile selection fails closed.
+
+The first entry is the already-validated `example.external-system.v1` profile. Registry validation requires that entry to remain semantically identical to the canonical profile fixture rather than becoming an independently drifting copy.
+
+```text
+registry discovery != governance authority
+profile lookup != policy decision
+registered != activated
+registered != ENFORCED deployment
+unknown profile -> FAIL_CLOSED
+```
+
+StegCore is the runtime consumer and should resolve profiles by `profile_id` from a pinned Governance registry snapshot rather than application-specific hard coding.
