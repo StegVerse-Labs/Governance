@@ -141,7 +141,7 @@ Master Records
 ```text
 docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_PROFILE.md
 schemas/universal_governance_connector_profile.schema.json
-docs/examples/fixtures/universal_governance_connector_profile.example.json
+fixtures/universal-governance-connector/profile.example.json
 scripts/validate_universal_governance_connector_profile.py
 .github/workflows/universal-governance-connector.yml
 ```
