@@ -5,7 +5,7 @@ on:
     paths:
       - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
       - "schemas/universal_governance_connector_profile.schema.json"
-      - "docs/examples/fixtures/universal_governance_connector_profile.example.json"
+      - "fixtures/universal-governance-connector/profile.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
       - ".github/workflows/universal-governance-connector.yml"
   push:
@@ -13,7 +13,7 @@ on:
     paths:
       - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
       - "schemas/universal_governance_connector_profile.schema.json"
-      - "docs/examples/fixtures/universal_governance_connector_profile.example.json"
+      - "fixtures/universal-governance-connector/profile.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
   workflow_dispatch:
 
@@ -41,7 +41,7 @@ jobs:
           from pathlib import Path
           for p in [
               Path("schemas/universal_governance_connector_profile.schema.json"),
-              Path("docs/examples/fixtures/universal_governance_connector_profile.example.json"),
+              Path("fixtures/universal-governance-connector/profile.example.json"),
           ]:
               json.loads(p.read_text())
               print("JSON_OK", p)
