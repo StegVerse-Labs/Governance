@@ -24,6 +24,8 @@ def validate(adapter,registry):
     if adapter.get("schema_version")!="stegverse.governance-external-adapter.v1":
         raise ValueError("adapter schema")
     profile=resolve(registry,adapter.get("governance_profile_id"))
+    if adapter.get("candidate_hash_profile")!="stegverse.external-native-action-candidate.v1":
+        raise ValueError("adapter candidate hash profile")
     if adapter.get("system_id")!=profile.get("system",{}).get("system_id"):
         raise ValueError("adapter system binding")
     if adapter.get("boundary_id")!=profile.get("system",{}).get("boundary_id"):
@@ -51,6 +53,8 @@ def validate(adapter,registry):
             raise ValueError("separate consequence authority required")
         if not isinstance(op.get("input_mapping"),dict) or not op["input_mapping"]:
             raise ValueError("input mapping")
+        if op["input_mapping"].get("native_parameters")!="candidate_hash_basis.parameters":
+            raise ValueError("native parameters candidate hash mapping")
         if not isinstance(op.get("evidence_mapping"),dict) or not op["evidence_mapping"]:
             raise ValueError("evidence mapping")
     a=adapter.get("authority_boundaries") or {}
@@ -79,6 +83,7 @@ def main():
         print("UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER: FAIL:",e); return 1
     print("UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER: PASS")
     print("enforcement_claim=ENFORCED_SOURCE_CONTRACT_ONLY")
+    print("candidate_hash_profile=stegverse.external-native-action-candidate.v1")
     print("negative_controls=3")
     print("authority_effect=NONE")
     return 0
