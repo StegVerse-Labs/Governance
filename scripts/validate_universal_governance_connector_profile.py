@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-FIXTURE = ROOT / "docs/examples/fixtures/universal_governance_connector_profile.example.json"
+FIXTURE = ROOT / "fixtures/universal-governance-connector/profile.example.json"
 
 REQUIRED_GOV = {"G0","G1","G2","G3","G4","G5","G6"}
 REQUIRED_ADM = {"A0","A1","A2","A3","A4","A5","A6","A7","A8"}
