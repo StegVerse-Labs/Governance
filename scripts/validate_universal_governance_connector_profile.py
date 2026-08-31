@@ -140,6 +140,11 @@ def main() -> int:
             raise ValueError("request policy binding")
         if not request.get("authority_ref") or not request.get("evidence_refs"):
             raise ValueError("request authority/evidence binding")
+        candidate_hash=request.get("candidate_hash")
+        if not isinstance(candidate_hash,str) or not candidate_hash.startswith("sha256:") or len(candidate_hash)!=71:
+            raise ValueError("request candidate hash binding")
+        if any(ch not in "0123456789abcdef" for ch in candidate_hash[7:]):
+            raise ValueError("request candidate hash binding")
         # deterministic negative controls
         bad=json.loads(json.dumps(profile))
         bad["system"]["bypass_path_declared"]=True
@@ -187,6 +192,7 @@ def main() -> int:
     print("UNIVERSAL_GOVERNANCE_CONNECTOR_PROFILE: PASS")
     print(f"operations={len(profile['operations'])}")
     print("request_contract=PASS")
+    print("candidate_hash_binding=PASS")
     print("intr_profile=governance-external-action")
     print(f"registry_profiles={len(registry['profiles'])}")
     print("registry_resolution=PASS")
