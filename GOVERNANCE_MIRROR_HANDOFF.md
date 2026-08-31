@@ -342,3 +342,22 @@ No current Governance or StegTrace bootstrap implementation task is manually sta
 ## Archive conditions
 
 This session becomes archive-safe when all unique session requirements are durably committed and no session-specific mutation or validation claim remains. The project may remain incomplete, and the target repository may remain blocked, provided the merged automation, durable task record, machine-observable release condition, and continuation scope are active and independently reconstructable.
+
+
+## Universal Governance Connector profile lane — issue #26
+
+A reusable profile-driven governance composition layer is now under implementation at:
+
+```text
+docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_MIRROR_HANDOFF.md
+docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_PROFILE.md
+schemas/universal_governance_connector_profile.schema.json
+```
+
+The connector profile composes existing Governance classes/admissibility stages, StegGate `profile_ref`, Universal Interlock/InTr bindings, canonical HB-derived carrier references, and the existing StegCore three-layer evaluator.
+
+This lane does not replace the StegTrace workstream and does not create a second governance engine. It defines only the reusable per-system variable profile and its authority/fail-closed invariants.
+
+Canonical runtime owner: `StegVerse-Labs/StegCore#163`.
+
+No ENFORCED external-system claim is valid from schema/source alone; the target adapter/deployment must prove protected consequence paths cannot bypass the governed Interlock/InTr boundary.
