@@ -230,3 +230,35 @@ authority_effect = NONE
 ```
 
 The reference adapter claims `ENFORCED` at source-contract level only and includes bypass-negative-control evidence references. Live ENFORCED activation remains unclaimed until a real deployed target boundary proves the protected consequence cannot bypass the governed path.
+
+
+## Exact candidate binding — issue #34
+
+The Universal Governance request now binds both identity and exact candidate state:
+
+```text
+candidate_ref  = stable candidate identity/reference
+candidate_hash = sha256 of the canonical adapter candidate basis
+```
+
+For the external adapter v1 hash profile:
+
+```text
+profile: stegverse.external-native-action-candidate.v1
+canonical basis:
+{
+  "candidate_ref": <candidate_ref>,
+  "native_operation": <native_operation>,
+  "parameters": <canonical native parameters>
+}
+```
+
+The adapter computes the hash before Governance evaluation. The same hash must be presented again at the deterministic StegGate execution boundary before consequence.
+
+```text
+same candidate_ref + different candidate_hash -> DENY / FAIL_CLOSED
+same candidate_hash + mutated execution parameters -> CANDIDATE_BINDING_MISMATCH
+Governance ALLOW != permission to substitute a later candidate
+```
+
+Candidate hashing creates no execution or credential authority.
