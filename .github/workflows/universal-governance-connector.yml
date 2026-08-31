@@ -7,7 +7,11 @@ on:
       - "schemas/universal_governance_connector_profile.schema.json"
       - "schemas/universal_governance_connector_request.schema.json"
       - "schemas/universal_governance_connector_registry.schema.json"
+      - "schemas/universal_governance_external_adapter.schema.json"
       - "specs/universal-governance-connector-profiles.v1.json"
+      - "fixtures/universal-governance-connector/external-adapter.example.json"
+      - "scripts/validate_universal_governance_external_adapter.py"
+      - "docs/governance/UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER.md"
       - "fixtures/universal-governance-connector/profile.example.json"
       - "fixtures/universal-governance-connector/request.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
@@ -19,7 +23,11 @@ on:
       - "schemas/universal_governance_connector_profile.schema.json"
       - "schemas/universal_governance_connector_request.schema.json"
       - "schemas/universal_governance_connector_registry.schema.json"
+      - "schemas/universal_governance_external_adapter.schema.json"
       - "specs/universal-governance-connector-profiles.v1.json"
+      - "fixtures/universal-governance-connector/external-adapter.example.json"
+      - "scripts/validate_universal_governance_external_adapter.py"
+      - "docs/governance/UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER.md"
       - "fixtures/universal-governance-connector/profile.example.json"
       - "fixtures/universal-governance-connector/request.example.json"
       - "scripts/validate_universal_governance_connector_profile.py"
@@ -42,6 +50,8 @@ jobs:
         run: python -m py_compile scripts/validate_universal_governance_connector_profile.py
       - name: Validate connector profile
         run: python scripts/validate_universal_governance_connector_profile.py
+      - name: Validate external adapter contract
+        run: python scripts/validate_universal_governance_external_adapter.py
       - name: Parse schema and fixture
         run: |
           python - <<'PY'
@@ -54,6 +64,8 @@ jobs:
               Path("fixtures/universal-governance-connector/request.example.json"),
               Path("schemas/universal_governance_connector_registry.schema.json"),
               Path("specs/universal-governance-connector-profiles.v1.json"),
+              Path("schemas/universal_governance_external_adapter.schema.json"),
+              Path("fixtures/universal-governance-connector/external-adapter.example.json"),
           ]:
               json.loads(p.read_text())
               print("JSON_OK", p)
