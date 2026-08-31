@@ -1,0 +1,48 @@
+name: Universal Governance Connector
+
+on:
+  pull_request:
+    paths:
+      - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
+      - "schemas/universal_governance_connector_profile.schema.json"
+      - "fixtures/universal-governance-connector/profile.example.json"
+      - "scripts/validate_universal_governance_connector_profile.py"
+      - ".github/workflows/universal-governance-connector.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*"
+      - "schemas/universal_governance_connector_profile.schema.json"
+      - "fixtures/universal-governance-connector/profile.example.json"
+      - "scripts/validate_universal_governance_connector_profile.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile validator
+        run: python -m py_compile scripts/validate_universal_governance_connector_profile.py
+      - name: Validate connector profile
+        run: python scripts/validate_universal_governance_connector_profile.py
+      - name: Parse schema and fixture
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [
+              Path("schemas/universal_governance_connector_profile.schema.json"),
+              Path("fixtures/universal-governance-connector/profile.example.json"),
+          ]:
+              json.loads(p.read_text())
+              print("JSON_OK", p)
+          PY
