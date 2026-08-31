@@ -201,3 +201,32 @@ unknown profile -> FAIL_CLOSED
 ```
 
 StegCore is the runtime consumer and should resolve profiles by `profile_id` from a pinned Governance registry snapshot rather than application-specific hard coding.
+
+
+## Thin external-system adapter contract — issue #32
+
+The remaining per-system variable implementation is now formalized as:
+
+```text
+schema: stegverse.governance-external-adapter.v1
+schema file: schemas/universal_governance_external_adapter.schema.json
+fixture: fixtures/universal-governance-connector/external-adapter.example.json
+validator: scripts/validate_universal_governance_external_adapter.py
+```
+
+The adapter binds a native system operation to a registered Governance operation and declares native input/evidence mapping. It contains no governance policy.
+
+Protected consequences require a separate consequence authority reference. Governance `ALLOW` makes a candidate eligible for that separate authority check; it does not execute the consequence.
+
+```text
+adapter != governance engine
+adapter != execution authority
+adapter != credential authority
+ALLOW != consequence execution
+ENFORCED + bypass -> invalid
+ENFORCED source contract != live ENFORCED observation
+credential authority = TV/TVC
+authority_effect = NONE
+```
+
+The reference adapter claims `ENFORCED` at source-contract level only and includes bypass-negative-control evidence references. Live ENFORCED activation remains unclaimed until a real deployed target boundary proves the protected consequence cannot bypass the governed path.
