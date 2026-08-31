@@ -158,3 +158,19 @@ LIVE_EXTERNAL_ENFORCED_SYSTEM: false
 ACTIVATED: false
 COMPLETE: false
 ```
+
+
+## Canonical InTr request contract — issue #28
+
+The connector payload is now explicitly serialized as:
+
+```text
+schema: stegverse.governance-connector.request/v1
+schema file: schemas/universal_governance_connector_request.schema.json
+fixture: fixtures/universal-governance-connector/request.example.json
+InTr profile: governance-external-action
+```
+
+Transport-owned values such as the Interlock exchange id, InTr packet id, hop receipts, and HB-derived carrier signal are not self-asserted by this payload. They are supplied/verified by the transport boundary.
+
+The payload carries only the per-transition governance candidate and already-resolved facts required by the canonical StegCore three-layer evaluator.

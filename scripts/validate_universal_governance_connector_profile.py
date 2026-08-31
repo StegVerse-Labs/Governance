@@ -7,6 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "fixtures/universal-governance-connector/profile.example.json"
+REQUEST_FIXTURE = ROOT / "fixtures/universal-governance-connector/request.example.json"
 
 REQUIRED_GOV = {"G0","G1","G2","G3","G4","G5","G6"}
 REQUIRED_ADM = {"A0","A1","A2","A3","A4","A5","A6","A7","A8"}
@@ -78,6 +79,26 @@ def main() -> int:
     try:
         profile=load(FIXTURE)
         validate(profile)
+        request=load(REQUEST_FIXTURE)
+        if profile["interlock"]["intr_profile_ref"] != "governance-external-action":
+            raise ValueError("canonical governance InTr profile binding")
+        if request.get("schema_version") != "stegverse.governance-connector.request/v1":
+            raise ValueError("request schema version")
+        if request.get("profile_id") != profile["profile_id"]:
+            raise ValueError("request/profile identity binding")
+        if request.get("system_id") != profile["system"]["system_id"]:
+            raise ValueError("request/system identity binding")
+        if request.get("boundary_id") != profile["system"]["boundary_id"]:
+            raise ValueError("request/boundary identity binding")
+        op=next((x for x in profile["operations"] if x["operation_id"]==request.get("operation_id")), None)
+        if op is None:
+            raise ValueError("request operation binding")
+        resolved=request.get("resolved_facts") or {}
+        boundary=resolved.get("execution_boundary") or {}
+        if boundary.get("policy_ref") != op["policy_ref"]:
+            raise ValueError("request policy binding")
+        if not request.get("authority_ref") or not request.get("evidence_refs"):
+            raise ValueError("request authority/evidence binding")
         # deterministic negative controls
         bad=json.loads(json.dumps(profile))
         bad["system"]["bypass_path_declared"]=True
@@ -108,6 +129,8 @@ def main() -> int:
         return 1
     print("UNIVERSAL_GOVERNANCE_CONNECTOR_PROFILE: PASS")
     print(f"operations={len(profile['operations'])}")
+    print("request_contract=PASS")
+    print("intr_profile=governance-external-action")
     print("negative_controls=3")
     print("authority_effect=NONE")
     return 0
