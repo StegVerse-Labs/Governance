@@ -361,3 +361,15 @@ This lane does not replace the StegTrace workstream and does not create a second
 Canonical runtime owner: `StegVerse-Labs/StegCore#163`.
 
 No ENFORCED external-system claim is valid from schema/source alone; the target adapter/deployment must prove protected consequence paths cannot bypass the governed Interlock/InTr boundary.
+
+
+## Ecosystem purpose contribution — 2026-09-02
+
+Canonical organization invariant: `StegVerse-Labs/.github/docs/ECOSYSTEM_PURPOSE_INVARIANT.md`.
+Machine declaration: `.stegverse/ecosystem-purpose-contribution.json`.
+
+This repository contributes to the StegVerse ecosystem sum through: **admissibility, evidence, interoperability, consequence_containment**.
+
+This binding grants no new authority, does not change repository-local execution/credential/admission/routing/custody/publication/consequence boundaries, and does not establish a new runtime or maturity state. Existing handoff evidence remains authoritative for what this repository has actually implemented, validated, released, deployed, activated, observed, or reconstructed.
+
+The repository should continue advancing the shared objective: preserve agency and explicit authority while making consequential transitions bounded and reconstructable, without requiring a specific intelligence provider or collapsing governance into a universal correctness authority.
