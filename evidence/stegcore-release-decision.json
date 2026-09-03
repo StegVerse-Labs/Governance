@@ -30,10 +30,10 @@
   },
   "continuity_receipt_minted": false,
   "decision": "FAIL-CLOSED",
-  "decision_hash": "a14f7c8464179d0b4342a299929efe9db54deffc28eafbaf9a87253499447f84",
+  "decision_hash": "219fe9e547be690119ffdd029fb2e54452e49c2bd91769ed13d932da97ded011",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-09-02T09:54:47.525354+00:00",
+  "evaluated_at": "2026-09-03T10:05:02.942780+00:00",
   "next_permitted_action": "restore a TV/TVC-governed evidence projection or other authorized repository-readable transfer, then re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
