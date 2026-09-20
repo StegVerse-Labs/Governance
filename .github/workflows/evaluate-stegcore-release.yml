@@ -179,6 +179,12 @@ jobs:
             gh issue reopen "$NUMBER" >/dev/null 2>&1 || true
           fi
 
-      - name: Fail workflow on denied decision
-        if: steps.decision.outputs.decision != 'ALLOW'
+      - name: Preserve fail-closed acquisition as blocked evidence
+        if: steps.decision.outputs.decision == 'FAIL-CLOSED'
+        run: |
+          echo "STEGCORE_RELEASE_POLICY_BLOCKED_SOURCE_EVIDENCE=PASS"
+          echo "No release, tag, deployment, receipt, or execution authority is granted."
+
+      - name: Fail workflow on explicit denied decision
+        if: steps.decision.outputs.decision == 'DENY'
         run: exit 1
