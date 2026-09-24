@@ -115,3 +115,5 @@ None. Issue creation, this handoff, and registry installation are continuity wor
 ## Completion
 
 This Governance lane completes only when a valid architecture-decision receipt exists and a target-owned executable continuation is established. The ecosystem goal remains open until issuer implementation, validation, integration, runtime proof, required CGE review, and downstream consumer evidence actually occur.
+
+<!-- validation-only probe; do not merge -->
