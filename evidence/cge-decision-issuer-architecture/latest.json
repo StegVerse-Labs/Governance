@@ -1,0 +1,46 @@
+{
+  "schema": "stegverse.cge-decision-issuer-architecture-decision/v1",
+  "decision_id": "CGE-DECISION-ISSUER-ARCHITECTURE-001",
+  "decision_timestamp": "2026-09-13T22:58:00Z",
+  "gap_id": "MR.GAP.CGE_DECISION_ISSUER.001",
+  "canonical_owner_repository": "StegVerse-Labs/StegCore",
+  "canonical_owner_subsystem": "StegCore governance/admissibility decision surface",
+  "architecture_decision_basis": [
+    "StegCore already owns canonical admissibility evaluation composition through src/stegcore/steggate.py and its underlying three-layer evaluator.",
+    "The installed Master Records closure contract explicitly permits STEGCORE as commit-time evaluation_system.",
+    "Governance remains architecture/policy coordination and must not become the runtime issuer merely by recording this decision.",
+    "Master Records remains observed-reality custody/reconstruction and does not become the transition executor.",
+    "Interlock/InTr remains the separate governed state-transition/admission executor.",
+    "TV/TVC remains credential/provider/release and bounded execution-grant authority."
+  ],
+  "bootstrap_continuation_path": {
+    "target_repository": "StegVerse-Labs/StegCore",
+    "target_handoff": "docs/CGE_DECISION_ISSUER_MIRROR_HANDOFF.md",
+    "target_entrypoint": "src/stegcore/cge_decision_issuer.py",
+    "master_records_closure_contracts": [
+      "StegVerse-Labs/StegDB:master-records/monitoring/schemas/authority_context_receipt.schema.json",
+      "StegVerse-Labs/StegDB:master-records/monitoring/schemas/commit_time_admissibility_receipt.schema.json"
+    ]
+  },
+  "issuer_transition_executor_separation": {
+    "issuer_owner": "StegVerse-Labs/StegCore",
+    "custody_owner": "Master Records",
+    "transition_executor": "Interlock/InTr",
+    "issuer_may_execute_transition": false,
+    "master_records_may_execute_transition": false
+  },
+  "credential_authority": "TV/TVC",
+  "heartbeat_authority_effect": "NONE",
+  "github_runtime_authority": "NONE",
+  "device_verification_required": false,
+  "target_owned_executable_continuation_established": true,
+  "evidence_refs": [
+    "docs/governance/CGE_DECISION_ISSUER_ARCHITECTURE_MIRROR_HANDOFF.md",
+    "StegVerse-Labs/StegCore:src/stegcore/steggate.py",
+    "StegVerse-Labs/StegDB:master-records/monitoring/schemas/commit_time_admissibility_receipt.schema.json",
+    "StegVerse-Labs/StegDB:master-records/monitoring/schemas/authority_context_receipt.schema.json"
+  ],
+  "authority_effect": "ARCHITECTURE_OWNER_SELECTION_ONLY",
+  "runtime_issuer_activated": false,
+  "cge_review_result_issued": false
+}
