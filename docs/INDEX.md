@@ -53,3 +53,8 @@
 ## Handoff
 
 - [Governance Mirror Handoff](../GOVERNANCE_MIRROR_HANDOFF.md)
+
+- [Metered Dependency Migration — Governance Policy Candidate](governance/METERED_PLATFORM_REPLACEMENT.md) (source-only, no provider retirement authority)
+- [Synthetic Selection GDR Contract Fixture](examples/fixtures/metered_replacement_selection_gdr.json)
+- [Synthetic Retirement-Denied GDR Contract Fixture](examples/fixtures/metered_replacement_retirement_denied_gdr.json)
+- [Metered Policy Salvage Mirror Handoff](../METERED_PLATFORM_REPLACEMENT_MIRROR_HANDOFF.md)
