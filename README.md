@@ -171,3 +171,7 @@ Workflow paths above are displayed without the leading dot for readability; actu
 - `main` is protected
 - Schemas and core docs must pass CI validation
 - Governance v0 API surface is frozen — additive changes require a new policy version
+
+## Metered dependency Governance candidate
+
+A provider-neutral, source-only contract for dependency migration and fail-closed retirement is staged under [`docs/governance/METERED_PLATFORM_REPLACEMENT.md`](docs/governance/METERED_PLATFORM_REPLACEMENT.md). Its synthetic fixtures are validation inputs, not actual issued decisions. See [`METERED_PLATFORM_REPLACEMENT_MIRROR_HANDOFF.md`](METERED_PLATFORM_REPLACEMENT_MIRROR_HANDOFF.md) and [issue #46](https://github.com/StegVerse-Labs/Governance/issues/46). The historical provider-specific work is retained but excluded pending canonical owner/collision disposition.
