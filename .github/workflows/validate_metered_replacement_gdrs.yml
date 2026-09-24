@@ -1,0 +1,25 @@
+name: Validate Metered Governance Policy Candidate
+on:
+  pull_request:
+    paths:
+      - 'docs/governance/METERED_PLATFORM_REPLACEMENT.md'
+      - 'docs/examples/fixtures/metered_replacement_*_gdr.json'
+      - 'scripts/validate_metered_replacement_gdrs.py'
+      - 'tests/test_metered_replacement_gdrs.py'
+      - '.github/workflows/validate_metered_replacement_gdrs.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate synthetic fixture contract
+        run: python scripts/validate_metered_replacement_gdrs.py
+      - name: Negative mutation tests
+        run: python -m unittest discover -s tests -p test_metered_replacement_gdrs.py -v
