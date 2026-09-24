@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "transition_id": "taxonomy-commit-time-denial-001",
+  "governance_classes": ["G0", "G1", "G2", "G3", "G4"],
+  "stages": [
+    {"stage":"A0","name":"formation","status":"PASS","reason_code":"ok","evidence_refs":["fixture://candidate"]},
+    {"stage":"A1","name":"structural","status":"PASS","reason_code":"invariants_preserved","evidence_refs":["fixture://invariants"]},
+    {"stage":"A2","name":"causal","status":"PASS","reason_code":"causal_link_verified","evidence_refs":["fixture://causal-chain"]},
+    {"stage":"A3","name":"evidentiary","status":"PASS","reason_code":"evidence_sufficient","evidence_refs":["fixture://evidence"]},
+    {"stage":"A4","name":"authority","status":"PASS","reason_code":"standing_valid_at_review","evidence_refs":["fixture://delegation"]},
+    {"stage":"A5","name":"procedural","status":"PASS","reason_code":"procedure_satisfied","evidence_refs":["fixture://procedure"]},
+    {"stage":"A6","name":"commit_time","status":"FAIL","reason_code":"delegation_revoked_before_commit","evidence_refs":["fixture://revocation"]},
+    {"stage":"A7","name":"continuity","status":"NOT_RUN","reason_code":"execution_not_authorized","evidence_refs":[]},
+    {"stage":"A8","name":"reconstruction","status":"NOT_RUN","reason_code":"no_executed_transition","evidence_refs":[]}
+  ],
+  "aggregate_disposition": "DENY",
+  "failure_stage": "A6",
+  "region_results": [{"region_id":"canonical","disposition":"DENY","evidence_refs":["fixture://revocation"]}],
+  "authority_boundaries": {
+    "taxonomy_grants_execution_authority": false,
+    "continuity_receipt_minted": false,
+    "certification_granted": false,
+    "custody_granted": false
+  }
+}
