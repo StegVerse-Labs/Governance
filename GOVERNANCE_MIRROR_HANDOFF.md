@@ -373,3 +373,7 @@ This repository contributes to the StegVerse ecosystem sum through: **admissibil
 This binding grants no new authority, does not change repository-local execution/credential/admission/routing/custody/publication/consequence boundaries, and does not establish a new runtime or maturity state. Existing handoff evidence remains authoritative for what this repository has actually implemented, validated, released, deployed, activated, observed, or reconstructed.
 
 The repository should continue advancing the shared objective: preserve agency and explicit authority while making consequential transitions bounded and reconstructable, without requiring a specific intelligence provider or collapsing governance into a universal correctness authority.
+
+## Metered dependency policy salvage — Governance issue #46
+
+A provider-neutral policy-only **candidate** was separated from historical PR #3 on `recovery/governance-metered-policy-46`. Consult `METERED_PLATFORM_REPLACEMENT_MIRROR_HANDOFF.md` for exact original SHA, synthetic fixture status, pending registry admission, and source-only validation. Central generation 213 has no separately admitted metered-policy goal; related active `ENTERPRISE-HOST-PROVIDER-ERADICATION-001` (COSV `40000100100000`) owns host-provider source eradication. No old provider-specific workflow or active provider assumption may be reintroduced through this salvage. No executable provider retirement, live costs, GDR issuance, resident execution or Master Records custody is evidenced by this branch.

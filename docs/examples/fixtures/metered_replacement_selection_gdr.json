@@ -1,0 +1,52 @@
+{
+  "gdr_version": "1.0",
+  "decision_id": "gdr-metered-replacement-selection-001",
+  "decision": "allow",
+  "policy": {
+    "policy_id": "metered-platform-replacement",
+    "policy_version": "1.0.0"
+  },
+  "evaluated_inputs": {
+    "source": "SYNTHETIC_TEST_FIXTURE",
+    "receipt_ids": [],
+    "dependency_id": "example-service",
+    "registry_ref": "test-only",
+    "cost_evidence_ref": "test-only",
+    "priority_report_ref": "test-only"
+  },
+  "issued_at": 1784527200,
+  "rationale": "Synthetic contract test only; no observed provider state, actual selection, retirement authorization, or executed GDR.",
+  "replacement_boundary": {
+    "authorized_actions": [
+      "inventory_services",
+      "map_dependencies",
+      "design_successor",
+      "prepare_parallel_operation"
+    ],
+    "prohibited_actions": [
+      "cancel_service",
+      "delete_service",
+      "revoke_credentials",
+      "cut_over_production_traffic",
+      "retire_provider"
+    ],
+    "parallel_operation_required": true,
+    "migration_evidence_required": true,
+    "retirement_requires_separate_gdr": true
+  },
+  "execution_boundary": {
+    "result": "ALLOW",
+    "scope": "REPLACEMENT_DESIGN_ONLY",
+    "provider_retirement_authority": false,
+    "cancellation_authority": false,
+    "continuity_receipt_minted": false
+  },
+  "runtime_expectation": {
+    "result": "ALLOW",
+    "reason_code": "replacement.selection_allowed",
+    "provider_retirement_authority": false,
+    "cancellation_authority": false,
+    "continuity_receipt_minted": false
+  },
+  "fixture_classification": "SYNTHETIC_NON_AUTHORITATIVE"
+}
