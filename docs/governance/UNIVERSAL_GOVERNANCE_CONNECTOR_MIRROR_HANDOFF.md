@@ -89,7 +89,7 @@ profile declaration != execution authority
 governance ALLOW != credential authority
 governance ALLOW != consequence execution by itself
 HB / derived carrier != governance authority
-Master Records custody != governance authority
+Master Records organization record != governance authority
 verification != authority
 successful translation != permission
 unknown operation -> FAIL_CLOSED
