@@ -196,7 +196,7 @@ Do not claim workflow, integration, deployment, governed activation, publication
 - `StegVerse-Labs/StegProv`: persistent research profile.
 - `StegVerse-Labs/StegFREEDOM`: oversight profile.
 - `StegVerse-Labs/Site`, `GCAT-BCAT-Engine/Publisher`, `StegVerse-Labs/admissibility-wiki`, and `stegguardian-wiki`: propagation only after engine and profile claims are validated.
-- `master-records`: custody or canonical preservation only under its own live contracts; no custody is implied here.
+- `master-records`: organization records/reconstruction only under its own live contracts; no Master Records organization record is implied here.
 
 ## Release posture
 

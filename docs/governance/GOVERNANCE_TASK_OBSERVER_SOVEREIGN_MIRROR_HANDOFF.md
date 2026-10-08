@@ -262,7 +262,7 @@ Hosted/manual Actions are not a production execution path. This session may insp
 
 ### ESCALATED / AUTHORITY-OWNED
 
-Actual CGE/Master Records decision issuance remains unresolved under Governance #19 / `MR.GAP.CGE_DECISION_ISSUER.001`.
+Actual CGE decision issuance remains unresolved under Governance #19 / `MR.GAP.CGE_DECISION_ISSUER.001`.
 
 ## Failure policy
 
