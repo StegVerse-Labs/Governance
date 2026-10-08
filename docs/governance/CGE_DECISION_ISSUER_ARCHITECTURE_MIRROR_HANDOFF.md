@@ -7,7 +7,7 @@ Canonical gap: `StegVerse-Labs/StegDB:MR.GAP.CGE_DECISION_ISSUER.001`
 
 ## Purpose
 
-Preserve and observe the unresolved architecture decision for the canonical CGE / Master Records decision issuer without moving issuer implementation, receipt issuance, canonical mutation, or execution authority into Governance.
+Preserve and observe the unresolved architecture decision for the canonical CGE decision issuer without moving issuer implementation, receipt issuance, canonical mutation, or execution authority into Governance.
 
 ## Established facts
 
@@ -25,7 +25,7 @@ No repository-backed canonical issuer was found in the connected StegVerse-Labs 
 
 Governance must decide the canonical subsystem/repository owner and bootstrap path for an issuer that can consume a validated CGE handoff and, under its own authority, produce:
 
-1. an independently verifiable CGE / Master Records authority-context receipt;
+1. an independently verifiable CGE authority-context receipt (schema under StegDB `master-records/monitoring/schemas/`; Master Records keeps the organization record);
 2. a commit-time admissibility receipt binding current action, policy, evidence, authority context, unresolved conditions, and repository state;
 3. exactly one `CGE_REVIEW_ACCEPTED`, `CGE_REVIEW_DENIED`, `CGE_REVIEW_DEFERRED`, or `CGE_REVIEW_BLOCKED` result.
 
@@ -106,7 +106,7 @@ No issuer implementation is manually startable from this handoff.
 
 ### ESCALATED / AUTHORITY-OWNED
 
-Actual issuer implementation and actual CGE/Master Records receipt issuance belong to the future canonical owner selected by the architecture decision. Governance must not assume that execution authority in advance.
+Actual issuer implementation and actual CGE receipt issuance belong to the future canonical owner selected by the architecture decision. Governance must not assume that execution authority in advance.
 
 ### COMPLETED / SUPERSEDED
 

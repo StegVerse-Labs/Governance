@@ -137,7 +137,7 @@ receipt != execution authority
 
 ## Relationship to Master Records
 
-Master Records may receive the decision/transport/consequence evidence chain for reconstruction when the profile requires it. Custody remains non-authorizing.
+Master Records may keep the decision/transport/consequence receipts as organization records for reconstruction when the profile requires it. The Organization owns the evidence chain, and organization records remain non-authorizing.
 
 ## V1 runtime owner
 
