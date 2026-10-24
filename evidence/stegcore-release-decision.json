@@ -86,10 +86,10 @@
   },
   "continuity_receipt_minted": false,
   "decision": "DENY",
-  "decision_hash": "ac7f0c3294d8143d57f454c78ee81bb7c48ef519291f57822583bfc3654383dc",
+  "decision_hash": "3fec311ff2cedb47eac4200d26ea8e121f308a2becb38f1b4602bec436637dd6",
   "decision_owner": "StegVerse-Labs/Governance",
   "deployment_authorized": false,
-  "evaluated_at": "2026-10-23T05:50:07.198995+00:00",
+  "evaluated_at": "2026-10-24T05:47:53.674145+00:00",
   "next_permitted_action": "repair failed gates and re-evaluate",
   "policy_id": "stegcore-release-policy-v1",
   "reasons": [
