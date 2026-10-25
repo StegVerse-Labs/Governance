@@ -1,0 +1,1 @@
+python scripts/validate_gdr_examples.py

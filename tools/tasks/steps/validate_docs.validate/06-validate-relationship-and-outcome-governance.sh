@@ -1,0 +1,1 @@
+python scripts/validate_relationship_outcomes.py

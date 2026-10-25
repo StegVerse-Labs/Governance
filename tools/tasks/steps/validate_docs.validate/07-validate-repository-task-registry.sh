@@ -1,0 +1,1 @@
+python scripts/run_governance_tasks.py --validate-only
