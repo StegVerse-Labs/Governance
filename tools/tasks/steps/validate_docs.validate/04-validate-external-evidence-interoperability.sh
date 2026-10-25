@@ -1,0 +1,1 @@
+python scripts/validate_external_evidence_interop.py

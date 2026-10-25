@@ -1,0 +1,236 @@
+{
+  "schema": "stegverse.workflow-surface-registry/v1",
+  "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+  "repository": "StegVerse-Labs/Governance",
+  "policy_issue": "StegVerse-Labs/.github#167, #168; StegVerse-org/.github#166",
+  "preferred_repository_workflow_count_max": 2,
+  "exception_repository_workflow_count_max": 3,
+  "credential_authority": "the SKAP Vault inside KV is the only PII and credential store for every user, including the StegVerse ecosystem's own; no secret or token is referenced, introduced or moved by this fold",
+  "invariants": [
+    "Every workflow file is registered in surfaces[]; an unregistered or changed one fails closed (tests/test_workflow_surface_registry.py).",
+    "A new check is a group in tools/tasks/task_catalog.json, never a new workflow file.",
+    "The stable dispatcher carries no workflow_dispatch, schedule, repository_dispatch, issues or workflow_run trigger; a kept surface is pinned by sha256 and unchanged by the fold.",
+    "G17 documented exception: above 2 workflow files, every kept surface other than the dispatcher carries an exception record (lifecycle and technical-necessity justification); the count never exceeds exception_repository_workflow_count_max (3)."
+  ],
+  "unregistered_workflow_outcome": {
+    "disposition": "FAIL_CLOSED",
+    "failure_code": "UNREGISTERED_WORKFLOW_SURFACE",
+    "failed_predicate": "EVERY_WORKFLOW_FILE_IS_REGISTERED",
+    "required_evidence_or_repair": "register the file in control/workflow-surface-registry.json surfaces[] or fold it into tools/tasks/task_catalog.json",
+    "retry_entrypoint": "tests/test_workflow_surface_registry.py",
+    "owning_existing_goal": "G17-WORKFLOW-SURFACE-MINIMIZATION (StegVerse-Labs/.github#167/#168); StegVerse-org/.github#166",
+    "next_attempt": "the next pull request touching .github/workflows/"
+  },
+  "surfaces": [
+    {
+      "path": ".github/workflows/validation-dispatcher.yml",
+      "classification": "KEEP_STABLE_DISPATCHER",
+      "triggers": [
+        "pull_request",
+        "push"
+      ],
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    {
+      "path": ".github/workflows/bootstrap-stegtrace.yml",
+      "classification": "KEEP_EXISTING_SURFACE_UNCHANGED",
+      "triggers": [
+        "workflow_dispatch",
+        "schedule"
+      ],
+      "permissions": {
+        "contents": "write"
+      },
+      "reason": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write plus git push, using secrets.GH_STEGVERSE_BRIDGE_PAT. It is credential-bound and named by docs/governance/STEGTRACE_MIRROR_HANDOFF.md as worker_registry_ref. Byte-unchanged; its schedule is left as-is because changing a credential-bound surface is out of lane.",
+      "verbatim_sha256": "2cbfdfb0c5095961fd4c3fe1daf84abbff8193eadac790fe718375f0b68ce07d",
+      "exception": {
+        "lifecycle": "credential-bound StegTrace bootstrap writer",
+        "justification": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write plus git push, using secrets.GH_STEGVERSE_BRIDGE_PAT. It is credential-bound and named by docs/governance/STEGTRACE_MIRROR_HANDOFF.md as worker_registry_ref. Byte-unchanged; its schedule is left as-is because changing a credential-bound surface is out of lane.",
+        "within_exception_ceiling": true
+      }
+    },
+    {
+      "path": ".github/workflows/evaluate-stegcore-release.yml",
+      "classification": "KEEP_EXISTING_SURFACE_UNCHANGED",
+      "triggers": [
+        "push",
+        "schedule",
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "write",
+        "issues": "write"
+      },
+      "reason": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; it pushes the release-policy decision artifact to main with the run's github.token. Byte-unchanged.",
+      "verbatim_sha256": "7dd740a82ac09cfce1626dbc75f5720b4f6ef4c2431f8443bd2765ff57c33531",
+      "exception": {
+        "lifecycle": "release-policy decision writer",
+        "justification": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; it pushes the release-policy decision artifact to main with the run's github.token. Byte-unchanged.",
+        "within_exception_ceiling": true
+      }
+    },
+    {
+      "path": ".github/workflows/ingest_bundle.yml",
+      "classification": "KEEP_EXISTING_SURFACE_UNCHANGED",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "write"
+      },
+      "reason": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; a dispatch-input bundle ingester that commits and pushes. Named in REQUIRED_FILES of scripts/validate_docs.py. Byte-unchanged.",
+      "verbatim_sha256": "f003f691c33d23bbcc25ea44c4f68760cb8677ddcdd3b0f740f22ebee8303b7e",
+      "exception": {
+        "lifecycle": "bundle ingestion writer",
+        "justification": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; a dispatch-input bundle ingester that commits and pushes. Named in REQUIRED_FILES of scripts/validate_docs.py. Byte-unchanged.",
+        "within_exception_ceiling": true
+      }
+    },
+    {
+      "path": ".github/workflows/ingest_conversation.yml",
+      "classification": "KEEP_EXISTING_SURFACE_UNCHANGED",
+      "triggers": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "permissions": {
+        "contents": "write"
+      },
+      "reason": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; commits and pushes generated records on push and dispatch. Named in REQUIRED_FILES of scripts/validate_docs.py. Byte-unchanged.",
+      "verbatim_sha256": "2dda9f81674a24855ba22f9aab37c0807a94f2e85cb0d9ee5de32ac4648d191f",
+      "exception": {
+        "lifecycle": "conversation ingestion writer",
+        "justification": "KEEP_EXISTING_SURFACE_UNCHANGED (documented exception, writer): contents: write; commits and pushes generated records on push and dispatch. Named in REQUIRED_FILES of scripts/validate_docs.py. Byte-unchanged.",
+        "within_exception_ceiling": true
+      }
+    }
+  ],
+  "folded": [
+    {
+      "workflow": ".github/workflows/activation_status.yml",
+      "name": null,
+      "triggers_before": [],
+      "classification": "ELIMINATE",
+      "status": "DONE",
+      "reason": "ELIMINATE_DEAD_SURFACE: invalid YAML (line 52, column 1: the heredoc's f-string body sits at column 0 inside the `run: |` block scalar). GitHub has never been able to load it, so it has never run. It was also a contents: write writer that would commit a wall-clock timestamp to docs/ACTIVATION_STATUS.md on every docs push. A repair would turn on a new clock-driven writer, so it is retired under the StegBrain dead-surface pattern. docs/ACTIVATION_STATUS.md is unchanged as a stored record.",
+      "verbatim_record": "tools/tasks/folded/activation_status.yml",
+      "verbatim_sha256": "1624b0a17de5ac2d76e66f367bdea7e21bcaa351b26062f50fc00ff2a722c55c"
+    },
+    {
+      "workflow": ".github/workflows/forward-to-bridge.yml",
+      "name": "Forward PR to StegVerse AI Bridge [CONTAINED \u2014 TV/TVC AUTHORITY REQUIRED]",
+      "triggers_before": [
+        "workflow_dispatch"
+      ],
+      "classification": "ELIMINATE",
+      "status": "DONE",
+      "reason": "ELIMINATE_DISPATCH_ONLY_CONTAINED: workflow_dispatch only, contents: read and no credential. Its single step prints a containment error and exits 1 (a legacy forwarder superseded by TV/TVC route authority), so it does no work.",
+      "verbatim_record": "tools/tasks/folded/forward-to-bridge.yml",
+      "verbatim_sha256": "65666682fabce7267e2bee974997354de45200dd7ae80c54cdf82a6ed1ab7d73"
+    },
+    {
+      "workflow": ".github/workflows/observe-governance-tasks.yml",
+      "name": "Observe Governance Tasks - Hosted Guard Only",
+      "triggers_before": [
+        "workflow_dispatch"
+      ],
+      "classification": "ELIMINATE",
+      "status": "DONE",
+      "reason": "ELIMINATE_DISPATCH_ONLY_NO_WORK: workflow_dispatch only, with `permissions: {}`. It blanks GITHUB_TOKEN/GH_TOKEN and only echoes that the hosted observer is disabled. It holds no credential and does no work. The REQUIRED_FILES entry in scripts/validate_docs.py is repointed to the byte-identical folded record.",
+      "verbatim_record": "tools/tasks/folded/observe-governance-tasks.yml",
+      "verbatim_sha256": "b53bc4d9ec5eede3d8a91cb935686a1763ee7af55f616461c40215142bc8450b"
+    },
+    {
+      "workflow": ".github/workflows/test-readiness.yml",
+      "name": "Test Readiness",
+      "triggers_before": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+      "status": "DONE",
+      "catalog_groups": [
+        "test-readiness.repo-smoke"
+      ],
+      "verbatim_record": "tools/tasks/folded/test-readiness.yml",
+      "verbatim_sha256": "8508ba02eab5538440c83e9d43a26fd5a9a4c66185cdc0d4b73f8fcb49225f17"
+    },
+    {
+      "workflow": ".github/workflows/universal-governance-connector.yml",
+      "name": "Universal Governance Connector",
+      "triggers_before": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+      "status": "DONE",
+      "catalog_groups": [
+        "universal-governance-connector.validate"
+      ],
+      "verbatim_record": "tools/tasks/folded/universal-governance-connector.yml",
+      "verbatim_sha256": "b80cf4e0dba22e9e232b80d3d1c9511527ff3a66d2f2ad5e88ed178af5b29b8e"
+    },
+    {
+      "workflow": ".github/workflows/validate-admissibility-taxonomy.yml",
+      "name": "Validate Admissibility Taxonomy",
+      "triggers_before": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+      "status": "DONE",
+      "catalog_groups": [
+        "validate-admissibility-taxonomy.validate"
+      ],
+      "verbatim_record": "tools/tasks/folded/validate-admissibility-taxonomy.yml",
+      "verbatim_sha256": "9f05c2d0548e803730b9519b0954b6c0ae98034cb8b80b5e13a45e82ab7f7417"
+    },
+    {
+      "workflow": ".github/workflows/validate_docs.yml",
+      "name": "Validate Governance Docs",
+      "triggers_before": [
+        "workflow_dispatch",
+        "push",
+        "pull_request"
+      ],
+      "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+      "status": "DONE",
+      "catalog_groups": [
+        "validate_docs.validate"
+      ],
+      "verbatim_record": "tools/tasks/folded/validate_docs.yml",
+      "verbatim_sha256": "ffbc8ed97da92f4b5bfba7028d4ef4480c48522bf695ea7888c1f60ce40b2e85"
+    },
+    {
+      "workflow": ".github/workflows/validate_governance.yml",
+      "name": "Validate Governance (schema + docs)",
+      "triggers_before": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+      "status": "DONE",
+      "catalog_groups": [
+        "validate_governance.validate"
+      ],
+      "verbatim_record": "tools/tasks/folded/validate_governance.yml",
+      "verbatim_sha256": "9694b697581bf872a4e3ea2ccd3e9830ffd9d0e6a77a70e32ebd1f8d4d9dc16f"
+    }
+  ],
+  "ceiling_fail_closed": {
+    "disposition": "FAIL_CLOSED",
+    "workflow_count": 5,
+    "failure_code": "G17_CONTRACT_FLOOR_ABOVE_EXCEPTION_CEILING",
+    "failed_predicate": "workflow_count <= exception_repository_workflow_count_max (3)",
+    "required_evidence_or_repair": "retiring a kept surface needs its own admitted repair. bootstrap-stegtrace, evaluate-stegcore-release, ingest_bundle and ingest_conversation each hold contents: write and push to the repository. bootstrap-stegtrace also binds secrets.GH_STEGVERSE_BRIDGE_PAT, and evaluate-stegcore-release binds github.token. Credentials belong only in the SKAP Vault inside KV, and moving writers or credentials is outside this lane.",
+    "retry_entrypoint": "tests/test_workflow_surface_registry.py",
+    "owning_existing_goal": "G17-WORKFLOW-SURFACE-MINIMIZATION (StegVerse-Labs/.github#167/#168); StegVerse-org/.github#166",
+    "next_attempt": "the next pull request touching .github/workflows/ or those contracts"
+  }
+}

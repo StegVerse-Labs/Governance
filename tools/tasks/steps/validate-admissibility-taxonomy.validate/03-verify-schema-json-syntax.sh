@@ -1,0 +1,1 @@
+python -m json.tool schemas/admissibility_stage_vector.schema.json >/dev/null

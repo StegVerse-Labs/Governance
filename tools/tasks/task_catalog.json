@@ -1,0 +1,292 @@
+{
+ "schema": "stegverse.task-catalog/v1",
+ "repository": "StegVerse-Labs/Governance",
+ "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+ "authority": "Rigel 2026-10-24 retroactive G17 enforcement (StegVerse-org/.github#166); pattern StegVerse-Labs/StegDB#60 (eab2e773)",
+ "dispatcher": ".github/workflows/validation-dispatcher.yml",
+ "runner": "tools/tasks/run_catalog.py",
+ "runner_source": "StegVerse-Labs/StegDB tools/tasks/run_catalog.py @ eab2e773271f3e63466a710f1b4555f677882848 (sha256 f741f30557888fd8e4852a52adfc65736a08898d49ade7519f6bcc2672921e9b), copied unmodified",
+ "rule": "Every check a folded workflow job ran is one group here; its step bodies are the original run blocks byte for byte, pinned by sha256, except the repairs listed. A new check is a new group (or a step in one), never a new workflow file.",
+ "path_filters": "Dropped: every group runs on every pull_request and push to main (a superset of the original path-filtered runs). workflow_dispatch/schedule triggers are not carried (no manual dispatch, no cron).",
+ "repairs": [
+  "scripts/validate_docs.py REQUIRED_FILES: `.github/workflows/validate_docs.yml` and `.github/workflows/observe-governance-tasks.yml` are repointed to `tools/tasks/folded/<same>.yml`, the byte-identical sha-pinned records. The kept ingest_* entries are unchanged.",
+  "docs/INDEX.md: the Validation workflow and Activation status workflow links are repointed to their folded records.",
+  "Path filters and workflow_dispatch are not carried. Each group runs on its declared pull_request and push events."
+ ],
+ "folded_from_commit": "41cc41cc1654614612e882346b5d387a23db9e9c",
+ "groups": [
+  {
+   "id": "test-readiness.repo-smoke",
+   "source": {
+    "workflow": ".github/workflows/test-readiness.yml",
+    "workflow_name": "Test Readiness",
+    "job": "repo-smoke",
+    "job_name": null,
+    "commit": "41cc41c",
+    "triggers_before": [
+     "push",
+     "pull_request",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Baseline repository smoke test",
+     "run_file": "tools/tasks/steps/test-readiness.repo-smoke/01-baseline-repository-smoke-test.sh",
+     "run_sha256": "b9ca9ed2406c9532b40bd3c46ae13c4eb0924562a3232a0b9308a04329377ec1"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 5,
+    "python_version": "3.11"
+   }
+  },
+  {
+   "id": "universal-governance-connector.validate",
+   "source": {
+    "workflow": ".github/workflows/universal-governance-connector.yml",
+    "workflow_name": "Universal Governance Connector",
+    "job": "validate",
+    "job_name": null,
+    "commit": "41cc41c",
+    "triggers_before": [
+     "pull_request",
+     "push",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Compile validator",
+     "run_file": "tools/tasks/steps/universal-governance-connector.validate/01-compile-validator.sh",
+     "run_sha256": "1c2dba7dff01ab278c4e0e523eb9c2d201b7bf24ccbbef56d577d65bd706d76f"
+    },
+    {
+     "name": "Validate connector profile",
+     "run_file": "tools/tasks/steps/universal-governance-connector.validate/02-validate-connector-profile.sh",
+     "run_sha256": "497da7ca110a2ba2ef8476ab57b7254769e1b8889d05a724a36ecbef1d8f6a20"
+    },
+    {
+     "name": "Validate external adapter contract",
+     "run_file": "tools/tasks/steps/universal-governance-connector.validate/03-validate-external-adapter-contract.sh",
+     "run_sha256": "143be6aa74f7abfb4bfe22700b7fddf41a9cd84c169ab458fb6711564de61bee"
+    },
+    {
+     "name": "Parse schema and fixture",
+     "run_file": "tools/tasks/steps/universal-governance-connector.validate/04-parse-schema-and-fixture.sh",
+     "run_sha256": "0ae2418cf61bc257966b611c7c93923a2cac0ec21c74e7a713a8b13ce0bc79c3"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "false",
+    "timeout_minutes": 30,
+    "python_version": "3.12"
+   }
+  },
+  {
+   "id": "validate-admissibility-taxonomy.validate",
+   "source": {
+    "workflow": ".github/workflows/validate-admissibility-taxonomy.yml",
+    "workflow_name": "Validate Admissibility Taxonomy",
+    "job": "validate",
+    "job_name": null,
+    "commit": "41cc41c",
+    "triggers_before": [
+     "pull_request",
+     "push",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Compile validator",
+     "run_file": "tools/tasks/steps/validate-admissibility-taxonomy.validate/01-compile-validator.sh",
+     "run_sha256": "8517f80dc656ea9e169e87d20b21a75ad6ee6b2f56860b14a8e462f9bc008fd3"
+    },
+    {
+     "name": "Validate fixtures and invariants",
+     "run_file": "tools/tasks/steps/validate-admissibility-taxonomy.validate/02-validate-fixtures-and-invariants.sh",
+     "run_sha256": "0e405e829cfb70246aa9448d9a812547b50c85a8aeafc0107c3ac5baa3b24580"
+    },
+    {
+     "name": "Verify schema JSON syntax",
+     "run_file": "tools/tasks/steps/validate-admissibility-taxonomy.validate/03-verify-schema-json-syntax.sh",
+     "run_sha256": "3012520b744e0a5d027b437c42aff5da1e76d99c4bd7273b7780d2b6a08d94ec"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 5,
+    "python_version": "3.11"
+   }
+  },
+  {
+   "id": "validate_docs.validate",
+   "source": {
+    "workflow": ".github/workflows/validate_docs.yml",
+    "workflow_name": "Validate Governance Docs",
+    "job": "validate",
+    "job_name": null,
+    "commit": "41cc41c",
+    "triggers_before": [
+     "workflow_dispatch",
+     "push",
+     "pull_request"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Install validation dependency",
+     "run_file": "tools/tasks/steps/validate_docs.validate/01-install-validation-dependency.sh",
+     "run_sha256": "e3178baa28b420751bb7bb15ba2f1e24aaccfcf261d43e12cf049275379a0602"
+    },
+    {
+     "name": "Validate governance docs",
+     "run_file": "tools/tasks/steps/validate_docs.validate/02-validate-governance-docs.sh",
+     "run_sha256": "3264def0cbb95de9f9d4b44a9bc37a5dcd7327d5b3422377b7ba3724d7eec1bb"
+    },
+    {
+     "name": "Validate GDR examples and three-layer invariants",
+     "run_file": "tools/tasks/steps/validate_docs.validate/03-validate-gdr-examples-and-three-layer-invariants.sh",
+     "run_sha256": "eec6ce31bfbee8cb717fed1a96bcb6ab0dd478495febcaa95b8b8ef36febafba"
+    },
+    {
+     "name": "Validate external evidence interoperability",
+     "run_file": "tools/tasks/steps/validate_docs.validate/04-validate-external-evidence-interoperability.sh",
+     "run_sha256": "489feebd81c6b851c10560d15343e8743cce8a88a0b1e375b760b96216c9b946"
+    },
+    {
+     "name": "Validate VerFi real-artifact intake contract",
+     "run_file": "tools/tasks/steps/validate_docs.validate/05-validate-verfi-real-artifact-intake-contract.sh",
+     "run_sha256": "b2062db89d79a6580c2e0dd2399ad1ddc6fa02234ef2f9fe043094e0733d0852"
+    },
+    {
+     "name": "Validate relationship and outcome governance",
+     "run_file": "tools/tasks/steps/validate_docs.validate/06-validate-relationship-and-outcome-governance.sh",
+     "run_sha256": "02b4a7ab888cc0c8f58133dec0f7e143d4cb332998a6ddd0eefe49f113869bd3"
+    },
+    {
+     "name": "Validate repository task registry",
+     "run_file": "tools/tasks/steps/validate_docs.validate/07-validate-repository-task-registry.sh",
+     "run_sha256": "8c17b7f0b95452c4b3f52e671ad7c9266746e1c65149f9e02423e5e4a198ed28"
+    },
+    {
+     "name": "Smoke-test conversation ingestion",
+     "run_file": "tools/tasks/steps/validate_docs.validate/08-smoke-test-conversation-ingestion.sh",
+     "run_sha256": "1b68079b4432cf96f8f34d35f4032c9a18d8f469f25815b84ffb5e4ba6847522"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 30,
+    "python_version": "3.11"
+   }
+  },
+  {
+   "id": "validate_governance.validate",
+   "source": {
+    "workflow": ".github/workflows/validate_governance.yml",
+    "workflow_name": "Validate Governance (schema + docs)",
+    "job": "validate",
+    "job_name": null,
+    "commit": "41cc41c",
+    "triggers_before": [
+     "pull_request",
+     "push",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Run governance validation",
+     "run_file": "tools/tasks/steps/validate_governance.validate/01-run-governance-validation.sh",
+     "run_sha256": "b53273a6c220c99087319e3273f06d50dfea72be1dc7f9b7cd0fb5cf341d85c7"
+    },
+    {
+     "name": "Validate KnowledgeVault GDR persistence boundary",
+     "run_file": "tools/tasks/steps/validate_governance.validate/02-validate-knowledgevault-gdr-persistence-boundary.sh",
+     "run_sha256": "0e7462556ba5b7954b3a86640080702a5de6ab3599098b168228dcbba1966c79"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 5,
+    "python_version": "3.11"
+   }
+  },
+  {
+   "id": "workflow-surface-registry.validate",
+   "catalog_addition": "G17 registry gate (no folded source workflow)",
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Workflow files equal the registered surfaces; catalog verifies ALLOW",
+     "run_file": "tools/tasks/steps/workflow-surface-registry.validate/01-registry.sh",
+     "run_sha256": "811824e88664923006be2eeb35632d710f5504145967f61632ad9e8fbdcb35ca"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "false",
+    "timeout_minutes": 10,
+    "python_version": "3.11"
+   }
+  }
+ ]
+}

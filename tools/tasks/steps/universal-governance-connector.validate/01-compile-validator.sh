@@ -1,0 +1,1 @@
+python -m py_compile scripts/validate_universal_governance_connector_profile.py

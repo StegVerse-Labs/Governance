@@ -56,8 +56,8 @@ REQUIRED_FILES = [
     "scripts/test_ingest_conversation.py",
     ".github/workflows/ingest_bundle.yml",
     ".github/workflows/ingest_conversation.yml",
-    ".github/workflows/validate_docs.yml",
-    ".github/workflows/observe-governance-tasks.yml",
+    "tools/tasks/folded/validate_docs.yml",
+    "tools/tasks/folded/observe-governance-tasks.yml",
 ]
 
 REQUIRED_HANDOFF_PHRASES = [

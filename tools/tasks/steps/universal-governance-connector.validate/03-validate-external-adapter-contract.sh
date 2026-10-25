@@ -1,0 +1,1 @@
+python scripts/validate_universal_governance_external_adapter.py

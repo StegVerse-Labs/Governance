@@ -1,0 +1,1 @@
+python scripts/validate_verfi_real_artifact_intake.py
