@@ -5,9 +5,9 @@
  "authority": "Rigel 2026-10-24 retroactive G17 enforcement (StegVerse-org/.github#166); pattern StegVerse-Labs/StegDB#60 (eab2e773)",
  "dispatcher": ".github/workflows/validation-dispatcher.yml",
  "runner": "tools/tasks/run_catalog.py",
- "runner_source": "StegVerse-Labs/StegDB tools/tasks/run_catalog.py @ eab2e773271f3e63466a710f1b4555f677882848 (sha256 f741f30557888fd8e4852a52adfc65736a08898d49ade7519f6bcc2672921e9b), copied unmodified",
+ "runner_source": "StegVerse-Labs/StegDB tools/tasks/run_catalog.py @ eab2e773271f3e63466a710f1b4555f677882848 (sha256 f741f30557888fd8e4852a52adfc65736a08898d49ade7519f6bcc2672921e9b), copied unmodified; then patched with the original-path-filter selection (matrix marks cells selected; StegVerse-Labs/Site#1647 pattern), so it no longer equals that sha256",
  "rule": "Every check a folded workflow job ran is one group here; its step bodies are the original run blocks byte for byte, pinned by sha256, except the repairs listed. A new check is a new group (or a step in one), never a new workflow file.",
- "path_filters": "Dropped: every group runs on every pull_request and push to main (a superset of the original path-filtered runs). workflow_dispatch/schedule triggers are not carried (no manual dispatch, no cron).",
+ "path_filters": "Restored: each folded group carries its original workflow's push / pull_request paths or paths-ignore filter as path_filters (a folded workflow's own path names its tools/tasks/folded copy and its tools/tasks/steps directory). A group the event's changed files do not select records NOT_SELECTED and exits 0 (a run, never a skipped job; pattern StegVerse-org/StegVerse-SDK#561, StegVerse-Labs/Site#1647). Not carried: branches filters, workflow_dispatch/schedule triggers (no manual dispatch, no cron), job-level if, and GitHub's 300-changed-file rule (an undeterminable diff selects every group).",
  "repairs": [
   "scripts/validate_docs.py REQUIRED_FILES: `.github/workflows/validate_docs.yml` and `.github/workflows/observe-governance-tasks.yml` are repointed to `tools/tasks/folded/<same>.yml`, the byte-identical sha-pinned records. The kept ingest_* entries are unchanged.",
   "docs/INDEX.md: the Validation workflow and Activation status workflow links are repointed to their folded records.",
@@ -102,6 +102,42 @@
     "persist_credentials": "false",
     "timeout_minutes": 30,
     "python_version": "3.12"
+   },
+   "path_filters": {
+    "pull_request": {
+     "paths": [
+      "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*",
+      "schemas/universal_governance_connector_profile.schema.json",
+      "schemas/universal_governance_connector_request.schema.json",
+      "schemas/universal_governance_connector_registry.schema.json",
+      "schemas/universal_governance_external_adapter.schema.json",
+      "specs/universal-governance-connector-profiles.v1.json",
+      "fixtures/universal-governance-connector/external-adapter.example.json",
+      "scripts/validate_universal_governance_external_adapter.py",
+      "docs/governance/UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER.md",
+      "fixtures/universal-governance-connector/profile.example.json",
+      "fixtures/universal-governance-connector/request.example.json",
+      "scripts/validate_universal_governance_connector_profile.py",
+      "tools/tasks/folded/universal-governance-connector.yml",
+      "tools/tasks/steps/universal-governance-connector.validate/**"
+     ]
+    },
+    "push": {
+     "paths": [
+      "docs/governance/UNIVERSAL_GOVERNANCE_CONNECTOR_*",
+      "schemas/universal_governance_connector_profile.schema.json",
+      "schemas/universal_governance_connector_request.schema.json",
+      "schemas/universal_governance_connector_registry.schema.json",
+      "schemas/universal_governance_external_adapter.schema.json",
+      "specs/universal-governance-connector-profiles.v1.json",
+      "fixtures/universal-governance-connector/external-adapter.example.json",
+      "scripts/validate_universal_governance_external_adapter.py",
+      "docs/governance/UNIVERSAL_GOVERNANCE_EXTERNAL_ADAPTER.md",
+      "fixtures/universal-governance-connector/profile.example.json",
+      "fixtures/universal-governance-connector/request.example.json",
+      "scripts/validate_universal_governance_connector_profile.py"
+     ]
+    }
    }
   },
   {
@@ -149,6 +185,28 @@
     "persist_credentials": "true",
     "timeout_minutes": 5,
     "python_version": "3.11"
+   },
+   "path_filters": {
+    "pull_request": {
+     "paths": [
+      "schemas/admissibility_stage_vector.schema.json",
+      "docs/governance/GOVERNANCE_CLASSES_AND_ADMISSIBILITY_STAGES.md",
+      "docs/examples/admissibility/**",
+      "scripts/validate_admissibility_stage_vectors.py",
+      "tools/tasks/folded/validate-admissibility-taxonomy.yml",
+      "tools/tasks/steps/validate-admissibility-taxonomy.validate/**"
+     ]
+    },
+    "push": {
+     "paths": [
+      "schemas/admissibility_stage_vector.schema.json",
+      "docs/governance/GOVERNANCE_CLASSES_AND_ADMISSIBILITY_STAGES.md",
+      "docs/examples/admissibility/**",
+      "scripts/validate_admissibility_stage_vectors.py",
+      "tools/tasks/folded/validate-admissibility-taxonomy.yml",
+      "tools/tasks/steps/validate-admissibility-taxonomy.validate/**"
+     ]
+    }
    }
   },
   {
@@ -221,6 +279,42 @@
     "persist_credentials": "true",
     "timeout_minutes": 30,
     "python_version": "3.11"
+   },
+   "path_filters": {
+    "pull_request": {
+     "paths": [
+      "docs/**",
+      "automation/**",
+      "scripts/validate_docs.py",
+      "scripts/validate_gdr_examples.py",
+      "scripts/validate_external_evidence_interop.py",
+      "scripts/validate_verfi_real_artifact_intake.py",
+      "scripts/validate_relationship_outcomes.py",
+      "scripts/run_governance_tasks.py",
+      "scripts/ingest_conversation.py",
+      "scripts/test_ingest_conversation.py",
+      "GOVERNANCE_MIRROR_HANDOFF.md",
+      "tools/tasks/folded/validate_docs.yml",
+      "tools/tasks/steps/validate_docs.validate/**"
+     ]
+    },
+    "push": {
+     "paths": [
+      "docs/**",
+      "automation/**",
+      "scripts/validate_docs.py",
+      "scripts/validate_gdr_examples.py",
+      "scripts/validate_external_evidence_interop.py",
+      "scripts/validate_verfi_real_artifact_intake.py",
+      "scripts/validate_relationship_outcomes.py",
+      "scripts/run_governance_tasks.py",
+      "scripts/ingest_conversation.py",
+      "scripts/test_ingest_conversation.py",
+      "GOVERNANCE_MIRROR_HANDOFF.md",
+      "tools/tasks/folded/validate_docs.yml",
+      "tools/tasks/steps/validate_docs.validate/**"
+     ]
+    }
    }
   },
   {
@@ -278,6 +372,11 @@
      "name": "Workflow files equal the registered surfaces; catalog verifies ALLOW",
      "run_file": "tools/tasks/steps/workflow-surface-registry.validate/01-registry.sh",
      "run_sha256": "811824e88664923006be2eeb35632d710f5504145967f61632ad9e8fbdcb35ca"
+    },
+    {
+     "name": "Folded groups keep their original path filters (NOT_SELECTED, never skipped)",
+     "run_file": "tools/tasks/steps/workflow-surface-registry.validate/02-original-path-filters.sh",
+     "run_sha256": "9db82fbdf49b831995929ec2919b6ead95a650d1b9929cfb760742654aa3dbc7"
     }
    ],
    "artifacts": [],
