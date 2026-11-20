@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """Create or update the canonical StegTrace bootstrap in a pre-existing repo.
 
-The script is fail-closed and idempotent. It never creates the repository itself.
-It writes a durable JSON receipt with COMPLETE, BLOCKED, RETRY,
-REVIEW_REQUIRED, or FAILED status.
+The script is fail-closed and idempotent. It never creates the repository itself
+and it reads no GitHub credential: credential_authority is "TV/TVC ONLY" (TVC
+coordination/credential-model-consistency-matrix.v1.json). The write into
+StegVerse-Labs/StegTrace is TVC's broker operations APPLY_BOUNDED_FILE_SET then
+OPEN_PULL_REQUEST, executed under a TV/TVC-bound warrant with a TV/TVC-issued
+TVC_EPHEMERAL_GITHUB_TOKEN. This script emits the non-secret request for those
+operations and a FAIL_CLOSED receipt carrying the six fields. Lowest mode: E0
+(local, no network); the degraded form is the same FAIL_CLOSED receipt.
 """
 from __future__ import annotations
 
-import base64
+import hashlib
 import json
 import os
-import subprocess
 import sys
-import time
 from pathlib import Path
 
 OWNER = "StegVerse-Labs"
@@ -38,8 +41,9 @@ FILES = {
 }
 
 
-def gh(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(["gh", *args], text=True, capture_output=True, check=check)
+BROKER_ENTRYPOINT = "StegVerse-Labs/TVC github_repository_operation_broker.py"
+OWNING_GOAL = ("STEGTRACE-ENGINE-V0 (StegVerse-Labs/Governance STEGTRACE_MIRROR_HANDOFF); credential path: "
+               "TV/TVC transition, drafted under StegVerse-org/.github#164")
 
 
 def write_receipt(status: str, detail: str, **extra: object) -> None:
@@ -50,55 +54,56 @@ def write_receipt(status: str, detail: str, **extra: object) -> None:
         "target_repository": FULL_REPO,
         "status": status,
         "detail": detail,
-        "observed_at": int(time.time()),
         **extra,
     }
     RECEIPT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
-def api_exists(path: str) -> bool:
-    result = gh("api", path, check=False)
-    return result.returncode == 0
+def broker_request() -> dict[str, object]:
+    """Non-secret request for TVC's APPLY_BOUNDED_FILE_SET then OPEN_PULL_REQUEST."""
+    files = [{"path": path, "content_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+              "bytes": len(content.encode("utf-8"))} for path, content in sorted(FILES.items())]
+    return {
+        "credential_authority": "TV/TVC",
+        "operations": [
+            {"operation_class": "APPLY_BOUNDED_FILE_SET", "repository": FULL_REPO, "new_branch": BRANCH,
+             "files": files, "maximum_file_count": len(files),
+             "maximum_total_bytes": sum(int(item["bytes"]) for item in files),
+             "commit_message": "Install canonical StegTrace bootstrap",
+             "content_source": "StegVerse-Labs/Governance scripts/bootstrap_stegtrace.py FILES at the admitted commit",
+             "base_ref": "UNKNOWN_NOT_AUTHENTICALLY_OBSERVED", "expected_base_sha": "UNKNOWN_NOT_AUTHENTICALLY_OBSERVED"},
+            {"operation_class": "OPEN_PULL_REQUEST", "repository": FULL_REPO, "head_ref": BRANCH,
+             "expected_head_sha": "bound by the APPLY_BOUNDED_FILE_SET receipt", "draft": True,
+             "title": "Bootstrap StegTrace v0 engine",
+             "body": "Installs the canonical StegTrace engine bootstrap, contract, profiles, schema, validator, "
+                     "workflow, and mirror handoff."},
+        ],
+    }
 
 
 def main() -> int:
-    if not os.environ.get("GH_TOKEN"):
-        write_receipt("BLOCKED", "GitHub mutation credential unavailable; TV/TVC-only credential boundary preserved", credential_authority="TV/TVC", github_token_runtime_authority="NONE")
-        return 0
-    if not api_exists(f"repos/{FULL_REPO}"):
-        write_receipt("BLOCKED", "target repository does not exist or token cannot observe it", release_condition=f"GET /repos/{FULL_REPO} returns 200")
-        return 0
+    write_receipt(
+        "FAIL_CLOSED",
+        "the StegTrace write is a TV/TVC broker transition; this workflow reads no GitHub credential",
+        disposition="FAIL_CLOSED",
+        failure_code="STEGTRACE_BOOTSTRAP_WRITE_IS_A_TV_TVC_BROKER_TRANSITION",
+        failed_predicate="GITHUB_MUTATION_CREDENTIAL_IS_TV_TVC_WARRANTED",
+        required_evidence_or_repair=(
+            "TV/TVC transition: the TVC broker executes APPLY_BOUNDED_FILE_SET then OPEN_PULL_REQUEST for this "
+            "request under a TV/TVC-bound warrant and authorization with a TV/TVC-issued, least-privilege "
+            "TVC_EPHEMERAL_GITHUB_TOKEN; no repository or organization secret or PAT is read in its place; "
+            "the target repository must exist (GET /repos/" + FULL_REPO + " was not observed as 200)"),
+        retry_entrypoint=BROKER_ENTRYPOINT + " APPLY_BOUNDED_FILE_SET, OPEN_PULL_REQUEST with broker_request",
+        owning_existing_goal=OWNING_GOAL,
+        next_attempt="on the TV/TVC broker's APPLY_BOUNDED_FILE_SET and OPEN_PULL_REQUEST receipts for this request",
+        lowest_mode="E0",
+        credential_authority="TV/TVC",
+        github_token_runtime_authority="NONE",
+        broker_request=broker_request(),
+    )
+    return 1
 
-    default_branch = json.loads(gh("api", f"repos/{FULL_REPO}").stdout)["default_branch"]
-    if not api_exists(f"repos/{FULL_REPO}/git/ref/heads/{BRANCH}"):
-        base_sha = json.loads(gh("api", f"repos/{FULL_REPO}/git/ref/heads/{default_branch}").stdout)["object"]["sha"]
-        gh("api", f"repos/{FULL_REPO}/git/refs", "-X", "POST", "-f", f"ref=refs/heads/{BRANCH}", "-f", f"sha={base_sha}")
-
-    changed = []
-    for path, content in FILES.items():
-        endpoint = f"repos/{FULL_REPO}/contents/{path}"
-        existing = gh("api", endpoint, "-f", f"ref={BRANCH}", check=False)
-        encoded = base64.b64encode(content.encode()).decode()
-        if existing.returncode == 0:
-            data = json.loads(existing.stdout)
-            old = base64.b64decode(data["content"]).decode()
-            if old == content:
-                continue
-            gh("api", endpoint, "-X", "PUT", "-f", "message=Update canonical StegTrace bootstrap", "-f", f"content={encoded}", "-f", f"sha={data['sha']}", "-f", f"branch={BRANCH}")
-        else:
-            gh("api", endpoint, "-X", "PUT", "-f", "message=Install canonical StegTrace bootstrap", "-f", f"content={encoded}", "-f", f"branch={BRANCH}")
-        changed.append(path)
-
-    prs = json.loads(gh("api", f"repos/{FULL_REPO}/pulls", "-f", "state=open", "-f", f"head={OWNER}:{BRANCH}").stdout)
-    if prs:
-        pr_url = prs[0]["html_url"]
-    else:
-        pr = json.loads(gh("api", f"repos/{FULL_REPO}/pulls", "-X", "POST", "-f", "title=Bootstrap StegTrace v0 engine", "-f", f"head={BRANCH}", "-f", f"base={default_branch}", "-f", "body=Installs the canonical StegTrace engine bootstrap, contract, profiles, schema, validator, workflow, and mirror handoff.").stdout)
-        pr_url = pr["html_url"]
-
-    write_receipt("REVIEW_REQUIRED", "bootstrap installed on branch and pull request exists", changed_files=changed, pull_request=pr_url)
-    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

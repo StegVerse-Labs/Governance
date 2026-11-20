@@ -23,9 +23,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Observe target and install bootstrap when available
-        env:
-          GH_TOKEN: ${{ secrets.GH_STEGVERSE_BRIDGE_PAT }}
+      # No secret is read. The StegTrace write is TVC's broker operations
+      # APPLY_BOUNDED_FILE_SET then OPEN_PULL_REQUEST (a TV/TVC transition);
+      # this step emits their non-secret request and fails closed with the six fields.
+      - name: Emit the TV/TVC broker request (fails closed; no credential)
         run: python scripts/bootstrap_stegtrace.py
 
       - name: Upload inspectable bootstrap receipt
